@@ -68,7 +68,20 @@
     body.innerHTML = '';
     var clone = svg.cloneNode(true);
     clone.removeAttribute('style');
-    body.appendChild(clone);
+    /* 一定要包一個 .lti-fig 返去。
+       所有圖表樣式都係 scope 喺 .lti-fig 之下嘅（.lti-fig .fill-blue、
+       .lti-fig .line-amber、.lti-fig text 嘅 halo…）。呢個 overlay 掛喺
+       document.body,唔喺原本嗰個 <figure class="lti-fig"> 裡面 —— 所以
+       如果直接擺個 svg 落去,一條規則都唔會中:
+         fill: var(--chart-blue-fill) 解析唔到 → declaration 無效 →
+         fill 跌返初始值 = 黑色。
+       結果就係每張圖放大之後面積填色變成一大塊死黑、線同標籤都冇色。
+       （用純 .lti-fig 而唔係 .md-typeset .lti-fig:後者帶 margin,
+       而 overlay 唔喺 .md-typeset 裡面,所以呢個 class 唔會帶副作用。） */
+    var holder = document.createElement('div');
+    holder.className = 'lti-fig';
+    holder.appendChild(clone);
+    body.appendChild(holder);
     var cap = fig.querySelector('figcaption');
     if (cap) {
       var c = document.createElement('div');
