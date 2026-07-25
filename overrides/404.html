@@ -1,0 +1,43 @@
+{% extends "main.html" %}
+
+<!--
+  自訂 404。兩件事同一般頁唔同,唔好「順手」改返：
+
+  1. 所有連結一定要用絕對 URL（config.site_url）。
+     GitHub Pages 係喺「原本嗰條唔存在嘅 URL」上面送呢一頁,所以相對連結
+     會用嗰條錯路徑做 base。例如訪客入 /新手篇/99-唔存在/,相對連結
+     "level/" 就會解成 /新手篇/99-唔存在/level/ —— 又一個 404。
+
+  2. 下面個 #lti-404 標記係畀 resume.js 睇嘅,唔好刪。
+     resume.js 會記住「上次睇嘅頁」,而首頁只要有紀錄就會自動跳過去。
+     由於呢頁嘅 location.pathname 係嗰條錯 URL(唔含 "404"),單靠 URL
+     判斷係捉唔到嘅 —— 結果會將 404 記成上次嗰頁,令讀者每次入首頁
+     都被拋返 404,出唔到嚟。有咗呢個標記,resume.js 就知唔好記。
+-->
+{% block content %}
+<div id="lti-404" hidden data-lti-nostore="1"></div>
+
+<h1>搵唔到呢一頁 🤔</h1>
+
+<p>唔好意思,呢個地址冇嘢。最常見嘅原因係：</p>
+
+<ul>
+  <li>連結被 WhatsApp / 論壇截斷咗(尾巴唔見咗一截)</li>
+  <li>地址打錯字</li>
+  <li>本站仲喺整理階段,個頁搬過位</li>
+</ul>
+
+<p>唔緊要,由呢幾個入口入返去就得:</p>
+
+<ul>
+  <li><a href="{{ config.site_url }}?home"><strong>🏠 首頁</strong></a> —— 本站係乜嚟嘅,由邊度開始睇</li>
+  <li><a href="{{ config.site_url }}level/"><strong>📍 搵自己嘅 Level</strong></a> —— 先搞清楚你而家喺邊個階段</li>
+  <li><a href="{{ config.site_url }}新手篇/01-你適合主動定被動投資/"><strong>🟢 新手篇 第 1 章</strong></a> —— 你適合主動定被動投資?</li>
+  <li><a href="{{ config.site_url }}遊戲/"><strong>🎮 互動遊戲</strong></a> —— 用 20 年 70 個決定親身試下偏誤嘅代價</li>
+</ul>
+
+<p>或者用右上角(手機係頂部)嘅 <strong>🔍 搜尋</strong> 打你想搵嘅字,中文搵得到嘅。</p>
+
+<p><small>如果你係由本站某條連結行到呢度嘅,即係我搞錯咗 ——
+歡迎去 <a href="{{ config.repo_url }}/issues">GitHub</a> 開個 issue 話我知。</small></p>
+{% endblock %}

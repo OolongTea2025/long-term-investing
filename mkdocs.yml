@@ -7,7 +7,10 @@ repo_name: OolongTea2025/long-term-investing
 
 theme:
   name: material
+  custom_dir: overrides   # overrides/main.html = 分享用嘅 og/twitter meta;overrides/404.html = 自訂 404
   language: zh-Hant
+  favicon: images/favicon.svg
+  logo: images/logo.svg
   font: false            # 中文用系統字型,唔 load 外部 webfont(快、私隱好)
   features:
     - navigation.instant

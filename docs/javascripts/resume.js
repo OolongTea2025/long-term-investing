@@ -23,6 +23,19 @@
     return location.origin + '/';   // 真係搵唔到先用（例如 root site）
   }
 
+  /* 呢一頁係唔係 404？
+     千萬唔可以只靠 location.pathname 睇有冇 "404" —— GitHub Pages 係喺
+     「原本嗰條唔存在嘅 URL」上面送 404.html 嘅內容,所以訪客入
+     /新手篇/99-唔存在/ 嘅時候,pathname 就係 /新手篇/99-唔存在/,
+     完全唔含 "404"。舊版就係咁走漏,將 404 記成「上次嗰頁」,
+     令讀者之後每次入首頁都被 replace 去嗰個 404,永遠出唔嚟。
+     所以真正嘅判斷係 overrides/404.html 裡面嗰個 #lti-404 標記;
+     pathname 嗰個 test 留住做多一層保險（例如有人直接開 /404.html）。 */
+  function is404() {
+    if (document.getElementById('lti-404')) return true;
+    return /(^|\/)404(\.html)?\/?$/.test(location.pathname);
+  }
+
   function homeHref() {
     var base;
     try { base = localStorage.getItem(HOME); } catch (e) {}
@@ -69,7 +82,7 @@
 
       if (!isHome) {
         // 內容頁：記低位置（404 除外）
-        if (!/(^|\/)404/.test(path)) {
+        if (!is404()) {
           localStorage.setItem(KEY, JSON.stringify({ u: path, t: title }));
         }
         return;

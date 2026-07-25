@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="長線投資入門">
+  <!-- Header 版:透明底、單色白。唔用 favicon 嗰個版本,因為佢有深藍底,
+       擺落同樣係藍色嘅 header 會變成一個藍上藍嘅方格;而 amber bar 對
+       header 藍(#2563a8)只有 2.77:1,所以三條都用白。
+
+       fill 一定要硬寫 #ffffff,唔可以用 currentColor:Material 係用
+       <img src="logo.svg"> 出 logo,而 <img> 載入嘅 SVG 係獨立文件,
+       唔會繼承 header 嘅 color —— currentColor 會 fallback 去黑色,
+       變成黑 bar 貼藍底,幾乎睇唔到。 -->
+  <rect x="4.2" y="17.4" width="6.1" height="9.4" rx="1.6" fill="#ffffff"/>
+  <rect x="12.95" y="12.2" width="6.1" height="14.6" rx="1.6" fill="#ffffff"/>
+  <rect x="21.7" y="5.9" width="6.1" height="20.9" rx="1.6" fill="#ffffff"/>
+</svg>

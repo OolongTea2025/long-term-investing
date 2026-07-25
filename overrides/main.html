@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+<!--
+  Social-share meta (Open Graph + Twitter).
+  Hand-written instead of using Material's `social` plugin, because that plugin
+  needs cairo/pango system libraries — which would have to be installed in CI on
+  every build. The card is generated locally (scratchpad/make_brand.py) and
+  committed as docs/images/social-card.png, so CI stays dependency-free.
+  Material's base.html emits no og:/twitter: tags, so nothing here duplicates.
+-->
+{% block extrahead %}
+  {%- set page_title = config.site_name -%}
+  {%- if page and page.title and not page.is_homepage -%}
+    {%- set page_title = (page.title | striptags) ~ " · " ~ config.site_name -%}
+  {%- endif -%}
+  {%- set page_desc = config.site_description -%}
+  {%- if page and page.meta and page.meta.description -%}
+    {%- set page_desc = page.meta.description -%}
+  {%- endif -%}
+  {%- set card = config.site_url ~ "images/social-card.png" -%}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:locale" content="zh_HK">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_desc }}">
+  <meta property="og:url" content="{{ page.canonical_url if page else config.site_url }}">
+  <meta property="og:image" content="{{ card }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="長線投資入門 —— 由零開始嘅被動指數投資指南">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_desc }}">
+  <meta name="twitter:image" content="{{ card }}">
+  <meta name="twitter:image:alt" content="長線投資入門 —— 由零開始嘅被動指數投資指南">
+  <link rel="apple-touch-icon" href="{{ 'images/apple-touch-icon.png' | url }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ 'images/favicon.png' | url }}">
+{% endblock %}
