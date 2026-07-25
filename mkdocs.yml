@@ -2,10 +2,8 @@ site_name: 長線投資入門
 site_description: 由零開始嘅被動指數投資指南 — 免費、任睇、傳承落去
 site_author: 一生只活一次
 site_url: https://OolongTea2025.github.io/long-term-investing/
-# repo 而家係 private,所以未加 repo_url —— 轉 public 之後再 uncomment 呢兩行,
-# 唔係嘅話網站上面個 GitHub 連結會俾訪客撞 404。
-# repo_url: https://github.com/OolongTea2025/long-term-investing
-# repo_name: OolongTea2025/long-term-investing
+repo_url: https://github.com/OolongTea2025/long-term-investing
+repo_name: OolongTea2025/long-term-investing
 
 theme:
   name: material
