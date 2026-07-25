@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="一個關於認知偏誤嘅廣東話互動故事。七十個決定，二十年，一個乜都冇做嘅對照組。">
+<meta name="color-scheme" content="dark">
+<title>烏龍茶的投資人生</title>
+<style>
+:root{
+ --ink:#12140f; --paper:#e8e4d9; --paper2:#d6d1c2;
+ --jade:#4a6b5d; --jade-lt:#7a9e8f;
+ --red:#c04a3e; --green:#4f9463;
+ --gold:#c9a25c; --dim:#8d8878;
+ --font-d:"Songti SC","Noto Serif TC","Source Han Serif TC",serif;
+ --font-b:"PingFang HK","Noto Sans TC","Microsoft JhengHei",sans-serif;
+ --safe-b:env(safe-area-inset-bottom,0px);
+ --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0a0b08;overscroll-behavior:none}
+body{font-family:var(--font-b);color:var(--paper);
+ display:flex;align-items:center;justify-content:center;
+ -webkit-font-smoothing:antialiased}
+/* 四行：頂欄 / 走勢圖 / 舞台 / 對話。
+   走勢圖以前係 position:absolute 浮喺舞台上面，結果永遠壓住立繪塊面 ——
+   立繪高度會跟螢幕變，浮層根本估唔中邊度先安全。做返真嘅 grid 行，
+   數學上就唔可能再疊。 */
+#app{position:relative;width:100%;max-width:1100px;
+ height:100dvh;max-height:100dvh;overflow:hidden;
+ display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;
+ background:#0a0b08}
+/* Screens stack on top of the grid; only .on is laid out. */
+.scr{display:none}
+.scr.on{display:contents}
+.scr.solo.on{display:block;grid-row:1/-1;overflow-y:auto;
+ -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+button{font-family:inherit;color:inherit}
+a{color:var(--gold)}
+
+/* ============ shared button ============ */
+.btn{display:inline-block;font-family:var(--font-d);font-size:15px;letter-spacing:.24em;
+ padding:13px 30px;border:1px solid var(--gold);color:var(--gold);
+ background:transparent;cursor:pointer;transition:background .25s,color .25s;
+ text-indent:.24em;border-radius:2px}
+.btn:hover,.btn:active{background:var(--gold);color:#0a0b08}
+.btn.sm{font-size:12px;padding:9px 18px;letter-spacing:.16em}
+.btn.ghost{border-color:rgba(232,228,217,.3);color:var(--paper2)}
+.btn.ghost:hover{background:rgba(232,228,217,.14);color:var(--paper)}
+
+/* ============ TITLE ============ */
+#title{background:#0a0b08}
+#title.on{display:grid;grid-row:1/-1;grid-template-rows:1fr;
+ place-items:center;position:relative;overflow-y:auto}
+#titleBg{position:absolute;inset:0;background-size:cover;background-position:center;
+ opacity:.5;filter:saturate(.65)}
+#title .veil{position:absolute;inset:0;
+ background:linear-gradient(180deg,rgba(10,11,8,.6) 0%,rgba(10,11,8,.25) 38%,rgba(10,11,8,.95) 100%)}
+#title .inner{position:relative;z-index:2;padding:28px 22px calc(28px + var(--safe-b));
+ width:100%;max-width:520px;text-align:center}
+.t-eyebrow{font-family:var(--font-d);letter-spacing:.5em;font-size:10.5px;
+ color:var(--gold);margin-bottom:16px;text-indent:.5em}
+.t-main{font-family:var(--font-d);font-size:clamp(34px,8.5vw,62px);
+ font-weight:600;letter-spacing:.06em;line-height:1.12;
+ text-shadow:0 4px 30px rgba(0,0,0,.9)}
+.t-sub{margin-top:12px;font-size:12.5px;color:var(--paper2);opacity:.85;letter-spacing:.1em}
+.t-rule{width:48px;height:1px;background:var(--gold);margin:22px auto;opacity:.7}
+.namewrap{margin:0 auto 18px;max-width:280px}
+.namewrap label{display:block;font-size:10.5px;color:var(--dim);letter-spacing:.2em;margin-bottom:7px}
+#nameIn{width:100%;background:rgba(232,228,217,.07);border:1px solid rgba(232,228,217,.22);
+ color:var(--paper);font-family:var(--font-d);font-size:18px;text-align:center;
+ padding:10px;border-radius:2px;letter-spacing:.1em}
+#nameIn:focus{outline:none;border-color:var(--gold)}
+.t-note{margin-top:22px;font-size:11.5px;color:var(--dim);line-height:1.95}
+.t-note b{color:var(--paper2);font-weight:600}
+#contWrap{margin-top:12px}
+#contInfo{font-size:10.5px;color:var(--dim);margin-top:6px;letter-spacing:.06em}
+.t-links{margin-top:24px;font-size:11px;color:var(--dim);line-height:2}
+
+/* ============ TOP BAR ============ */
+#topbar{position:relative;z-index:12;display:flex;align-items:stretch;gap:8px;
+ padding:calc(6px + var(--safe-t)) 10px 6px;background:#0a0b08}
+.tb-when{font-family:var(--font-d);letter-spacing:.06em;color:var(--paper2);
+ display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+.tb-when b{font-size:17px;color:var(--paper)}
+.tb-when .sm{font-size:10.5px;color:var(--dim)}
+.tb-phase{font-size:9.5px;letter-spacing:.22em;color:var(--gold);text-indent:.22em;margin-top:1px}
+.tb-money{margin-left:auto;text-align:right;line-height:1.5;font-size:11px;
+ font-variant-numeric:tabular-nums}
+.tb-money .row{display:flex;justify-content:flex-end;gap:10px}
+.tb-money .lbl{color:var(--dim);font-size:9.5px;align-self:center}
+.tb-money .bench{color:var(--jade-lt)}
+.up{color:var(--green)}.dn{color:var(--red)}
+.iconbtn{width:30px;height:30px;flex-shrink:0;border:1px solid rgba(232,228,217,.26);
+ background:rgba(10,11,8,.55);color:var(--paper2);border-radius:50%;cursor:pointer;
+ font-size:13px;display:flex;align-items:center;justify-content:center;align-self:flex-start}
+.iconbtn.ok{border-color:var(--jade-lt);color:var(--jade-lt)}
+#tbBtns{display:flex;gap:6px;align-self:flex-start;margin-left:8px}
+
+/* ============ STAGE ============ */
+#stagewrap{position:relative;overflow:hidden;min-height:0}
+#bg{position:absolute;inset:0;background-size:cover;background-position:center;
+ transition:opacity .45s;will-change:opacity}
+#bgVeil{position:absolute;inset:0;
+ background:linear-gradient(180deg,rgba(10,11,8,.42) 0%,rgba(10,11,8,.12) 28%,rgba(10,11,8,.5) 68%,rgba(10,11,8,.95) 100%)}
+/* The figure is bottom-anchored inside the stage row and scales with the row,
+   so it can never be resized by the dialogue growing — the dialogue lives in
+   its own grid row and simply takes the space it needs. */
+#figs{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;
+ pointer-events:none}
+#figs img{position:absolute;bottom:0;height:100%;width:auto;max-width:130%;
+ object-fit:contain;object-position:bottom center;
+ filter:drop-shadow(0 14px 34px rgba(0,0,0,.75));
+ opacity:0;transition:opacity .42s ease}
+#figs img.in{opacity:1}
+#stagewrap::after{content:'';position:absolute;left:0;right:0;bottom:0;height:22%;
+ pointer-events:none;background:linear-gradient(180deg,transparent,rgba(10,11,8,.85))}
+/* 走勢圖：自己一行，永遠唔會壓住立繪。點一下可以放大。 */
+#chartWrap{position:relative;margin:0 10px 4px;height:42px;
+ background:rgba(232,228,217,.045);border:1px solid rgba(232,228,217,.10);
+ border-radius:3px;overflow:hidden;cursor:pointer;transition:height .3s}
+#chartWrap.big{height:min(34dvh,200px)}
+#chart{width:100%;height:100%;display:block}
+#chartHint{position:absolute;right:6px;bottom:3px;font-size:8.5px;color:var(--dim);
+ letter-spacing:.1em;pointer-events:none}
+
+/* ============ DIALOGUE ============ */
+#dlg{position:relative;z-index:10;padding:0 10px calc(10px + var(--safe-b));
+ max-height:64dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+ overscroll-behavior:contain}
+.sig{display:block;font-size:12.5px;color:#f3d99b;letter-spacing:.06em;
+ border-left:3px solid var(--gold);padding:7px 11px;margin-bottom:8px;
+ line-height:1.7;font-weight:500;background:rgba(12,14,10,.94);
+ border-radius:0 3px 3px 0;box-shadow:0 2px 14px rgba(0,0,0,.5)}
+.namep{display:inline-block;font-family:var(--font-d);font-size:13px;letter-spacing:.12em;
+ color:var(--paper);background:var(--jade);padding:3px 12px;border-radius:2px 2px 0 0;
+ position:relative;z-index:2;top:1px}
+.txtbox{background:rgba(18,20,15,.95);border:1px solid rgba(232,228,217,.13);
+ border-radius:2px;padding:12px 13px;font-size:14.5px;line-height:1.9;
+ color:var(--paper);letter-spacing:.02em}
+#body::after{content:'▾';margin-left:5px;color:var(--gold);animation:bl 1.1s infinite}
+@keyframes bl{0%,100%{opacity:0}50%{opacity:1}}
+#opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.opt{text-align:left;background:rgba(18,20,15,.95);
+ border:1px solid rgba(232,228,217,.2);color:var(--paper);
+ padding:11px 12px;font-size:13.5px;line-height:1.55;cursor:pointer;
+ border-radius:2px;transition:background .18s,border-color .18s;
+ display:flex;align-items:center;gap:10px}
+.opt .k{flex-shrink:0;font-family:var(--font-d);font-size:10.5px;color:var(--gold);
+ border:1px solid rgba(201,162,92,.5);width:20px;height:20px;
+ display:flex;align-items:center;justify-content:center;border-radius:50%}
+.opt .otxt{flex:1}
+.opt:hover:not(:disabled){background:rgba(74,107,93,.5);border-color:var(--jade-lt)}
+.opt:disabled{opacity:.32;cursor:default}
+.opt.extra{border-style:dashed;border-color:rgba(201,162,92,.45)}
+.opt .btag{font-size:9.5px;color:var(--gold);opacity:.9;flex-shrink:0;
+ border:1px solid rgba(201,162,92,.35);padding:2px 5px;border-radius:2px}
+#res{margin-top:8px;padding:11px 12px;background:rgba(74,107,93,.22);
+ border-left:2px solid var(--jade-lt);font-size:13.5px;line-height:1.8;
+ display:none;border-radius:0 2px 2px 0}
+#res.on{display:block}
+#resWhy{margin-top:7px;padding-top:7px;border-top:1px dashed rgba(201,162,92,.3);
+ font-size:11.5px;color:var(--paper2);line-height:1.75}
+#resWhy .tag{color:var(--gold);font-family:var(--font-d);letter-spacing:.08em}
+#next{margin-top:9px;width:100%;text-align:center}
+
+/* ============ OVERLAY CARD (review / backlog / settings) ============ */
+.ovl{position:absolute;inset:0;z-index:40;display:none;
+ align-items:center;justify-content:center;padding:14px;
+ background:rgba(6,7,5,.92);backdrop-filter:blur(8px);overflow-y:auto}
+.ovl.on{display:flex}
+.card{width:100%;max-width:520px;background:rgba(16,18,13,.97);
+ border:1px solid rgba(201,162,92,.3);border-radius:3px;padding:20px 18px;
+ box-shadow:0 18px 60px rgba(0,0,0,.7);margin:auto}
+.card h2{font-family:var(--font-d);font-size:24px;letter-spacing:.08em;font-weight:600;margin-top:6px}
+.eyebrow{font-size:9.5px;letter-spacing:.32em;color:var(--gold);text-indent:.32em}
+.rule{width:40px;height:1px;background:var(--gold);margin:12px 0 14px;opacity:.75}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-bottom:12px}
+.kv{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;
+ border-bottom:1px solid rgba(232,228,217,.09);font-variant-numeric:tabular-nums;gap:8px}
+.kv .l{color:var(--dim)}
+.kv .v{font-family:var(--font-d);text-align:right}
+.verdict{font-size:13px;line-height:1.95;color:var(--paper2);
+ border-left:2px solid var(--jade-lt);padding:9px 11px;
+ background:rgba(74,107,93,.16);border-radius:0 2px 2px 0;margin-bottom:11px}
+.cardbtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+canvas.cv{width:100%;background:rgba(232,228,217,.035);border-radius:2px;display:block}
+#logList{max-height:56dvh;overflow-y:auto;margin:-4px -4px 0;padding:4px}
+.logrow{border-left:2px solid rgba(232,228,217,.16);padding:7px 0 7px 11px;
+ margin-bottom:8px;font-size:12.5px;line-height:1.7}
+.logrow .t{color:var(--dim);font-size:10.5px;letter-spacing:.08em}
+.logrow .b{color:var(--gold);font-size:11px}
+.setrow{display:flex;justify-content:space-between;align-items:center;
+ padding:9px 0;border-bottom:1px solid rgba(232,228,217,.09);font-size:13px}
+.seg{display:flex;gap:0;border:1px solid rgba(232,228,217,.22);border-radius:2px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 11px;font-size:11.5px;
+ color:var(--paper2);cursor:pointer}
+.seg button.on{background:var(--gold);color:#0a0b08}
+
+/* ============ ENDING ============ */
+#end{background:#0a0b08}
+#endCg{width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;position:relative}
+#endCg::after{content:'';position:absolute;inset:0;
+ background:linear-gradient(180deg,transparent 42%,#0a0b08 100%)}
+.epad{padding:0 18px calc(40px + var(--safe-b));max-width:660px;margin:0 auto;width:100%}
+.e-name{font-family:var(--font-d);font-size:clamp(28px,7vw,44px);letter-spacing:.1em;
+ margin-top:-34px;position:relative;z-index:2;text-shadow:0 3px 22px #000}
+.e-tag{font-size:10.5px;letter-spacing:.24em;color:var(--gold);margin-bottom:12px;text-indent:.24em}
+.e-desc{font-size:14.5px;line-height:2.05;color:var(--paper2);margin-bottom:22px}
+.sec{margin:30px 0 10px;font-family:var(--font-d);font-size:12.5px;letter-spacing:.24em;
+ color:var(--gold);border-bottom:1px solid rgba(201,162,92,.28);padding-bottom:6px;text-indent:.24em}
+.stat{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;font-size:13.5px;
+ border-bottom:1px solid rgba(232,228,217,.09);font-variant-numeric:tabular-nums}
+.stat .v{font-family:var(--font-d);text-align:right}
+.note{font-size:12.5px;line-height:1.95;color:var(--paper2);
+ background:rgba(192,74,62,.14);border-left:2px solid var(--red);
+ padding:12px 13px;margin-top:12px;border-radius:0 2px 2px 0}
+.note.good{background:rgba(79,148,99,.14);border-left-color:var(--green)}
+.note.plain{background:rgba(232,228,217,.05);border-left-color:rgba(232,228,217,.3)}
+.foot{margin-top:14px;font-size:11px;color:var(--dim);line-height:1.95}
+/* attribution bars */
+.attr{margin-bottom:11px}
+.attr .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;gap:8px}
+.attr .amt{font-family:var(--font-d);font-variant-numeric:tabular-nums;white-space:nowrap}
+.attr .track{height:8px;background:rgba(232,228,217,.09);border-radius:4px;overflow:hidden;
+ display:flex;justify-content:flex-start}
+.attr .track i{display:block;height:100%;border-radius:4px}
+.attr .why{font-size:11px;color:var(--dim);line-height:1.7;margin-top:4px}
+.attr .why a{color:var(--gold);text-decoration:none;border-bottom:1px dotted var(--gold)}
+.biasrow{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:12.5px}
+.biasrow .bn{width:84px;flex-shrink:0;font-family:var(--font-d);font-size:11.5px}
+.biasrow .bar{flex:1;height:6px;background:rgba(232,228,217,.1);border-radius:3px;overflow:hidden}
+.biasrow .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--jade),var(--gold))}
+.biasrow .bc{width:20px;text-align:right;color:var(--dim);font-size:10.5px}
+.biasdesc{font-size:11px;color:var(--dim);line-height:1.65;margin:-2px 0 10px 93px}
+.biasdesc a{color:var(--gold);text-decoration:none;border-bottom:1px dotted rgba(201,162,92,.6)}
+.mikeimg{width:100%;border-radius:2px;margin-top:8px;display:block}
+.endbtns{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap}
+
+/* ============ market shock feedback ============ */
+#flash{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+ transition:opacity .5s ease}
+#flash.hit{opacity:1;transition:opacity .08s ease}
+@keyframes shk{0%,100%{transform:translate(0,0)}
+ 20%{transform:translate(-4px,2px)}40%{transform:translate(3px,-2px)}
+ 60%{transform:translate(-2px,-2px)}80%{transform:translate(3px,1px)}}
+#app.shake{animation:shk .4s ease}
+
+/* ============ responsive ============ */
+@media(min-width:700px){
+ .txtbox{font-size:15.5px}
+ .sig{font-size:13.5px}
+ .opt{font-size:14.5px;padding:12px 14px}
+ #topbar{padding:calc(10px + var(--safe-t)) 16px 8px}
+ #dlg{padding:0 16px calc(14px + var(--safe-b))}
+ #chartWrap{margin:0 16px 6px;height:52px}
+ .tb-money{font-size:12px}
+}
+/* 橫屏手機：改做左右兩欄（立繪左、對話右）—— 即係一般 galgame 嘅橫屏做法。
+   之前用返直屏嘅上下佈局，對話框食咗 76dvh，中間個 stage 行被壓到零高，
+   而立繪係 height:100%，所以成個人就唔見咗。唔鎖直屏：iOS Safari 本身
+   鎖唔到，而且橫屏先係視覺小說嘅原生格式。 */
+@media(orientation:landscape) and (max-height:560px){
+ #app{grid-template-rows:auto auto minmax(0,1fr);
+      grid-template-columns:minmax(0,38%) minmax(0,62%)}
+ #topbar{grid-area:1/1/2/3}
+ #chartWrap{grid-area:2/1/3/3;height:30px;margin:0 10px 3px}
+ #stagewrap{grid-area:3/1/4/2}
+ #dlg{grid-area:3/2/4/3;max-height:none;padding:0 10px calc(8px + var(--safe-b)) 4px}
+ #title.on,#end.on,.scr.solo.on{grid-column:1/-1;grid-row:1/-1}
+ #chartWrap.big{height:64px}
+ #chartHint{display:none}
+ #stagewrap::after{height:14%}
+ .txtbox{font-size:13px;line-height:1.7;padding:8px 10px}
+ .opt{padding:7px 10px;font-size:12.5px;gap:8px}
+ .sig{font-size:11px;padding:5px 9px;margin-bottom:5px;line-height:1.55}
+ .namep{font-size:11.5px;padding:2px 9px}
+ #topbar{padding:calc(3px + var(--safe-t)) 10px 3px}
+ .tb-when b{font-size:15px}
+}
+/* 矮但唔係橫屏（例如分屏、細窗）：淨係縮，唔換佈局 */
+@media(max-height:560px) and (orientation:portrait){
+ #chartWrap{height:34px}
+ #dlg{max-height:68dvh}
+ .txtbox{font-size:13.5px;line-height:1.75;padding:9px 11px}
+ .opt{padding:8px 11px;font-size:13px}
+ .sig{font-size:11.5px;padding:5px 9px;margin-bottom:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="flash"></div>
+
+<!-- ============ TITLE ============ -->
+<section class="scr on" id="title">
+ <div id="titleBg"></div><div class="veil"></div>
+ <div class="inner">
+  <div class="t-eyebrow">投資行為模擬</div>
+  <h1 class="t-main">烏龍茶的<br>投資人生</h1>
+  <div class="t-sub">七十個決定 · 二十年 · 一個對照組</div>
+  <div class="t-rule"></div>
+  <div class="namewrap">
+   <label>你嘅名</label>
+   <input id="nameIn" maxlength="8" value="烏龍茶" autocomplete="off">
+  </div>
+  <button class="btn" id="startBtn">開始</button>
+  <div id="contWrap" style="display:none">
+   <button class="btn sm ghost" id="contBtn">繼續上次進度</button>
+   <div id="contInfo"></div>
+  </div>
+  <p class="t-note">
+   你三十歲，有 <b>$300,000</b>，每個季度儲到啲錢。<br>
+   有個叫 <b>Mike</b> 嘅人同你一齊開始。佢第一日買晒指數基金，<br>
+   之後每個季度照供，二十年冇再做過任何嘢。<br><br>
+   遊戲完咗會話你知：你同佢嘅差距，<br>究竟係邊幾樣嘢造成，每樣值幾多錢。
+  </p>
+  <div class="t-links">
+   <a href="../新手篇/06-行為偏誤點應對/" id="lnkCh6">← 返《長線投資入門》</a>
+  </div>
+ </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section class="scr" id="game">
+ <div id="topbar">
+  <div>
+   <div class="tb-when"><b id="tNum">1</b><span class="sm">/70</span>
+    <span class="sm" id="tWhen">第 0 年 · 30歲</span></div>
+   <div class="tb-phase" id="tPhase">新手期</div>
+  </div>
+  <div class="tb-money">
+   <div class="row"><span class="lbl">你</span><span id="hNav">$300,000</span></div>
+   <div class="row"><span class="lbl">Mike</span><span class="bench" id="hBen">$300,000</span></div>
+   <div class="row"><span class="lbl">差距</span><span id="hGap">—</span></div>
+  </div>
+  <div id="tbBtns">
+   <button class="iconbtn" id="logBtn" title="決定紀錄" aria-label="決定紀錄">☰</button>
+   <button class="iconbtn" id="setBtn" title="設定" aria-label="設定">⚙</button>
+  </div>
+ </div>
+
+ <div id="chartWrap" title="點一下放大">
+  <canvas id="chart"></canvas>
+  <div id="chartHint">你 vs Mike</div>
+ </div>
+
+ <div id="stagewrap">
+  <div id="bg"></div><div id="bgVeil"></div>
+  <div id="figs"><img id="figB" alt=""><img id="figA" alt=""></div>
+ </div>
+
+ <div id="dlg">
+  <div class="sig" id="sig"></div>
+  <div id="nameTag" style="display:none"><span class="namep" id="spkName"></span></div>
+  <div class="txtbox" id="body"></div>
+  <div id="opts"></div>
+  <div id="res">
+   <div id="resTxt"></div>
+   <div id="resWhy" style="display:none"></div>
+   <button class="btn sm" id="next">繼 續</button>
+  </div>
+ </div>
+</section>
+
+<!-- ============ ENDING ============ -->
+<section class="scr solo" id="end">
+ <div id="endCg"></div>
+ <div class="epad">
+  <div class="e-name" id="eName"></div>
+  <div class="e-tag" id="eTag"></div>
+  <div class="e-desc" id="eDesc"></div>
+  <div id="eExtra"></div>
+ </div>
+</section>
+
+<!-- ============ OVERLAYS ============ -->
+<div class="ovl" id="review"><div class="card">
+ <div class="eyebrow" id="rvEyebrow"></div>
+ <h2 id="rvTitle"></h2>
+ <div class="rule"></div>
+ <div class="grid2" id="rvStats"></div>
+ <canvas class="cv" id="rvChart" height="120" style="margin-bottom:12px"></canvas>
+ <div class="verdict" id="rvVerdict"></div>
+ <div style="font-size:11.5px;line-height:1.85;color:var(--dim)" id="rvBias"></div>
+ <div class="cardbtns">
+  <button class="btn sm ghost" id="rvSave">儲存進度</button>
+  <button class="btn sm" id="rvNext">繼續</button>
+ </div>
+</div></div>
+
+<div class="ovl" id="logOvl"><div class="card">
+ <div class="eyebrow">DECISION LOG</div>
+ <h2>你嘅決定紀錄</h2>
+ <div class="rule"></div>
+ <div id="logList"></div>
+ <div class="cardbtns"><button class="btn sm" id="logClose">閂</button></div>
+</div></div>
+
+<div class="ovl" id="setOvl"><div class="card">
+ <div class="eyebrow">SETTINGS</div>
+ <h2>設定</h2>
+ <div class="rule"></div>
+ <div class="setrow"><span>文字速度</span>
+  <span class="seg" id="segSpeed">
+   <button data-v="34">慢</button><button data-v="17">正常</button>
+   <button data-v="7">快</button><button data-v="0">即時</button>
+  </span></div>
+ <div class="setrow"><span>音樂同音效</span>
+  <span class="seg" id="segSound"><button data-v="1">開</button><button data-v="0">閂</button></span></div>
+ <div class="setrow"><span>顯示偏誤標籤</span>
+  <span class="seg" id="segTags"><button data-v="1">開</button><button data-v="0">閂</button></span></div>
+ <div class="foot">「顯示偏誤標籤」會喺每個選項旁邊寫明佢對應邊種認知偏誤。
+  打完一次之後預設會開。你會發現：就算明知係偏誤，你依然想揀。</div>
+ <div class="cardbtns">
+  <button class="btn sm ghost" id="setSave">儲存進度</button>
+  <button class="btn sm" id="setClose">閂</button>
+ </div>
+</div></div>
+
+</div>
+<script>
+/*__SCRIPT__*/
+</script>
+</body>
+</html>

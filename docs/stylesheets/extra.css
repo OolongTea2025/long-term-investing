@@ -1,0 +1,302 @@
+/* ============================================================
+   長線投資入門 — Ocean 主題 (蓋過 Material 預設)
+   ============================================================ */
+
+/* 淺色 */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #2563a8;
+  --md-primary-fg-color--light: #3f7cc0;
+  --md-primary-fg-color--dark:  #1c4f88;
+  --md-accent-fg-color:         #1c4f88;
+  --md-default-bg-color:        #fbfaf6;   /* 暖白紙底 */
+  --md-typeset-a-color:         #1f5fa3;
+}
+
+/* 深色 */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #5f9fda;
+  --md-primary-fg-color--light: #7bb0e2;
+  --md-primary-fg-color--dark:  #2563a8;
+  --md-accent-fg-color:         #7bb0e2;
+  --md-default-bg-color:        #14171a;
+  --md-typeset-a-color:         #7bb0e2;
+}
+
+/* 中文長讀:放鬆行距、字體 */
+.md-typeset {
+  font-family: "PingFang TC","PingFang HK","Noto Sans TC",
+               "Microsoft JhengHei",-apple-system,BlinkMacSystemFont,
+               "Segoe UI",sans-serif;
+  line-height: 1.9;
+  font-size: .8rem;
+}
+.md-typeset h1 { font-weight: 800; letter-spacing: .01em; }
+.md-typeset h2 { font-weight: 750; margin-top: 2.4em; }
+.md-typeset li { margin-bottom: .35em; }
+
+/* 公式 / 重點置中框 */
+.md-typeset .formula {
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 10px;
+  padding: .9rem 1.1rem;
+  margin: 1.2rem 0;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+}
+
+/* 自訂 admonition:who (呢章適合邊個) */
+.md-typeset .admonition.who,
+.md-typeset details.who {
+  border-color: var(--md-primary-fg-color);
+}
+.md-typeset .who > .admonition-title,
+.md-typeset .who > summary {
+  background-color: color-mix(in srgb, var(--md-primary-fg-color) 12%, transparent);
+}
+.md-typeset .who > .admonition-title::before,
+.md-typeset .who > summary::before {
+  background-color: var(--md-primary-fg-color);
+  -webkit-mask-image: var(--md-admonition-icon--who);
+          mask-image: var(--md-admonition-icon--who);
+}
+:root {
+  --md-admonition-icon--who:
+    url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5m0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5"/></svg>');
+}
+
+/* Level 標籤 pill */
+.md-typeset .lvtag {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  background: var(--md-primary-fg-color);
+  color: #fff;
+  border-radius: 20px;
+  padding: .1rem .55rem;
+  vertical-align: middle;
+  margin-left: .3rem;
+}
+
+/* 財富階梯表:每級左邊色帶 */
+.md-typeset table.ladder th { white-space: nowrap; }
+.md-typeset table.ladder td:first-child { font-weight: 700; white-space: nowrap; }
+
+/* 首頁「繼續睇返上次」條 */
+.md-typeset .resume-slot {
+  max-width: 34rem;
+  margin: 0 auto 1.2rem;
+  padding: .55rem .9rem;
+  border: 1px solid var(--md-primary-fg-color);
+  background: color-mix(in srgb, var(--md-primary-fg-color) 8%, transparent);
+  border-radius: 24px;
+  font-size: .8rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+.md-typeset .resume-slot a { font-weight: 700; }
+.resume-slot .resume-ico { font-weight: 700; color: var(--md-primary-fg-color); }
+.resume-slot .resume-x {
+  border: 0;
+  background: transparent;
+  color: var(--md-default-fg-color--light);
+  cursor: pointer;
+  font-size: .8rem;
+  line-height: 1;
+  padding: .1rem .3rem;
+  margin-left: .1rem;
+}
+.resume-slot .resume-x:hover { color: var(--md-primary-fg-color); }
+
+/* ============================================================
+   圖表（inline SVG，theme-aware）— 配色已用 dataviz validator 驗過
+   light: blue #2563a8 / amber #c26a1b ; dark: #4a8ed4 / #c4842f
+   ============================================================ */
+[data-md-color-scheme="default"] {
+  --chart-blue: #2563a8;
+  --chart-amber: #c26a1b;
+  --chart-rose: #ad3a70;
+  --chart-floor: #7a7f88;
+  --chart-blue-fill: rgba(37,99,168,.12);
+  --chart-amber-fill: rgba(194,106,27,.14);
+  --chart-rose-fill: rgba(173,58,112,.13);
+  --chart-neutral-fill: rgba(20,23,26,.06);
+  --chart-surface: #ffffff;
+}
+[data-md-color-scheme="slate"] {
+  --chart-blue: #4a8ed4;
+  --chart-amber: #c4842f;
+  --chart-rose: #d75f96;
+  --chart-floor: #8b929b;
+  --chart-blue-fill: rgba(74,142,212,.16);
+  --chart-amber-fill: rgba(196,132,47,.18);
+  --chart-rose-fill: rgba(215,95,150,.16);
+  --chart-neutral-fill: rgba(255,255,255,.07);
+  --chart-surface: var(--md-default-bg-color);
+}
+.md-typeset .lti-fig { margin: 1.5rem 0; }
+.md-typeset .lti-fig svg { width: 100%; height: auto; max-width: 640px; display: block; margin: 0 auto; }
+
+/* ---------- 圖表喺窄螢幕嘅可讀性（配合 javascripts/figzoom.js）----------
+   啲 SVG 係 640 闊 viewBox 配 11.5–13px 字。喺 360px 電話度成張縮 1.78 倍，
+   字得返約 7px，讀唔到 —— 而且縮放係整體嘅，冇得淨係放大文字。
+   所以窄螢幕落 min-width 令字返到 ≥11px，改為橫向捲；另外可以全螢幕睇。
+   闊螢幕完全冇分別。 */
+.lti-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.md-typeset .lti-zoom { display: none; }
+@media (max-width: 700px) {
+  .lti-scroll { position: relative; }
+  .md-typeset .lti-fig .lti-scroll svg { min-width: var(--lti-minw, 540px); max-width: none; }
+  /* 右邊漸變 ＋ 提示：話畀人知右邊仲有嘢，唔係淨係得咁多 */
+  .md-typeset .lti-fig.lti-scrollable { position: relative; }
+  .md-typeset .lti-fig.lti-scrollable::after {
+    content: '';
+    position: absolute; top: 1.4rem; right: 0; bottom: 2.6rem; width: 2rem;
+    pointer-events: none; transition: opacity .2s;
+    background: linear-gradient(90deg, transparent, var(--md-default-bg-color));
+  }
+  .md-typeset .lti-fig.lti-scrolled::after { opacity: 0; }
+  .md-typeset .lti-fig.lti-scrollable .lti-zoom {
+    display: block; margin: .35rem auto 0; padding: .3rem .8rem;
+    font-size: .68rem; letter-spacing: .06em; cursor: pointer;
+    color: var(--md-primary-fg-color); background: transparent;
+    border: 1px solid var(--md-default-fg-color--lightest); border-radius: 2px;
+  }
+}
+/* 全螢幕睇圖 */
+body.lti-ovl-open { overflow: hidden; }
+.lti-ovl { position: fixed; inset: 0; z-index: 9999; display: none;
+  background: var(--md-default-bg-color); }
+.lti-ovl.on { display: flex; flex-direction: column; }
+.lti-ovl-bar { display: flex; align-items: center; gap: .6rem;
+  padding: .6rem .8rem; border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  flex-shrink: 0; }
+.lti-ovl-t { font-weight: 750; font-size: .8rem; flex: 1; line-height: 1.4;
+  color: var(--md-default-fg-color); }
+.lti-ovl-x { flex-shrink: 0; width: 2rem; height: 2rem; cursor: pointer;
+  font-size: .9rem; background: transparent; color: var(--md-default-fg-color);
+  border: 1px solid var(--md-default-fg-color--lightest); border-radius: 50%; }
+.lti-ovl-body { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch;
+  padding: 1rem .8rem 2rem; }
+.lti-ovl-body svg { width: 190%; max-width: none; height: auto; display: block; }
+.lti-ovl-cap { font-size: .74rem; line-height: 1.7; margin-top: 1rem;
+  color: var(--md-default-fg-color--light); max-width: 40rem; }
+.md-typeset .lti-fig .lti-cap-title { font-weight: 750; font-size: .82rem; text-align: center; margin: 0 0 .1rem; color: var(--md-default-fg-color); }
+.md-typeset .lti-fig figcaption { font-size: .72rem; line-height: 1.6; color: var(--md-default-fg-color--light); text-align: center; margin-top: .5rem; }
+.md-typeset .lti-fig figcaption .src { font-size: .64rem; opacity: .8; }
+/* SVG 內部語意 class */
+.lti-fig .ax { stroke: var(--md-default-fg-color--light); stroke-width: 1.2; }
+.lti-fig .grid { stroke: var(--md-default-fg-color--lightest); stroke-width: 1; stroke-dasharray: 3 4; }
+.lti-fig .axlabel { fill: var(--md-default-fg-color--light); font-size: 13px; }
+.lti-fig .axtitle { fill: var(--md-default-fg-color); font-size: 13px; font-weight: 700; }
+.lti-fig .anno { fill: var(--md-default-fg-color); font-size: 12.5px; }
+.lti-fig .anno-dim { fill: var(--md-default-fg-color--light); font-size: 12px; }
+.lti-fig .line-blue { fill: none; stroke: var(--chart-blue); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+.lti-fig .line-amber { fill: none; stroke: var(--chart-amber); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+.lti-fig .floor { stroke: var(--chart-floor); stroke-width: 1.6; stroke-dasharray: 5 4; fill: none; }
+.lti-fig .fill-divers { fill: var(--chart-blue-fill); stroke: none; }
+.lti-fig .fill-sys { fill: var(--chart-neutral-fill); stroke: none; }
+.lti-fig .leader { stroke: var(--md-default-fg-color--light); stroke-width: 1; fill: none; }
+.lti-fig .dot-blue { fill: var(--chart-blue); }
+.lti-fig .dot-amber { fill: var(--chart-amber); }
+.lti-fig .dot-rose { fill: var(--chart-rose); }
+.lti-fig .lbl-blue { fill: var(--chart-blue); font-size: 12.5px; font-weight: 700; }
+.lti-fig .lbl-amber { fill: var(--chart-amber); font-size: 12.5px; font-weight: 700; }
+.lti-fig .lbl-rose { fill: var(--chart-rose); font-size: 12.5px; font-weight: 700; }
+/* 文字 halo：底色描邊，令 label 壓落線／填色上面都讀得到（防 label 撞線） */
+.lti-fig text {
+  paint-order: stroke;
+  stroke: var(--md-default-bg-color);
+  stroke-width: 3.4px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.lti-fig text.no-halo { stroke: none; }
+/* 覆蓋喺深色塊上面嘅字（例如 bar 入面），用 bar 色做 halo 就唔啱 → 取消描邊 */
+.lti-fig .on-mark { fill: #fff; stroke: none; font-size: 12px; font-weight: 700; }
+/* 線：虛線變體 */
+.lti-fig .line-rose { fill: none; stroke: var(--chart-rose); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+.lti-fig .line-blue.dash, .lti-fig .line-amber.dash, .lti-fig .line-rose.dash { stroke-dasharray: 6 4; }
+.lti-fig .line-dim { fill: none; stroke: var(--md-default-fg-color--light); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+/* 面積填色 */
+.lti-fig .fill-blue { fill: var(--chart-blue-fill); stroke: none; }
+.lti-fig .fill-amber { fill: var(--chart-amber-fill); stroke: none; }
+.lti-fig .fill-rose { fill: var(--chart-rose-fill); stroke: none; }
+/* 長條：2px 底色間隙用 stroke 做，避免相鄰色塊黐埋 */
+.lti-fig .bar-blue { fill: var(--chart-blue); stroke: var(--md-default-bg-color); stroke-width: 2; }
+.lti-fig .bar-amber { fill: var(--chart-amber); stroke: var(--md-default-bg-color); stroke-width: 2; }
+.lti-fig .bar-rose { fill: var(--chart-rose); stroke: var(--md-default-bg-color); stroke-width: 2; }
+.lti-fig .bar-neutral { fill: var(--chart-neutral-fill); stroke: var(--md-default-bg-color); stroke-width: 2; }
+.lti-fig .bar-dim { fill: var(--md-default-fg-color--lightest); stroke: var(--md-default-bg-color); stroke-width: 2; }
+/* 流程／概念圖嘅方格 */
+.lti-fig .node { fill: var(--chart-neutral-fill); stroke: var(--md-default-fg-color--lighter); stroke-width: 1.2; }
+.lti-fig .node-blue { fill: var(--chart-blue-fill); stroke: var(--chart-blue); stroke-width: 1.4; }
+.lti-fig .node-amber { fill: var(--chart-amber-fill); stroke: var(--chart-amber); stroke-width: 1.4; }
+.lti-fig .node-rose { fill: var(--chart-rose-fill); stroke: var(--chart-rose); stroke-width: 1.4; }
+/* 數值標籤（文字色，唔用系列色） */
+/* 階梯／有序分級：同一隻藍，由淺到深（sequential，唔用彩虹色） */
+.lti-fig .step { fill: var(--chart-blue); stroke: var(--md-default-bg-color); stroke-width: 2; }
+.lti-fig .s1 { fill-opacity: .28; }
+.lti-fig .s2 { fill-opacity: .46; }
+.lti-fig .s3 { fill-opacity: .64; }
+.lti-fig .s4 { fill-opacity: .82; }
+.lti-fig .s5 { fill-opacity: 1; }
+.lti-fig .arrowhead { fill: var(--md-default-fg-color--light); stroke: none; }
+/* 機率分佈形狀（小提琴圖 / 鐘形），用嚟表達「一個結果範圍」 */
+.lti-fig .dist { fill: var(--chart-blue-fill); stroke: var(--chart-blue); stroke-width: 1.6; }
+.lti-fig .val { fill: var(--md-default-fg-color); font-size: 12.5px; font-weight: 700; }
+.lti-fig .val-dim { fill: var(--md-default-fg-color--light); font-size: 11.5px; }
+.lti-fig .hi { fill: var(--md-default-fg-color); font-size: 13px; font-weight: 800; }
+
+/* 固定「🏠 首頁」掣（內容頁左下角，畀人由自動跳轉返首頁） */
+.resume-home-btn {
+  position: fixed;
+  left: .8rem;
+  bottom: .8rem;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: .4rem .8rem;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff !important;
+  background: var(--md-primary-fg-color);
+  border-radius: 22px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,.22);
+  opacity: .9;
+}
+.resume-home-btn:hover { opacity: 1; background: var(--md-primary-fg-color--dark); }
+@media (max-width: 480px) {
+  .resume-home-btn { left: .6rem; bottom: .6rem; padding: .38rem .7rem; }
+}
+
+/* 首頁 hero */
+.hero {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+.hero .tagline {
+  color: var(--md-default-fg-color--light);
+  font-size: 1.05rem;
+  margin-top: -.4rem;
+}
+.hero .cta {
+  display: inline-block;
+  margin-top: 1.2rem;
+  background: var(--md-primary-fg-color);
+  color: #fff !important;
+  text-decoration: none;
+  padding: .6rem 1.4rem;
+  border-radius: 24px;
+  font-weight: 700;
+}
+.hero .cta:hover { background: var(--md-primary-fg-color--dark); }

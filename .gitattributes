@@ -1,0 +1,5 @@
+# 統一換行，避免 Windows/Linux 之間出現成堆假 diff
+* text=auto eol=lf
+*.webp binary
+*.png binary
+*.jpg binary

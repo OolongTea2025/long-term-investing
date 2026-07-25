@@ -1,0 +1,99 @@
+site_name: 長線投資入門
+site_description: 由零開始嘅被動指數投資指南 — 免費、任睇、傳承落去
+site_author: 一生只活一次
+site_url: https://OolongTea2025.github.io/long-term-investing/
+# repo 而家係 private,所以未加 repo_url —— 轉 public 之後再 uncomment 呢兩行,
+# 唔係嘅話網站上面個 GitHub 連結會俾訪客撞 404。
+# repo_url: https://github.com/OolongTea2025/long-term-investing
+# repo_name: OolongTea2025/long-term-investing
+
+theme:
+  name: material
+  language: zh-Hant
+  font: false            # 中文用系統字型,唔 load 外部 webfont(快、私隱好)
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.tooltips
+  palette:
+    # 預設淺色(唔跟系統),右上角仍可切換深色
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: 轉深色
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: 轉淺色
+
+plugins:
+  # 中文搜尋：Material 一見到裝咗 jieba 就會自動分詞，並且用零寬空格接返
+  # 啲詞；zh-Hant 嘅預設 separator 已經識斷 ​，所以唔使自己寫 separator。
+  # 但 jieba 嘅預設詞典係普通話語料，會將「投資」切成「投｜資」，
+  # 亦切唔出「再平衡」呢類術語 —— 所以要落自訂詞典。
+  - search:
+      jieba_dict_user: jieba_user_dict.txt
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/resume.js
+  - javascripts/figzoom.js
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - 首頁: index.md
+  - 📍 搵自己嘅 Level: level.md
+  - 🟢 新手篇:
+      - 1　你適合主動定被動投資？: 新手篇/01-你適合主動定被動投資.md
+      - 2　被動指數係咩,散戶點解會輸: 新手篇/02-被動指數係咩.md
+      - 3　分散風險原理: 新手篇/03-分散風險原理.md
+      - 4　點解買全世界: 新手篇/04-點解買全世界.md
+      - 5　你嘅第一個組合: 新手篇/05-你嘅第一個組合.md
+      - 6　行為偏誤點應對: 新手篇/06-行為偏誤點應對.md
+  - 🟡 進階篇:
+      - 7　配置路線 & 槓桿: 進階篇/07-配置路線與槓桿.md
+      - 8　終身100%股票？: 進階篇/08-終身100%股票.md
+      - 9　真正嘅風險: 進階篇/09-真正嘅風險.md
+      - 10　因子投資: 進階篇/10-因子投資.md
+      - 11　債券完整指南: 進階篇/11-債券.md
+      - 12　其他資產與迷思: 進階篇/12-其他資產與迷思.md
+  - 🔵 退休篇:
+      - 13　提早退休 & 要幾多錢: 退休篇/13-提早退休要幾多錢.md
+      - 14　提領策略 & 序列風險: 退休篇/14-提領策略與序列風險.md
+  - 🔴 進階選讀:
+      - A　市場點運作: 進階選讀/A-市場點運作.md
+      - B　資產定價模型: 進階選讀/B-資產定價模型.md
+      - C　各因子成因: 進階選讀/C-各因子成因.md
+      - D　行為金融學 & 市場異象: 進階選讀/D-行為金融學.md
+      - E　硬核資產定價: 進階選讀/E-硬核資產定價.md
+      - F　因子進階: 進階選讀/F-因子進階.md
+  - 📚 附錄:
+      - A　邏輯謬誤 & 思維工具: 附錄/01-邏輯謬誤與思維.md
+      - B　窮人點投資: 附錄/02-窮人點投資.md
+      - C　參考書單 & 來源: 附錄/03-參考書單與來源.md
+  - 🎮 互動遊戲: 遊戲.md
+
+copyright: 免費知識 · 歡迎自由分享同傳承 📖

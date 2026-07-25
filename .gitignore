@@ -1,0 +1,26 @@
+# 呢個資料夾入面嘅嘢，全部都係打算公開嘅。
+#
+# 參考資料、手機截圖、內部筆記已經**實體咁**擺咗喺 website/ 外面
+# （見上一層嘅 _reference / _screenshots / _notes），
+# 所以就算喺呢度 `git add .` 都唔可能誤傳 —— 唔使靠呢個檔擋。
+#
+# 下面淨係排除「唔應該入版本控制」嘅產物同系統垃圾。
+
+# 建置產物：GitHub Actions 每次 push 都會自己 build 返
+site/
+
+# 測試用嘅自動生成檔（由 game-src/build.mjs 產生）
+game-src/src/game.gen.mjs
+
+# 系統 / 工具垃圾
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+.env
+.env.*

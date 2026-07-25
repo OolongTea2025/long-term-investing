@@ -1,0 +1,109 @@
+/* 記住上次睇到邊頁 + 自動返到嗰度。
+   - 每頁記低當前位置（首頁、404 除外），並記低首頁 URL。
+   - 首頁行為：只要有紀錄就「永遠」自動跳返上次嗰頁（用 replace）。
+     例外：URL 帶住 ?home（由固定「🏠 首頁」掣去），就唔跳、正常顯示首頁。
+   - 每個內容頁都注入一個固定「🏠 首頁」掣，畀用家隨時返首頁簡介。
+   - 新訪客冇紀錄 → 唔跳。撳「繼續睇返」旁邊嘅 ✕ 清除 → 唔再跳。
+   - 相容 Material instant navigation（document$）。 */
+(function () {
+  var KEY = 'lti:lastpage';   // 上次嗰頁 {u,t}
+  var HOME = 'lti:home';      // 首頁 URL（capture 返嚟，方便砌「返首頁」連結）
+
+  /* 站根喺邊，要問返 Material 攞，唔可以用 location.origin + '/'。
+     GitHub Pages 嘅 project site 住喺 https://<user>.github.io/<repo>/ 之下，
+     origin + '/' 會去咗 <user>.github.io/ —— 即係 404 或者第二個網站。
+     呢個 bug 平時睇唔到：只要有紀錄就會用返 localStorage 嗰個。
+     但一個由分享連結／搜尋結果直接入到內容頁、未去過首頁嘅新讀者，
+     撳「🏠 首頁」就會中招 —— 而嗰個正正係最常見嘅第一次到訪路徑。
+     Material 每頁都有一個 [data-md-component="logo"]，佢個 href 永遠係
+     指返站根嘅相對路徑，擺喺任何子路徑都啱。 */
+  function siteRoot() {
+    var logo = document.querySelector('[data-md-component="logo"]');
+    if (logo && logo.href) return logo.href;
+    return location.origin + '/';   // 真係搵唔到先用（例如 root site）
+  }
+
+  function homeHref() {
+    var base;
+    try { base = localStorage.getItem(HOME); } catch (e) {}
+    if (!base) base = siteRoot();
+    return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'home';
+  }
+
+  function ensureHomeBtn(isHome) {
+    var b = document.getElementById('resume-home-btn');
+    if (isHome) { if (b) b.style.display = 'none'; return; }
+    if (!b) {
+      b = document.createElement('a');
+      b.id = 'resume-home-btn';
+      b.className = 'resume-home-btn';
+      b.setAttribute('aria-label', '返首頁');
+      b.innerHTML = '🏠 首頁';
+      document.body.appendChild(b);
+    }
+    b.href = homeHref();
+    b.style.display = '';
+  }
+
+  function showBanner(slot, d, path) {
+    slot.innerHTML =
+      '<span class="resume-ico">↩</span> 繼續睇返上次：' +
+      '<a href="' + d.u + '">' + (d.t || '上次嗰頁') + '</a>' +
+      '<button type="button" class="resume-x" aria-label="清除">✕</button>';
+    slot.style.display = '';
+    var x = slot.querySelector('.resume-x');
+    if (x) x.addEventListener('click', function () {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      slot.style.display = 'none';
+    });
+  }
+
+  function run() {
+    try {
+      var slot = document.getElementById('resume-slot');
+      var isHome = !!slot;                 // 首頁先有呢個 slot
+      var path = location.pathname;
+      var title = (document.title || '').split(' - ')[0].trim();
+
+      ensureHomeBtn(isHome);
+
+      if (!isHome) {
+        // 內容頁：記低位置（404 除外）
+        if (!/(^|\/)404/.test(path)) {
+          localStorage.setItem(KEY, JSON.stringify({ u: path, t: title }));
+        }
+        return;
+      }
+
+      // ── 以下淨係喺首頁行 ──
+      // capture 首頁 URL（乾淨版，去埋 query / hash）
+      try { localStorage.setItem(HOME, location.origin + location.pathname); } catch (e) {}
+
+      var stay = /(^|[?&])home(=|&|$)/.test(location.search);   // 由「🏠 首頁」掣入嚟
+
+      var raw = localStorage.getItem(KEY);
+      if (!raw) { slot.style.display = 'none'; return; }
+      var d;
+      try { d = JSON.parse(raw); } catch (e) { return; }
+      if (!d || !d.u || d.u === path) { slot.style.display = 'none'; return; }
+
+      // 冇帶 ?home → 永遠自動跳返上次嗰頁
+      if (!stay) { location.replace(d.u); return; }
+
+      // 帶 ?home（用家主動返首頁）→ 唔跳，顯示「繼續睇返」畀佢一撳返去
+      showBanner(slot, d, path);
+    } catch (e) { /* storage 唔用得就靜靜算數 */ }
+  }
+
+  // (1) 即刻處理當前頁面（hard load / 直入 URL 都 work）
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+
+  // (2) 之後每次 instant navigation 再跑
+  if (window.document$ && typeof window.document$.subscribe === 'function') {
+    window.document$.subscribe(run);
+  }
+})();

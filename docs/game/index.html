@@ -1,0 +1,2598 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="一個關於認知偏誤嘅廣東話互動故事。七十個決定，二十年，一個乜都冇做嘅對照組。">
+<meta name="color-scheme" content="dark">
+<title>烏龍茶的投資人生</title>
+<style>
+:root{
+ --ink:#12140f; --paper:#e8e4d9; --paper2:#d6d1c2;
+ --jade:#4a6b5d; --jade-lt:#7a9e8f;
+ --red:#c04a3e; --green:#4f9463;
+ --gold:#c9a25c; --dim:#8d8878;
+ --font-d:"Songti SC","Noto Serif TC","Source Han Serif TC",serif;
+ --font-b:"PingFang HK","Noto Sans TC","Microsoft JhengHei",sans-serif;
+ --safe-b:env(safe-area-inset-bottom,0px);
+ --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0a0b08;overscroll-behavior:none}
+body{font-family:var(--font-b);color:var(--paper);
+ display:flex;align-items:center;justify-content:center;
+ -webkit-font-smoothing:antialiased}
+/* 四行：頂欄 / 走勢圖 / 舞台 / 對話。
+   走勢圖以前係 position:absolute 浮喺舞台上面，結果永遠壓住立繪塊面 ——
+   立繪高度會跟螢幕變，浮層根本估唔中邊度先安全。做返真嘅 grid 行，
+   數學上就唔可能再疊。 */
+#app{position:relative;width:100%;max-width:1100px;
+ height:100dvh;max-height:100dvh;overflow:hidden;
+ display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;
+ background:#0a0b08}
+/* Screens stack on top of the grid; only .on is laid out. */
+.scr{display:none}
+.scr.on{display:contents}
+.scr.solo.on{display:block;grid-row:1/-1;overflow-y:auto;
+ -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+button{font-family:inherit;color:inherit}
+a{color:var(--gold)}
+
+/* ============ shared button ============ */
+.btn{display:inline-block;font-family:var(--font-d);font-size:15px;letter-spacing:.24em;
+ padding:13px 30px;border:1px solid var(--gold);color:var(--gold);
+ background:transparent;cursor:pointer;transition:background .25s,color .25s;
+ text-indent:.24em;border-radius:2px}
+.btn:hover,.btn:active{background:var(--gold);color:#0a0b08}
+.btn.sm{font-size:12px;padding:9px 18px;letter-spacing:.16em}
+.btn.ghost{border-color:rgba(232,228,217,.3);color:var(--paper2)}
+.btn.ghost:hover{background:rgba(232,228,217,.14);color:var(--paper)}
+
+/* ============ TITLE ============ */
+#title{background:#0a0b08}
+#title.on{display:grid;grid-row:1/-1;grid-template-rows:1fr;
+ place-items:center;position:relative;overflow-y:auto}
+#titleBg{position:absolute;inset:0;background-size:cover;background-position:center;
+ opacity:.5;filter:saturate(.65)}
+#title .veil{position:absolute;inset:0;
+ background:linear-gradient(180deg,rgba(10,11,8,.6) 0%,rgba(10,11,8,.25) 38%,rgba(10,11,8,.95) 100%)}
+#title .inner{position:relative;z-index:2;padding:28px 22px calc(28px + var(--safe-b));
+ width:100%;max-width:520px;text-align:center}
+.t-eyebrow{font-family:var(--font-d);letter-spacing:.5em;font-size:10.5px;
+ color:var(--gold);margin-bottom:16px;text-indent:.5em}
+.t-main{font-family:var(--font-d);font-size:clamp(34px,8.5vw,62px);
+ font-weight:600;letter-spacing:.06em;line-height:1.12;
+ text-shadow:0 4px 30px rgba(0,0,0,.9)}
+.t-sub{margin-top:12px;font-size:12.5px;color:var(--paper2);opacity:.85;letter-spacing:.1em}
+.t-rule{width:48px;height:1px;background:var(--gold);margin:22px auto;opacity:.7}
+.namewrap{margin:0 auto 18px;max-width:280px}
+.namewrap label{display:block;font-size:10.5px;color:var(--dim);letter-spacing:.2em;margin-bottom:7px}
+#nameIn{width:100%;background:rgba(232,228,217,.07);border:1px solid rgba(232,228,217,.22);
+ color:var(--paper);font-family:var(--font-d);font-size:18px;text-align:center;
+ padding:10px;border-radius:2px;letter-spacing:.1em}
+#nameIn:focus{outline:none;border-color:var(--gold)}
+.t-note{margin-top:22px;font-size:11.5px;color:var(--dim);line-height:1.95}
+.t-note b{color:var(--paper2);font-weight:600}
+#contWrap{margin-top:12px}
+#contInfo{font-size:10.5px;color:var(--dim);margin-top:6px;letter-spacing:.06em}
+.t-links{margin-top:24px;font-size:11px;color:var(--dim);line-height:2}
+
+/* ============ TOP BAR ============ */
+#topbar{position:relative;z-index:12;display:flex;align-items:stretch;gap:8px;
+ padding:calc(6px + var(--safe-t)) 10px 6px;background:#0a0b08}
+.tb-when{font-family:var(--font-d);letter-spacing:.06em;color:var(--paper2);
+ display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+.tb-when b{font-size:17px;color:var(--paper)}
+.tb-when .sm{font-size:10.5px;color:var(--dim)}
+.tb-phase{font-size:9.5px;letter-spacing:.22em;color:var(--gold);text-indent:.22em;margin-top:1px}
+.tb-money{margin-left:auto;text-align:right;line-height:1.5;font-size:11px;
+ font-variant-numeric:tabular-nums}
+.tb-money .row{display:flex;justify-content:flex-end;gap:10px}
+.tb-money .lbl{color:var(--dim);font-size:9.5px;align-self:center}
+.tb-money .bench{color:var(--jade-lt)}
+.up{color:var(--green)}.dn{color:var(--red)}
+.iconbtn{width:30px;height:30px;flex-shrink:0;border:1px solid rgba(232,228,217,.26);
+ background:rgba(10,11,8,.55);color:var(--paper2);border-radius:50%;cursor:pointer;
+ font-size:13px;display:flex;align-items:center;justify-content:center;align-self:flex-start}
+.iconbtn.ok{border-color:var(--jade-lt);color:var(--jade-lt)}
+#tbBtns{display:flex;gap:6px;align-self:flex-start;margin-left:8px}
+
+/* ============ STAGE ============ */
+#stagewrap{position:relative;overflow:hidden;min-height:0}
+#bg{position:absolute;inset:0;background-size:cover;background-position:center;
+ transition:opacity .45s;will-change:opacity}
+#bgVeil{position:absolute;inset:0;
+ background:linear-gradient(180deg,rgba(10,11,8,.42) 0%,rgba(10,11,8,.12) 28%,rgba(10,11,8,.5) 68%,rgba(10,11,8,.95) 100%)}
+/* The figure is bottom-anchored inside the stage row and scales with the row,
+   so it can never be resized by the dialogue growing — the dialogue lives in
+   its own grid row and simply takes the space it needs. */
+#figs{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;
+ pointer-events:none}
+#figs img{position:absolute;bottom:0;height:100%;width:auto;max-width:130%;
+ object-fit:contain;object-position:bottom center;
+ filter:drop-shadow(0 14px 34px rgba(0,0,0,.75));
+ opacity:0;transition:opacity .42s ease}
+#figs img.in{opacity:1}
+#stagewrap::after{content:'';position:absolute;left:0;right:0;bottom:0;height:22%;
+ pointer-events:none;background:linear-gradient(180deg,transparent,rgba(10,11,8,.85))}
+/* 走勢圖：自己一行，永遠唔會壓住立繪。點一下可以放大。 */
+#chartWrap{position:relative;margin:0 10px 4px;height:42px;
+ background:rgba(232,228,217,.045);border:1px solid rgba(232,228,217,.10);
+ border-radius:3px;overflow:hidden;cursor:pointer;transition:height .3s}
+#chartWrap.big{height:min(34dvh,200px)}
+#chart{width:100%;height:100%;display:block}
+#chartHint{position:absolute;right:6px;bottom:3px;font-size:8.5px;color:var(--dim);
+ letter-spacing:.1em;pointer-events:none}
+
+/* ============ DIALOGUE ============ */
+#dlg{position:relative;z-index:10;padding:0 10px calc(10px + var(--safe-b));
+ max-height:64dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+ overscroll-behavior:contain}
+.sig{display:block;font-size:12.5px;color:#f3d99b;letter-spacing:.06em;
+ border-left:3px solid var(--gold);padding:7px 11px;margin-bottom:8px;
+ line-height:1.7;font-weight:500;background:rgba(12,14,10,.94);
+ border-radius:0 3px 3px 0;box-shadow:0 2px 14px rgba(0,0,0,.5)}
+.namep{display:inline-block;font-family:var(--font-d);font-size:13px;letter-spacing:.12em;
+ color:var(--paper);background:var(--jade);padding:3px 12px;border-radius:2px 2px 0 0;
+ position:relative;z-index:2;top:1px}
+.txtbox{background:rgba(18,20,15,.95);border:1px solid rgba(232,228,217,.13);
+ border-radius:2px;padding:12px 13px;font-size:14.5px;line-height:1.9;
+ color:var(--paper);letter-spacing:.02em}
+#body::after{content:'▾';margin-left:5px;color:var(--gold);animation:bl 1.1s infinite}
+@keyframes bl{0%,100%{opacity:0}50%{opacity:1}}
+#opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.opt{text-align:left;background:rgba(18,20,15,.95);
+ border:1px solid rgba(232,228,217,.2);color:var(--paper);
+ padding:11px 12px;font-size:13.5px;line-height:1.55;cursor:pointer;
+ border-radius:2px;transition:background .18s,border-color .18s;
+ display:flex;align-items:center;gap:10px}
+.opt .k{flex-shrink:0;font-family:var(--font-d);font-size:10.5px;color:var(--gold);
+ border:1px solid rgba(201,162,92,.5);width:20px;height:20px;
+ display:flex;align-items:center;justify-content:center;border-radius:50%}
+.opt .otxt{flex:1}
+.opt:hover:not(:disabled){background:rgba(74,107,93,.5);border-color:var(--jade-lt)}
+.opt:disabled{opacity:.32;cursor:default}
+.opt.extra{border-style:dashed;border-color:rgba(201,162,92,.45)}
+.opt .btag{font-size:9.5px;color:var(--gold);opacity:.9;flex-shrink:0;
+ border:1px solid rgba(201,162,92,.35);padding:2px 5px;border-radius:2px}
+#res{margin-top:8px;padding:11px 12px;background:rgba(74,107,93,.22);
+ border-left:2px solid var(--jade-lt);font-size:13.5px;line-height:1.8;
+ display:none;border-radius:0 2px 2px 0}
+#res.on{display:block}
+#resWhy{margin-top:7px;padding-top:7px;border-top:1px dashed rgba(201,162,92,.3);
+ font-size:11.5px;color:var(--paper2);line-height:1.75}
+#resWhy .tag{color:var(--gold);font-family:var(--font-d);letter-spacing:.08em}
+#next{margin-top:9px;width:100%;text-align:center}
+
+/* ============ OVERLAY CARD (review / backlog / settings) ============ */
+.ovl{position:absolute;inset:0;z-index:40;display:none;
+ align-items:center;justify-content:center;padding:14px;
+ background:rgba(6,7,5,.92);backdrop-filter:blur(8px);overflow-y:auto}
+.ovl.on{display:flex}
+.card{width:100%;max-width:520px;background:rgba(16,18,13,.97);
+ border:1px solid rgba(201,162,92,.3);border-radius:3px;padding:20px 18px;
+ box-shadow:0 18px 60px rgba(0,0,0,.7);margin:auto}
+.card h2{font-family:var(--font-d);font-size:24px;letter-spacing:.08em;font-weight:600;margin-top:6px}
+.eyebrow{font-size:9.5px;letter-spacing:.32em;color:var(--gold);text-indent:.32em}
+.rule{width:40px;height:1px;background:var(--gold);margin:12px 0 14px;opacity:.75}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-bottom:12px}
+.kv{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;
+ border-bottom:1px solid rgba(232,228,217,.09);font-variant-numeric:tabular-nums;gap:8px}
+.kv .l{color:var(--dim)}
+.kv .v{font-family:var(--font-d);text-align:right}
+.verdict{font-size:13px;line-height:1.95;color:var(--paper2);
+ border-left:2px solid var(--jade-lt);padding:9px 11px;
+ background:rgba(74,107,93,.16);border-radius:0 2px 2px 0;margin-bottom:11px}
+.cardbtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+canvas.cv{width:100%;background:rgba(232,228,217,.035);border-radius:2px;display:block}
+#logList{max-height:56dvh;overflow-y:auto;margin:-4px -4px 0;padding:4px}
+.logrow{border-left:2px solid rgba(232,228,217,.16);padding:7px 0 7px 11px;
+ margin-bottom:8px;font-size:12.5px;line-height:1.7}
+.logrow .t{color:var(--dim);font-size:10.5px;letter-spacing:.08em}
+.logrow .b{color:var(--gold);font-size:11px}
+.setrow{display:flex;justify-content:space-between;align-items:center;
+ padding:9px 0;border-bottom:1px solid rgba(232,228,217,.09);font-size:13px}
+.seg{display:flex;gap:0;border:1px solid rgba(232,228,217,.22);border-radius:2px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 11px;font-size:11.5px;
+ color:var(--paper2);cursor:pointer}
+.seg button.on{background:var(--gold);color:#0a0b08}
+
+/* ============ ENDING ============ */
+#end{background:#0a0b08}
+#endCg{width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;position:relative}
+#endCg::after{content:'';position:absolute;inset:0;
+ background:linear-gradient(180deg,transparent 42%,#0a0b08 100%)}
+.epad{padding:0 18px calc(40px + var(--safe-b));max-width:660px;margin:0 auto;width:100%}
+.e-name{font-family:var(--font-d);font-size:clamp(28px,7vw,44px);letter-spacing:.1em;
+ margin-top:-34px;position:relative;z-index:2;text-shadow:0 3px 22px #000}
+.e-tag{font-size:10.5px;letter-spacing:.24em;color:var(--gold);margin-bottom:12px;text-indent:.24em}
+.e-desc{font-size:14.5px;line-height:2.05;color:var(--paper2);margin-bottom:22px}
+.sec{margin:30px 0 10px;font-family:var(--font-d);font-size:12.5px;letter-spacing:.24em;
+ color:var(--gold);border-bottom:1px solid rgba(201,162,92,.28);padding-bottom:6px;text-indent:.24em}
+.stat{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;font-size:13.5px;
+ border-bottom:1px solid rgba(232,228,217,.09);font-variant-numeric:tabular-nums}
+.stat .v{font-family:var(--font-d);text-align:right}
+.note{font-size:12.5px;line-height:1.95;color:var(--paper2);
+ background:rgba(192,74,62,.14);border-left:2px solid var(--red);
+ padding:12px 13px;margin-top:12px;border-radius:0 2px 2px 0}
+.note.good{background:rgba(79,148,99,.14);border-left-color:var(--green)}
+.note.plain{background:rgba(232,228,217,.05);border-left-color:rgba(232,228,217,.3)}
+.foot{margin-top:14px;font-size:11px;color:var(--dim);line-height:1.95}
+/* attribution bars */
+.attr{margin-bottom:11px}
+.attr .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;gap:8px}
+.attr .amt{font-family:var(--font-d);font-variant-numeric:tabular-nums;white-space:nowrap}
+.attr .track{height:8px;background:rgba(232,228,217,.09);border-radius:4px;overflow:hidden;
+ display:flex;justify-content:flex-start}
+.attr .track i{display:block;height:100%;border-radius:4px}
+.attr .why{font-size:11px;color:var(--dim);line-height:1.7;margin-top:4px}
+.attr .why a{color:var(--gold);text-decoration:none;border-bottom:1px dotted var(--gold)}
+.biasrow{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:12.5px}
+.biasrow .bn{width:84px;flex-shrink:0;font-family:var(--font-d);font-size:11.5px}
+.biasrow .bar{flex:1;height:6px;background:rgba(232,228,217,.1);border-radius:3px;overflow:hidden}
+.biasrow .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--jade),var(--gold))}
+.biasrow .bc{width:20px;text-align:right;color:var(--dim);font-size:10.5px}
+.biasdesc{font-size:11px;color:var(--dim);line-height:1.65;margin:-2px 0 10px 93px}
+.biasdesc a{color:var(--gold);text-decoration:none;border-bottom:1px dotted rgba(201,162,92,.6)}
+.mikeimg{width:100%;border-radius:2px;margin-top:8px;display:block}
+.endbtns{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap}
+
+/* ============ market shock feedback ============ */
+#flash{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+ transition:opacity .5s ease}
+#flash.hit{opacity:1;transition:opacity .08s ease}
+@keyframes shk{0%,100%{transform:translate(0,0)}
+ 20%{transform:translate(-4px,2px)}40%{transform:translate(3px,-2px)}
+ 60%{transform:translate(-2px,-2px)}80%{transform:translate(3px,1px)}}
+#app.shake{animation:shk .4s ease}
+
+/* ============ responsive ============ */
+@media(min-width:700px){
+ .txtbox{font-size:15.5px}
+ .sig{font-size:13.5px}
+ .opt{font-size:14.5px;padding:12px 14px}
+ #topbar{padding:calc(10px + var(--safe-t)) 16px 8px}
+ #dlg{padding:0 16px calc(14px + var(--safe-b))}
+ #chartWrap{margin:0 16px 6px;height:52px}
+ .tb-money{font-size:12px}
+}
+/* 橫屏手機：改做左右兩欄（立繪左、對話右）—— 即係一般 galgame 嘅橫屏做法。
+   之前用返直屏嘅上下佈局，對話框食咗 76dvh，中間個 stage 行被壓到零高，
+   而立繪係 height:100%，所以成個人就唔見咗。唔鎖直屏：iOS Safari 本身
+   鎖唔到，而且橫屏先係視覺小說嘅原生格式。 */
+@media(orientation:landscape) and (max-height:560px){
+ #app{grid-template-rows:auto auto minmax(0,1fr);
+      grid-template-columns:minmax(0,38%) minmax(0,62%)}
+ #topbar{grid-area:1/1/2/3}
+ #chartWrap{grid-area:2/1/3/3;height:30px;margin:0 10px 3px}
+ #stagewrap{grid-area:3/1/4/2}
+ #dlg{grid-area:3/2/4/3;max-height:none;padding:0 10px calc(8px + var(--safe-b)) 4px}
+ #title.on,#end.on,.scr.solo.on{grid-column:1/-1;grid-row:1/-1}
+ #chartWrap.big{height:64px}
+ #chartHint{display:none}
+ #stagewrap::after{height:14%}
+ .txtbox{font-size:13px;line-height:1.7;padding:8px 10px}
+ .opt{padding:7px 10px;font-size:12.5px;gap:8px}
+ .sig{font-size:11px;padding:5px 9px;margin-bottom:5px;line-height:1.55}
+ .namep{font-size:11.5px;padding:2px 9px}
+ #topbar{padding:calc(3px + var(--safe-t)) 10px 3px}
+ .tb-when b{font-size:15px}
+}
+/* 矮但唔係橫屏（例如分屏、細窗）：淨係縮，唔換佈局 */
+@media(max-height:560px) and (orientation:portrait){
+ #chartWrap{height:34px}
+ #dlg{max-height:68dvh}
+ .txtbox{font-size:13.5px;line-height:1.75;padding:9px 11px}
+ .opt{padding:8px 11px;font-size:13px}
+ .sig{font-size:11.5px;padding:5px 9px;margin-bottom:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="flash"></div>
+
+<!-- ============ TITLE ============ -->
+<section class="scr on" id="title">
+ <div id="titleBg"></div><div class="veil"></div>
+ <div class="inner">
+  <div class="t-eyebrow">投資行為模擬</div>
+  <h1 class="t-main">烏龍茶的<br>投資人生</h1>
+  <div class="t-sub">七十個決定 · 二十年 · 一個對照組</div>
+  <div class="t-rule"></div>
+  <div class="namewrap">
+   <label>你嘅名</label>
+   <input id="nameIn" maxlength="8" value="烏龍茶" autocomplete="off">
+  </div>
+  <button class="btn" id="startBtn">開始</button>
+  <div id="contWrap" style="display:none">
+   <button class="btn sm ghost" id="contBtn">繼續上次進度</button>
+   <div id="contInfo"></div>
+  </div>
+  <p class="t-note">
+   你三十歲，有 <b>$300,000</b>，每個季度儲到啲錢。<br>
+   有個叫 <b>Mike</b> 嘅人同你一齊開始。佢第一日買晒指數基金，<br>
+   之後每個季度照供，二十年冇再做過任何嘢。<br><br>
+   遊戲完咗會話你知：你同佢嘅差距，<br>究竟係邊幾樣嘢造成，每樣值幾多錢。
+  </p>
+  <div class="t-links">
+   <a href="../新手篇/06-行為偏誤點應對/" id="lnkCh6">← 返《長線投資入門》</a>
+  </div>
+ </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section class="scr" id="game">
+ <div id="topbar">
+  <div>
+   <div class="tb-when"><b id="tNum">1</b><span class="sm">/70</span>
+    <span class="sm" id="tWhen">第 0 年 · 30歲</span></div>
+   <div class="tb-phase" id="tPhase">新手期</div>
+  </div>
+  <div class="tb-money">
+   <div class="row"><span class="lbl">你</span><span id="hNav">$300,000</span></div>
+   <div class="row"><span class="lbl">Mike</span><span class="bench" id="hBen">$300,000</span></div>
+   <div class="row"><span class="lbl">差距</span><span id="hGap">—</span></div>
+  </div>
+  <div id="tbBtns">
+   <button class="iconbtn" id="logBtn" title="決定紀錄" aria-label="決定紀錄">☰</button>
+   <button class="iconbtn" id="setBtn" title="設定" aria-label="設定">⚙</button>
+  </div>
+ </div>
+
+ <div id="chartWrap" title="點一下放大">
+  <canvas id="chart"></canvas>
+  <div id="chartHint">你 vs Mike</div>
+ </div>
+
+ <div id="stagewrap">
+  <div id="bg"></div><div id="bgVeil"></div>
+  <div id="figs"><img id="figB" alt=""><img id="figA" alt=""></div>
+ </div>
+
+ <div id="dlg">
+  <div class="sig" id="sig"></div>
+  <div id="nameTag" style="display:none"><span class="namep" id="spkName"></span></div>
+  <div class="txtbox" id="body"></div>
+  <div id="opts"></div>
+  <div id="res">
+   <div id="resTxt"></div>
+   <div id="resWhy" style="display:none"></div>
+   <button class="btn sm" id="next">繼 續</button>
+  </div>
+ </div>
+</section>
+
+<!-- ============ ENDING ============ -->
+<section class="scr solo" id="end">
+ <div id="endCg"></div>
+ <div class="epad">
+  <div class="e-name" id="eName"></div>
+  <div class="e-tag" id="eTag"></div>
+  <div class="e-desc" id="eDesc"></div>
+  <div id="eExtra"></div>
+ </div>
+</section>
+
+<!-- ============ OVERLAYS ============ -->
+<div class="ovl" id="review"><div class="card">
+ <div class="eyebrow" id="rvEyebrow"></div>
+ <h2 id="rvTitle"></h2>
+ <div class="rule"></div>
+ <div class="grid2" id="rvStats"></div>
+ <canvas class="cv" id="rvChart" height="120" style="margin-bottom:12px"></canvas>
+ <div class="verdict" id="rvVerdict"></div>
+ <div style="font-size:11.5px;line-height:1.85;color:var(--dim)" id="rvBias"></div>
+ <div class="cardbtns">
+  <button class="btn sm ghost" id="rvSave">儲存進度</button>
+  <button class="btn sm" id="rvNext">繼續</button>
+ </div>
+</div></div>
+
+<div class="ovl" id="logOvl"><div class="card">
+ <div class="eyebrow">DECISION LOG</div>
+ <h2>你嘅決定紀錄</h2>
+ <div class="rule"></div>
+ <div id="logList"></div>
+ <div class="cardbtns"><button class="btn sm" id="logClose">閂</button></div>
+</div></div>
+
+<div class="ovl" id="setOvl"><div class="card">
+ <div class="eyebrow">SETTINGS</div>
+ <h2>設定</h2>
+ <div class="rule"></div>
+ <div class="setrow"><span>文字速度</span>
+  <span class="seg" id="segSpeed">
+   <button data-v="34">慢</button><button data-v="17">正常</button>
+   <button data-v="7">快</button><button data-v="0">即時</button>
+  </span></div>
+ <div class="setrow"><span>音樂同音效</span>
+  <span class="seg" id="segSound"><button data-v="1">開</button><button data-v="0">閂</button></span></div>
+ <div class="setrow"><span>顯示偏誤標籤</span>
+  <span class="seg" id="segTags"><button data-v="1">開</button><button data-v="0">閂</button></span></div>
+ <div class="foot">「顯示偏誤標籤」會喺每個選項旁邊寫明佢對應邊種認知偏誤。
+  打完一次之後預設會開。你會發現：就算明知係偏誤，你依然想揀。</div>
+ <div class="cardbtns">
+  <button class="btn sm ghost" id="setSave">儲存進度</button>
+  <button class="btn sm" id="setClose">閂</button>
+ </div>
+</div></div>
+
+</div>
+<script>
+
+/* ===================== model.js ===================== */
+/* ============================================================
+   經濟模型 — the honest version.
+
+   Design rule: every dollar the player loses relative to Mike must be
+   traceable to a named mechanism the teaching site actually explains.
+   There are NO hidden "ego tax" or "discipline bonus" return modifiers;
+   自我同紀律只係敘事變數，唔會直接加減回報。
+
+   Mechanisms, and where the site covers them:
+     1. 交易成本 / 產品費用        -> Ch2 費用蠶食
+     2. 唔喺市場（擇時、恐慌沽）   -> Ch2 錯過最好嘅日子
+     3. 集中持倉（個股中位數效應） -> Ch3 分散 / 99-01 法則
+     4. 槓桿（利息 + 強制平倉）    -> Ch7 槓桿
+     5. 持續投入同人工增長         -> Ch5 定額定投 / Ch7 人力資本
+
+   數字全部係名義港元。一個回合約等於一季。
+   ============================================================ */
+
+var TURNS = 70;
+var START = 300000;      // 起步淨值
+var CONTRIB0 = 20000;    // 每回合儲到嘅錢（基準）
+
+/* ---------- 時間 ----------
+   turn 1-20  -> 第 0-5 年    (每回合 .25 年)
+   turn 21-45 -> 第 5-12 年   (每回合 .28 年)
+   turn 46-70 -> 第 12-20 年  (每回合 .32 年)
+   Explicit, so the HUD and the script can never contradict each other. */
+var TURN_YEAR = (function () {
+  var a = [0];
+  for (var t = 1; t <= TURNS; t++) a[t] = a[t - 1] + (t <= 20 ? 0.25 : t <= 45 ? 0.28 : 0.32);
+  return a;
+})();
+var START_AGE = 30;
+function yearAt(t) { return Math.round(TURN_YEAR[Math.max(0, Math.min(TURNS, t))] * 10) / 10; }
+function ageAt(t) { return Math.floor(START_AGE + TURN_YEAR[Math.max(0, Math.min(TURNS, t))]); }
+
+/* ---------- 利率（每回合，名義） ---------- */
+var CASH_YIELD = 0.005;     // 現金放銀行 2%/年
+var MARGIN_RATE = 0.0134;   // 孖展息 5.5%/年
+var ROUND_TRIP = 0.0028;    // 一買一賣 0.28%：佣金 + 印花稅 + 價差
+var FUND_FEE = 0.0002;      // 廣泛指數 ETF 0.08%/年
+var MIKE_FEE = 0.0002;      // Mike 一樣要俾基金費 —— 冇免費午餐
+var MAINT = 0.25;           // 孖展維持保證金：自有資金 / 總持倉
+var FORCED_SLIP = 0.03;     // 被強制平倉嘅滑點（自己揀走就冇）
+
+/* ---------- 市場：regime-switching，每回合一季 ---------- */
+var REG = {
+  bull: { mu: 0.032, sd: 0.055, next: { bull: .87, chop: .10, crash: .03 } },
+  chop: { mu: 0.004, sd: 0.075, next: { bull: .26, chop: .64, crash: .10 } },
+  crash: { mu: -0.105, sd: 0.115, next: { crash: .50, recov: .50 } },
+  recov: { mu: 0.058, sd: 0.090, next: { bull: .45, recov: .40, chop: .15 } }
+};
+
+function mulberry32(a) {
+  var f = function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+  f.getState = function () { return a; };
+  f.setState = function (v) { a = v | 0; };
+  return f;
+}
+function gauss(rng) {
+  var u = 0, v = 0;
+  while (!u) u = rng();
+  while (!v) v = rng();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+/* 一次過生成成條市場路徑，並且記低每一個隨機數。
+   咁樣「逐項移除」歸因先至係精確嘅：反事實重播用完全一樣嘅市場，
+   兩者嘅差別就只可能係我哋郁咗嗰一樣嘢。 */
+function makePath(seed, turns) {
+  turns = turns || TURNS;
+  var rng = mulberry32(seed), path = [], regime = 'bull';
+  for (var t = 0; t < turns; t++) {
+    var R = REG[regime];
+    path.push({
+      r: R.mu + R.sd * gauss(rng),   // 指數回報
+      z: gauss(rng),                 // 個股特有衝擊
+      uJump: rng(),                  // 會唔會爆單一股票地雷
+      mJump: rng(),                  // 爆嘅話有幾深
+      regime: regime
+    });
+    var p = rng(), acc = 0, nx = regime;
+    for (var k in R.next) { acc += R.next[k]; if (p < acc) { nx = k; break; } }
+    regime = nx;
+  }
+  return path;
+}
+
+/* ---------- 決定紀錄 ----------
+   玩家揀完之後，我哋 snapshot 佢當時嘅姿態。
+   用 dec[] 重播 path[] 可以完全重現成局遊戲。 */
+function blankDecision() {
+  return {
+    invFrac: 0,   // 淨值入面有幾多成落咗市場 (0..1)
+    conc: 0,      // 落咗市場嗰啲錢，有幾多成押喺一注度
+    lev: 1,       // 總持倉倍數 (>=1)
+    churn: 0,     // 呢個回合自主買賣幾多次
+    volMult: 1,   // 嗰注有幾投機
+    dca: 0,       // 有冇長期定額計劃
+    indexed: 0,   // 落咗市場嗰啲錢係咪廣泛指數基金
+    cashOut: 0,   // 一次性現金支出（課程、訂閱、借畀人）
+    ig: 0.006     // 嗰個回合嘅人工增長率（事業選擇會郁佢）
+  };
+}
+
+function newSim(contribRate) {
+  return {
+    cash: START, invested: 0, eq: START, levPrev: 1,
+    contribRate: contribRate || CONTRIB0, contributed: 0, incomeGrowth: 0.006,
+    tradeCost: 0, fundFee: 0, spent: 0, forced: 0, marginCost: 0,
+    hist: [START], invFracHist: []
+  };
+}
+
+/* ---------- 一個回合 ----------
+   knobs 可以精確咁熄咗其中一個機制，用嚟做歸因。 */
+function step(S, dec, p, knobs) {
+  knobs = knobs || {};
+  var invFrac = knobs.noTiming ? 1 : Math.max(0, Math.min(1, dec.invFrac));
+  var conc = knobs.noConc ? 0 : Math.max(0, Math.min(1, dec.conc));
+  var lev = knobs.noLev ? 1 : Math.max(1, dec.lev);
+  var noCost = !!knobs.noCost;
+
+  /* --- 1. 出糧，儲蓄入袋 --- */
+  S.contributed += S.contribRate;
+  S.cash += S.contribRate;
+  var eq = S.cash + S.invested;
+
+  /* --- 2. 一次性現金支出 --- */
+  if (!noCost && dec.cashOut > 0) {
+    var spend = Math.min(S.cash, eq * dec.cashOut);
+    S.cash -= spend; S.spent += spend; eq -= spend;
+  }
+
+  /* --- 3. 調倉去目標姿態，買賣要俾錢 --- */
+  var oldExposure = S.invested * S.levPrev;
+  var newExposure = eq * invFrac * lev;
+  if (!noCost) {
+    var traded = Math.abs(newExposure - oldExposure) + Math.max(0, dec.churn) * newExposure;
+    var cost = traded * ROUND_TRIP;
+    S.tradeCost += cost;
+    eq -= cost;
+  }
+  S.cash = eq * (1 - invFrac);
+  S.invested = eq * invFrac;
+  S.levPrev = lev;
+
+  /* --- 4. 市場郁 ---
+     集中持倉唔係「指數但波幅大啲」。指數嘅回報係由一小撮股票拉起，
+     所以單一股票嘅平均數同指數一樣，但中位數低過指數 —— 大部分個股
+     跑輸，得幾隻孭起晒成個市。呢個就係第 3 章嘅 99/01 效應，
+     所以呢度照字面模擬：個股衝擊係平均值為 0 嘅對數常態，
+     佢嘅中位數自然就係負數。 */
+  var r = p.r, idio = 0;
+  if (conc > 0) {
+    /* 波幅封頂：就算你買咗全世界最投機嗰隻嘢，一個季度嘅個股波幅
+       都唔應該離譜到令「揀錯一次」等同「一定死」。冇咗呢個上限，
+       「大部分時候都醒目」同「次次都癲」嘅結果會一模一樣 ——
+       咁個遊戲就變成講「你點做都冇用」，而唔係講機制。 */
+    var sd = Math.min(0.20 * dec.volMult * Math.sqrt(conc), 0.42);
+    idio = Math.exp(sd * p.z - sd * sd / 2) - 1;
+    var pJump = 0.006 * conc * conc * Math.min(dec.volMult, 3);   // 造假、盈警、供股、除牌
+    if (p.uJump < pJump) idio = (1 + idio) * (1 - (0.35 + p.mJump * 0.40)) - 1;
+  }
+  var concRet = (1 + r) * (1 + idio) - 1;
+  var rp = (1 - conc) * r + conc * concRet;
+
+  var exposure = S.invested * lev;
+  var debt = S.invested * (lev - 1);
+  var pnl = exposure * rp;
+  var mc = debt * MARGIN_RATE;
+  S.marginCost += mc;
+  pnl -= mc;
+  if (!noCost) {
+    var fee = exposure * FUND_FEE * (dec.indexed ? 1 : 0.15);
+    S.fundFee += fee;
+    pnl -= fee;
+  }
+  S.invested += pnl;
+  S.cash *= (1 + CASH_YIELD);
+
+  /* --- 5. 強制平倉 --- */
+  var forced = false;
+  if (lev > 1.02) {
+    var assets = S.invested * lev;
+    if (assets <= 0 || S.invested / assets < MAINT) {
+      forced = true; S.forced++;
+      S.invested = Math.max(0, S.invested) * (1 - FORCED_SLIP);
+      S.levPrev = 1;
+      S.wasForced = true;   // engine 會順手幫你解除槓桿同集中 —— 你已經被斬晒
+    }
+  }
+  if (S.invested < 0) { S.cash += S.invested; S.invested = 0; }
+
+  S.eq = Math.max(0, S.cash + S.invested);
+  S.hist.push(S.eq);
+  S.invFracHist.push(invFrac);
+
+  /* --- 6. 人工增長（第 7 章：人力資本先係後生仔最大嘅資產）---
+     每個回合嘅增長率記喺 dec 度，所以反事實重播完全對得返。
+     knobs.baseIncome = 「如果你嘅人工由頭到尾都冇特別加過會點」 */
+  var g = knobs.baseIncome ? 0.006 : (dec.ig != null ? dec.ig : S.incomeGrowth);
+  S.contribRate *= (1 + g);
+
+  return { r: r, rp: rp, forced: forced, eq: S.eq };
+}
+
+/* Mike：第一日全部入市，之後每個回合照供，永遠唔郁。 */
+function runMike(path, contribRate, turns) {
+  var S = newSim(contribRate);
+  S.invested = S.cash; S.cash = 0;
+  turns = turns == null ? path.length : turns;
+  for (var t = 0; t < turns; t++) {
+    S.contributed += S.contribRate;
+    S.invested += S.contribRate;
+    var fee = S.invested * MIKE_FEE;
+    S.fundFee += fee;
+    S.invested = S.invested * (1 + path[t].r) - fee;
+    S.eq = S.invested;
+    S.hist.push(S.eq);
+    S.contribRate *= (1 + S.incomeGrowth);
+  }
+  return S;
+}
+
+/* 用同一條市場路徑重播，但熄咗其中一個機制。 */
+function replay(path, decs, knobs, contribRate) {
+  var S = newSim(contribRate);
+  for (var t = 0; t < decs.length; t++) step(S, decs[t], path[t], knobs);
+  return S;
+}
+
+
+/* ===================== engine.js ===================== */
+/* ============================================================
+   純遊戲邏輯（完全冇掂 DOM）
+   分開一份，係為咗可以喺 Node 度真係試玩幾千局嚟驗證數值，
+   而唔係靠肉眼估。見 test.mjs。
+   ============================================================ */
+
+function newGame(name, seed) {
+  seed = seed == null ? Math.floor(Math.random() * 1e9) : seed;
+  var path = makePath(seed);
+  return {
+    seed: seed, name: name || '烏龍茶', turn: 0,
+    path: path, mikeHist: runMike(path).hist,
+    sim: newSim(), decs: [],
+    posture: { invFrac: 0, conc: 0, lev: 1, volMult: 1, dca: 0, indexed: 0, ig: 0.006, churnCap: 99 },
+    ego: 0, disc: 0, health: 0, commit: 0,
+    biasCount: {}, biasLog: [], choices: [], reviewed: {},
+    idleTurns: 0, ruinTurn: 0, ended: null
+  };
+}
+function mikeAt(G, t) { return G.mikeHist[Math.min(t, G.mikeHist.length - 1)]; }
+function phaseOf(t) { return t <= 20 ? 'rookie' : t <= 45 ? 'mid' : 'vet'; }
+var PHASE_LABEL = { rookie: '新手期', mid: '中手期', vet: '老手期' };
+
+/* 每回合開始，姿態自然演變。
+   呢啲全部係真實嘅慣性，唔係暗中加減分：
+   · 集中持倉黐身 —— 冇人會靜靜雞自己分散返
+   · 槓桿同投機性會慢慢褪
+   · 有長期定額計劃，你嘅儲蓄會自動流入市場（呢個就係計劃嘅意義） */
+function drift(G) {
+  var P = G.posture;
+  /* 被強制平倉之後你冇得再揀 —— 券商幫你斬晒，槓桿同集中一次過清零。 */
+  if (G.sim.wasForced) { G.sim.wasForced = false; P.lev = 1; P.conc *= 0.35; P.volMult = 1; }
+  P.conc *= 0.92;
+  P.lev = 1 + (P.lev - 1) * 0.96;
+  P.volMult = 1 + (P.volMult - 1) * 0.85;
+  if (P.dca) P.invFrac = Math.max(0, Math.min(1, P.invFrac + (1 - P.invFrac) * 0.08));
+  if (P.invFrac < 0.75) G.idleTurns++; else G.idleTurns = 0;
+}
+
+/* 將一個選項嘅 d{} 套落姿態上面，然後 snapshot 出一個 decision。 */
+function applyChoice(G, d, opt, scen) {
+  var P = G.posture, cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  G.ego = cl(G.ego + (d.ego || 0), 0, 400);
+  G.disc = cl(G.disc + (d.disc || 0), -300, 1400);
+  G.health += (d.health || 0);
+  G.commit = Math.max(0, G.commit + (d.commit || 0));
+  if (d.inv != null) P.invFrac = cl(d.inv, 0, 1);
+  if (d.dInv) P.invFrac = cl(P.invFrac + d.dInv, 0, 1);
+  /* 集中度用遞減方式加：你已經好集中嘅時候，再「加注」實際上加得有限，
+     而且冇人會 100% 押晒喺一注度（總會有啲現金、強積金、其他嘢）。
+     用直加嘅話，玩幾個回合就會釘死喺 100%，跟住「醒目啲」同「癲晒」
+     嘅結果就冇分別 —— 呢個唔係真實，亦都教唔到嘢。 */
+  if (d.conc > 0) P.conc = cl(P.conc + d.conc * (1 - P.conc / 0.85), 0, 0.85);
+  else if (d.conc < 0) P.conc = cl(P.conc + d.conc, 0, 0.85);
+  if (d.lev != null) P.lev = Math.max(1, d.lev);
+  if (d.dLev) P.lev = Math.max(1, P.lev + d.dLev);
+  if (d.vol) P.volMult = Math.min(4, Math.max(P.volMult, d.vol));
+  if (d.dca) P.dca = 1;
+  if (d.indexed != null) {
+    P.indexed = d.indexed;
+    P.conc = P.conc * (1 - cl(d.indexed, 0, 1));   // 廣泛指數基金按定義唔係集中持倉
+  }
+  if (d.churnCap != null) P.churnCap = d.churnCap;
+  if (d.income) P.ig = cl(P.ig + d.income, -0.004, 0.02);
+
+  var churn = d.churn ? Math.min(d.churn, P.churnCap)
+                      : Math.min(P.indexed >= 0.9 ? 0.01 : 0.04, P.churnCap);
+
+  var dec = blankDecision();
+  dec.invFrac = P.invFrac; dec.conc = P.conc; dec.lev = P.lev;
+  dec.churn = churn; dec.volMult = P.volMult; dec.dca = P.dca;
+  dec.indexed = P.indexed >= 0.5 ? 1 : 0; dec.cashOut = d.cashOut || 0; dec.ig = P.ig;
+  G.decs.push(dec);
+
+  if (opt && opt.b) {
+    G.biasCount[opt.b] = (G.biasCount[opt.b] || 0) + 1;
+    G.biasLog.push({ turn: G.turn, b: opt.b, scen: scen ? scen.id : 0 });
+  }
+  if (opt) G.choices.push({ turn: G.turn, scen: scen ? scen.id : 0, opt: opt.t, bias: opt.b || null });
+  return dec;
+}
+
+/* 玩家揸咗好耐現金嗰陣，額外畀返一個返場選項。
+   遊戲一定要有條路返場，否則一次恐慌沽貨就等於玩完 —— 咁就唔係教緊嘢，係懲罰。
+   你隔咗幾耐先肯撳呢粒掣，本身就係「擇時代價」嘅量度。 */
+function extraOption(G) {
+  if (G.posture.invFrac >= 0.75 || G.idleTurns < 2) return null;
+  return {
+    t: '（將閒置現金投返落市場）', b: null, extra: true,
+    d: { inv: 0.95, churn: 0.3, disc: 6 },
+    r: '你將擺喺一邊嘅現金投返落去。',
+    why: '你今次喺場外坐咗 ' + G.idleTurns + ' 個回合。呢段時間市場升定跌，你都冇份。'
+  };
+}
+function optionsFor(G, scen) {
+  var list = scen.opts.slice(), ex = extraOption(G);
+  if (ex) list.push(ex);
+  return list;
+}
+
+/* 一個回合嘅純邏輯部分：套用選擇 -> 跑經濟 -> 回結果。 */
+function commitChoice(G, opt, scen) {
+  applyChoice(G, opt.d || {}, opt, scen);
+  return step(G.sim, G.decs[G.decs.length - 1], G.path[G.turn - 1]);
+}
+function isRuined(G) { return G.sim.eq <= (START + G.sim.contributed) * 0.06; }
+
+
+/* ===================== bias.js ===================== */
+/* ============================================================
+   認知偏誤資料庫 + 返教學網嘅對照
+   每一個偏誤都連返《長線投資入門》講佢嗰一章。
+   遊戲玩完之後，你觸發過嘅偏誤會變成一張「你應該去補返邊幾課」嘅清單。
+   ============================================================ */
+
+/* 相對路徑：假設遊戲擺喺網站嘅 /game/ 之下。
+   如果係用 file:// 直接開個 HTML，就冇網站可以連，UI 會自動收起啲連結。 */
+var CH = {
+  CH2:  ['第 2 章 · 被動指數係咩',      '../新手篇/02-被動指數係咩/'],
+  CH3:  ['第 3 章 · 分散風險原理',      '../新手篇/03-分散風險原理/'],
+  CH5:  ['第 5 章 · 你嘅第一個組合',    '../新手篇/05-你嘅第一個組合/'],
+  CH6:  ['第 6 章 · 行為偏誤點應對',    '../新手篇/06-行為偏誤點應對/'],
+  CH7:  ['第 7 章 · 配置路線 & 槓桿',   '../進階篇/07-配置路線與槓桿/'],
+  CH9:  ['第 9 章 · 真正嘅風險',        '../進階篇/09-真正嘅風險/'],
+  CH13: ['第 13 章 · 提早退休要幾多錢', '../退休篇/13-提早退休要幾多錢/'],
+  APA:  ['附錄 A · 邏輯謬誤 & 思維工具', '../附錄/01-邏輯謬誤與思維/'],
+  APB:  ['附錄 B · 窮人點投資',         '../附錄/02-窮人點投資/'],
+  XD:   ['進階選讀 D · 行為金融學',     '../進階選讀/D-行為金融學/']
+};
+var HAS_SITE = location.protocol !== 'file:';
+
+/* key: [名, 一句話解釋, 對應章節] */
+var BIAS = {
+  recency:    ['近因偏誤',   '以為最近發生嘅嘢會繼續發生', 'CH6'],
+  herding:    ['羊群效應',   '因為人哋做，所以你做', 'CH6'],
+  lottery:    ['彩票偏好',   '為咗一個細機會嘅大回報，接受一個大機會嘅細損失', 'CH9'],
+  lossaver:   ['損失厭惡',   '蝕嘅痛苦大過賺嘅快樂約兩倍，所以你賺就走、蝕就揸', 'CH6'],
+  anchoring:  ['錨定效應',   '你嘅買入價對市場冇任何意義，但對你有', 'CH6'],
+  overconf:   ['過度自信',   '你將運氣當咗能力', 'CH6'],
+  hotHand:    ['熱手謬誤',   '連贏幾次唔代表下次會贏', 'APA'],
+  confirm:    ['確認偏誤',   '你搵資料唔係為咗知真相，係為咗安心', 'CH6'],
+  illusion:   ['控制錯覺',   '複雜嘅方法令你覺得自己控制到一啲控制唔到嘅嘢', 'CH6'],
+  narrative:  ['敘事謬誤',   '一個好故事會令你忘記睇價格', 'APA'],
+  sunkcost:   ['沉沒成本',   '已經蝕咗嘅錢唔應該影響你今日嘅決定，但佢影響咗', 'CH6'],
+  hindsight:  ['後見之明',   '事後你覺得自己早知，其實你唔知', 'APA'],
+  complexity: ['複雜偏誤',   '你以為越複雜越專業', 'CH5'],
+  survivor:   ['倖存者偏差', '你只睇到成功嘅人，睇唔到失敗嗰批', 'APA'],
+  pattern:    ['形態幻覺',   '人腦會喺隨機入面睇到規律', 'XD'],
+  contrarian: ['逆向教條',   '為咗同人唔同而唔同，唔係一種策略', 'XD'],
+  authority:  ['權威偏誤',   '有人講得好肯定，唔代表佢係啱', 'APA'],
+  panic:      ['恐慌反應',   '喺最差嘅時刻做最重要嘅決定', 'CH6'],
+  mental:     ['心理帳戶',   '你將唔同嚟源嘅錢當成唔同價值', 'CH6'],
+  doingsth:   ['行動偏誤',   '唔郁令你焦慮，所以你郁，即使郁係錯', 'CH6'],
+  regret:     ['後悔厭惡',   '為咗唔想再錯過，你追高', 'CH6'],
+  smallsample:['小樣本謬誤', '十幾次交易證明唔到任何嘢', 'APA'],
+  ego:        ['自我投入',   '當你嘅身份綁死咗你嘅倉位，你就唔可以認錯', 'CH6'],
+  selfserve:  ['自利歸因',   '贏係我叻，輸係市場唔啱', 'APA'],
+  excuse:     ['藉口迴圈',   '每年都有一個唔算數嘅理由', 'CH6'],
+  comparison: ['選擇性比較', '你揀咗一個令你舒服嘅比較對象', 'APA'],
+  facesave:   ['面子成本',   '你為咗唔失禮，付出咗真金白銀', 'CH6'],
+  breakeven:  ['回本謬誤',   '你嘅本金唔知道你蝕過錢', 'CH6'],
+  markettime: ['擇時幻覺',   '你要估中兩次：幾時走，同幾時返', 'CH2'],
+  avoid:      ['逃避',       '唔睇個數字，個數字都仲喺度', 'CH6'],
+  selective:  ['選擇性記憶', '你只記得贏嗰幾單', 'APA'],
+  blame:      ['歸咎他人',   '保護咗自我，失去咗學習', 'APA'],
+  doubledown: ['加倍下注',   '用注碼證明自己啱', 'CH6'],
+  identity:   ['身份綁定',   '你嘅策略變咗你係邊個', 'CH6'],
+  endowment:  ['稟賦效應',   '因為係你嘅，所以你覺得佢值錢啲', 'CH6'],
+  exception:  ['例外心理',   '每個人都覺得自己係例外', 'APA'],
+  dismiss:    ['輕蔑迴避',   '唔明嘅嘢，話佢係泡沫就唔使學', 'APA'],
+  fomo:       ['錯失恐懼',   '驚執輸大過驚蝕錢', 'CH6'],
+  attention:  ['注意力誘惑', '為咗有人聽，你講咗你唔信嘅嘢', 'CH6'],
+  talkbook:   ['自賣自誇',   '講自己嘅倉位，係為咗畀人抬轎', 'CH6'],
+  fantasy:    ['幻想拖延',   '「遲早」係一個冇日期嘅承諾', 'CH13'],
+  consolation:['安慰性重構', '將損失重新包裝成學費', 'CH6'],
+  desperation:['絕望下注',   '時間唔夠，所以博更大 —— 呢個係最貴嘅邏輯', 'CH9'],
+  scarcity:   ['稀缺心態',   '越缺錢，越難做長遠決定 —— 呢個唔係人品問題', 'APB']
+};
+
+function biasName(k) { return BIAS[k] ? BIAS[k][0] : k; }
+function biasDesc(k) { return BIAS[k] ? BIAS[k][1] : ''; }
+/* 回一個連去對應章節嘅 <a>；如果唔係喺網站上面行，就淨係回章節名 */
+function biasLink(k) {
+  var b = BIAS[k]; if (!b) return '';
+  var c = CH[b[2]]; if (!c) return '';
+  return HAS_SITE ? '<a href="' + c[1] + '">' + c[0] + '</a>' : c[0];
+}
+function chLink(key, label) {
+  var c = CH[key]; if (!c) return label || '';
+  return HAS_SITE ? '<a href="' + c[1] + '">' + (label || c[0]) + '</a>' : (label || c[0]);
+}
+
+
+/* ===================== judge.js ===================== */
+/* ============================================================
+   結局判定 · 歸因分解 · Monte Carlo
+
+   舊版嘅「技術分數」係循環論證：技術本身就係一個寫死嘅回報加成，
+   所以「你係靠技術定靠彩數」呢條問題，答案早就寫咗喺公式入面。
+
+   新版係咁分嘅：攞你實際做過嘅七十個決定，原封不動咁擺去幾百個
+   唔同嘅市場歷史入面重跑。同一套行為，唔同嘅市場。
+   如果你嘅行為喺大部分平行時空都跑贏 Mike —— 咁就係真嘢。
+   如果淨係今次贏 —— 咁就係彩數。
+   ============================================================ */
+
+/* 攞你嘅決定序列，喺 n 個全新市場度重播。 */
+function monteCarlo(decs, n) {
+  n = n || 400;
+  var ratios = [], win = 0;
+  for (var i = 0; i < n; i++) {
+    var p = makePath(Math.floor(Math.random() * 1e9), decs.length);
+    var you = replay(p, decs, {}, CONTRIB0).eq;
+    var mk = runMike(p, CONTRIB0, decs.length).eq;
+    var r = mk > 0 ? you / mk : 0;
+    ratios.push(r);
+    if (r > 1) win++;
+  }
+  ratios.sort(function (a, b) { return a - b; });
+  return { ratios: ratios, win: win / n, med: ratios[Math.floor(n / 2)] };
+}
+
+/* 逐項移除歸因：每次淨係熄一樣嘢，用返同一條市場路徑重播。 */
+function attribute(G) {
+  var path = G.path, decs = G.decs, you = G.sim.eq;
+  var f = function (knobs) { return replay(path, decs, knobs, CONTRIB0).eq - you; };
+  return {
+    you: you,
+    mike: G.mike.eq,
+    gap: you - G.mike.eq,
+    cost: f({ noCost: 1 }),
+    timing: f({ noTiming: 1 }),
+    conc: f({ noConc: 1 }),
+    lev: f({ noLev: 1 }),
+    all: f({ noCost: 1, noTiming: 1, noConc: 1, noLev: 1 }),
+    income: -f({ baseIncome: 1 })   // 你嘅人工增長貢獻咗幾多（正數 = 幫到你）
+  };
+}
+
+var ENDING_INFO = {
+EARLY_RUIN:{n:'出局',cg:'cg_end_01_blowup',tag:'提前結束',
+ d:'你冇捱到最後。集中持倉、槓桿、單一注碼 —— 當中任何一樣單獨都未必致命，但你三樣一齊嚟。市場唔需要好耐就可以完成佢嘅工作。你連「慢慢輸」嘅機會都冇。'},
+BLOWUP:{n:'爆倉',cg:'cg_end_01_blowup',tag:'淨值歸零',
+ d:'你嘅淨值跌到剩返起步嘅一成以下。呢個結局唔需要解釋 —— 你自己知發生咗咩事。'},
+BOILED_FROG:{n:'溫水煮蛙',cg:'cg_end_02_boiled_frog',tag:'最常見嘅結局',
+ d:'你冇爆倉，冇災難，冇故事可以講。你只係喺二十年入面，慢慢咁、每一年輸少少畀一個乜都冇做嘅人。呢個係最常見嘅結局，亦都係最少人為意嘅。'},
+LEEK_LIFE:{n:'韭菜的一生',cg:'cg_end_03_leek_life',tag:'成本食晒',
+ d:'你嘅交易好勤力。券商好多謝你。你付出咗時間、精神同健康，買咗一堆手續費單據。'},
+AWAKENING:{n:'醒覺',cg:'cg_end_04_awakening',tag:'中途轉軚',
+ d:'你中途醒咗。你冇完全追返之前輸咗嘅，但你止住咗血，而且你嘅餘生唔使再對住個螢幕。呢個唔算贏，但呢個係體面嘅收場。'},
+WU_WEI:{n:'無為',cg:'cg_end_04_awakening',tag:'最難嘅結局',
+ d:'你由頭到尾冇做過幾多嘢。冇故事、冇高潮、冇一次「我當時就知」。你淨係買咗，然後由得佢。\n\n呢個係全個遊戲最難攞到嘅結局 —— 唔係因為佢需要技術，而係因為佢需要你二十年入面，喺每一次心郁郁嘅時候，都揀咗唔郁。'},
+TRUE_ALPHA:{n:'真 Alpha',cg:'cg_end_05_true_alpha',tag:'跑贏，而且唔係彩數',
+ d:'你打敗咗指數。而且唔係好彩 —— 同一套做法擺去幾百個唔同嘅市場，大部分時空你都一樣贏。\n\n但你要睇清楚你贏喺邊。'},
+LUCKY_FOOL:{n:'幸運兒',cg:'cg_end_06_lucky_fool',tag:'跑贏，但係⋯⋯',
+ d:'你打敗咗指數。恭喜。\n\n但係 ——'}
+};
+
+/* mcWin = 同一套行為喺其他市場跑贏 Mike 嘅比例 */
+function judge(G, mcWin) {
+  var S = G.sim;
+  var base = START + S.contributed;
+  var ratio = G.mike.eq > 0 ? S.eq / G.mike.eq : 0;
+  var totalCost = S.tradeCost + S.fundFee + S.spent + S.marginCost;
+  var biasN = G.biasLog.length;
+
+  if (G.ruinTurn && G.ruinTurn <= 45) return 'EARLY_RUIN';
+  if (S.eq < base * 0.15) return 'BLOWUP';
+  if (ratio > 1.0) return mcWin >= 0.5 ? 'TRUE_ALPHA' : 'LUCKY_FOOL';
+  /* 完全紀律嘅玩家會同 Mike 打成平手 —— 呢個唔係輸，呢個先係目標。 */
+  if (ratio >= 0.98 && biasN <= 12 && totalCost < S.eq * 0.04) return 'WU_WEI';
+  if (ratio >= 0.85 && G.posture.dca && G.posture.indexed >= 0.9) return 'AWAKENING';
+  /* 「韭菜」講嘅係成本，唔係「做得差」。你落場二十年，付出去嘅
+     佣金／印花稅／利息／學費，佔咗你一世投入嘅一成二以上 —— 咁先叫韭菜。 */
+  if (totalCost > base * 0.12) return 'LEEK_LIFE';
+  return 'BOILED_FROG';
+}
+
+/* 財富階梯 Level（同教學網一致，港元，唔計自住樓） */
+function levelOf(v) {
+  if (v < 100000) return ['Level 1', '$10萬以下'];
+  if (v < 1000000) return ['Level 2', '$10萬 – $100萬'];
+  if (v < 10000000) return ['Level 3', '$100萬 – $1,000萬'];
+  if (v < 50000000) return ['Level 4', '$1,000萬 – $5,000萬'];
+  return ['Level 5', '$5,000萬以上'];
+}
+
+
+/* ===================== scen1.js ===================== */
+/* ============================================================
+   場景 — 新手期（第 1-20 回合，第 0-5 年，30-35 歲）
+
+   d{} 嘅意思（全部都係真嘢，冇一樣係「暗中扣分」）：
+     inv     設定投入市場嘅比例 0..1
+     dInv    相對調整投入比例
+     conc    調整集中度（+ 係更集中）
+     lev     設定槓桿倍數        dLev  相對調整
+     churn   呢個回合自主買賣次數（直接變成交易成本）
+     vol     嗰注有幾投機（1 = 大路，4 = 賭場）
+     dca     1 = 開咗長期定額計劃
+     indexed 1 = 啲錢擺咗落廣泛指數基金（同時會令集中度歸零）
+     cashOut 一次性現金支出，佔淨值比例
+     income  人工增長率調整 —— 唯一一條唔靠運氣嘅跑贏路
+     ego / disc / health  純敘事計數，唔會直接影響回報
+   ============================================================ */
+
+var SCEN_ROOKIE = [
+{id:1,bg:'HOME_NIGHT',spr:['wulong','rookie'],who:null,
+ sig:'指數連續第五日新高。財經版標題：「牛市確立」。',
+ txt:'你三十歲。戶口入面有 30 萬。你望住個綠色嘅螢幕，個心跳得好快。呢個係你第一次認真諗「投資」呢兩個字。',
+ opts:[
+  {t:'All-in 落去，趁勢頭好',b:'recency',d:{ego:8,disc:-10,inv:1,conc:0.2,churn:0.4},r:'你成筆錢掟晒落去。個心又驚又興奮。'},
+  {t:'買一半，留一半現金',b:null,d:{disc:5,inv:0.5,conc:0.1,churn:0.2},r:'你買咗一半。留返啲彈藥，感覺穩陣啲。'},
+  {t:'先睇多陣，等回調先入',b:'anchoring',d:{disc:-2,inv:0},r:'你決定等。個指數繼續升。'},
+  {t:'每個月定額入，唔理價位',b:null,d:{disc:12,inv:0.3,dca:1,indexed:1,churn:0.05},r:'你設定咗每月自動買入。悶，但你唔使再諗。',
+   why:'定額計劃會慢慢將你嘅儲蓄自動推入市場，唔使你每次判斷「而家係咪好時機」。'}
+ ]},
+{id:2,bg:'APP_VOID',spr:['wulong','rookie_excited'],who:null,
+ sig:'你嘅持倉三日內升咗 8%。',
+ txt:'原來賺錢咁易？你開始日日睇十幾次戶口。每次見到個綠色數字，都有一種微微嘅快感。',
+ opts:[
+  {t:'加碼！我睇得好準',b:'overconf',d:{ego:15,disc:-8,dInv:0.3,conc:0.15,churn:0.6},r:'你追加咗。你覺得自己有天份。'},
+  {t:'即刻獲利離場，袋袋平安',b:'lossaver',d:{churn:1.0,dInv:-0.6},r:'你賣咗大部分。賺咗兩萬幾，你請自己食咗餐好。'},
+  {t:'咩都唔做',b:null,d:{disc:6},r:'你關咗個 app 去瞓覺。'},
+  {t:'去搵吓點解會升',b:null,d:{disc:3},r:'你睇咗兩個鐘研究報告，發現自己乜都唔明。'}
+ ]},
+{id:3,bg:'CHA_TENG',spr:['sinhing','smug'],who:'sinhing',
+ sig:'茶餐廳，師兄拍你膊頭。',
+ txt:'「後生仔，你買嗰啲大路嘢邊有肉食？我有隻嘢，下個月出業績，穩陣。你信我啦，我做咗十幾年。」',
+ opts:[
+  {t:'跟師兄買，佢咁有經驗',b:'herding',d:{ego:5,disc:-12,churn:1.0,conc:0.3,dInv:0.3,vol:2},r:'你買咗。師兄笑到見牙唔見眼。'},
+  {t:'買細注試吓水',b:'herding',d:{disc:-4,churn:0.6,conc:0.12,dInv:0.1,vol:2},r:'你落咗細注。心裡面已經幻想住佢升三倍。'},
+  {t:'笑笑口，唔跟',b:null,d:{disc:10},r:'你飲埋杯奶茶就走。師兄背後同人講你唔識嘢。'},
+  {t:'問佢點解咁肯定',b:null,d:{disc:8},r:'師兄講咗一堆，你發現佢答唔到最關鍵嗰條問題。'}
+ ]},
+{id:4,bg:'HOME_NIGHT',spr:['wulong','rookie'],who:null,
+ sig:'指數單日跌 3%。你嘅持倉由 +8% 變 -2%。',
+ txt:'紅色。成版紅色。你個胃有啲唔舒服。呢個數字尋日仲係綠色嘅。',
+ opts:[
+  {t:'即刻止蝕，走為上著',b:'lossaver',d:{churn:1.0,disc:-6,inv:0.1},r:'你賣晒。第二日反彈 2%。',
+   why:'你而家喺場外。個市幾時返，你要再估多一次。'},
+  {t:'溝貨，而家係平嘢',b:'anchoring',d:{ego:6,disc:-8,dInv:0.4,churn:0.5},r:'你加碼溝低咗成本價。'},
+  {t:'咩都唔做',b:null,d:{disc:10},r:'你將個 app 由主畫面移走。'},
+  {t:'查吓係咪基本面有變',b:null,d:{disc:6},r:'你查完發現只係大市回調，同公司無關。'}
+ ]},
+{id:5,bg:'PARK',spr:['mike','calm'],who:'mike',
+ sig:'公園。你撞到 Mike。',
+ txt:'「我？我買咗個指數基金，之後就冇再理。你問我升咗幾多？我唔記得喎，大概⋯⋯幾成？」佢望住啲樹，好似真係唔太在意。',
+ opts:[
+  {t:'咁悶？咁樣賺得幾多啫',b:'lottery',d:{ego:8,disc:-6},r:'你覺得 Mike 太保守。你有更好嘅方法。'},
+  {t:'問佢點解可以唔理',b:null,d:{disc:12},r:'「因為我理極都冇用囉。」佢答得好自然。'},
+  {t:'心諗：我要跑贏佢',b:'overconf',d:{ego:12,disc:-8},r:'你暗暗立咗個目標。呢個目標會跟住你好耐。'},
+  {t:'考慮買啲指數基金',b:null,d:{disc:15,dInv:0.2,dca:1,indexed:1},r:'你買咗一部分。至少呢部分你唔使煩。'}
+ ]},
+{id:6,bg:'APP_VOID',spr:['wulong','rookie_excited'],who:null,
+ sig:'社交平台洗版：某隻細價股三日升 120%。',
+ txt:'每個人都喺度講。有人 post 咗張截圖，一個月賺咗架車錢。留言區全部係「我都上咗車」。',
+ opts:[
+  {t:'追，遲咗就冇份',b:'herding',d:{ego:10,disc:-15,churn:1.2,conc:0.4,dInv:0.35,vol:3},r:'你喺高位入咗。第二日開市直插 30%。'},
+  {t:'等佢回調先追',b:'herding',d:{disc:-5,churn:0.8,conc:0.15,dInv:0.15,vol:3},r:'你等到「回調」先入。原來嗰個唔係回調，係開始。'},
+  {t:'唔掂',b:null,d:{disc:14},r:'你 scroll 走咗。三個禮拜後嗰隻嘢跌返落起步點。'},
+  {t:'買 call option 博一鋪',b:'lottery',d:{ego:12,disc:-18,churn:1.2,lev:1.6,dInv:0.2,vol:4},r:'你買咗期權。刺激到訓唔著。'}
+ ]},
+{id:7,bg:'OFFICE',spr:['wulong','rookie'],who:null,
+ sig:'返工時間。你一日睇咗 47 次股價。',
+ txt:'老細行過你身後，你迅速 alt-tab。個 spreadsheet 由朝早開到而家一格都冇填過。',
+ opts:[
+  {t:'算啦，賺錢緊要過返工',b:null,d:{ego:8,disc:-10,income:-0.0015},r:'你繼續睇。個 project 遲咗交。',
+   why:'你嘅人工係你而家最大嘅現金流來源。佢一停低，你嘅每一個投資決定都會變得更加急。'},
+  {t:'手機收埋落抽屜',b:null,d:{disc:12,income:0.0008},r:'你成日冇睇。收工先發現升咗 1%。'},
+  {t:'設定價格提示就算',b:null,d:{disc:6},r:'你設咗 alert。至少唔使成日 refresh。'},
+  {t:'索性請假專心炒',b:'doingsth',d:{ego:10,disc:-15,income:-0.0025,churn:0.8},r:'你請咗一日假。嗰日大市橫行。'}
+ ]},
+{id:8,bg:'HOME_NIGHT',spr:['wulong','rookie'],who:null,
+ sig:'你買咗嘅細價股跌咗 35%。',
+ txt:'由賺變蝕，由細蝕變大蝕。你成日喺度計：等返到成本價我就走。',
+ opts:[
+  {t:'死揸，等返家鄉',b:'lossaver',d:{disc:-12,ego:4,conc:0.1},r:'你決定唔賣。呢個決定會令你揸多兩年。'},
+  {t:'再溝多次',b:'sunkcost',d:{ego:8,disc:-15,conc:0.25,dInv:0.3,churn:0.6},r:'你溝低咗成本。個坑越掘越深。'},
+  {t:'認蝕，清倉',b:null,d:{disc:16,churn:0.8,conc:-0.35},r:'好痛。但你將啲錢調返去指數。'},
+  {t:'賣一半，減低壓力',b:null,d:{disc:8,churn:0.5,conc:-0.18},r:'你賣咗一半。心情好返少少。'}
+ ]},
+{id:9,bg:'CHA_TENG',spr:['sinhing','secretive'],who:'sinhing',
+ sig:'師兄壓低聲線。',
+ txt:'「呢個消息我淨係話畀你知。有人接手，下個禮拜公佈。你唔好同人講。」佢望一望四周。',
+ opts:[
+  {t:'重注跟',b:'herding',d:{ego:12,disc:-20,churn:1.2,conc:0.45,dInv:0.4,vol:3.5},r:'你落咗重注。「消息」冇出現。'},
+  {t:'細注跟',b:'herding',d:{disc:-8,churn:0.6,conc:0.15,dInv:0.12,vol:3.5},r:'你落咗細注，一個月後蝕咗四成。'},
+  {t:'唔跟，呢啲係內幕消息',b:null,d:{disc:14},r:'你拒絕咗。師兄之後少咗搵你。'},
+  {t:'問佢自己買咗幾多',b:null,d:{disc:12},r:'佢支支吾吾。你明白晒。'}
+ ]},
+{id:10,bg:'APP_VOID',spr:['wulong','rookie'],who:null,
+ sig:'大市反彈。你戶口回到 +5%。',
+ txt:'原來揸住都會返家鄉。你開始覺得，跌嗰陣唔賣先係啱。',
+ opts:[
+  {t:'證明咗死揸係啱',b:'hindsight',d:{ego:15,disc:-10},r:'你將呢次經驗記低。可惜你記錯咗重點。'},
+  {t:'趁回本走人',b:'anchoring',d:{churn:0.9,disc:-4,inv:0.15},r:'你走咗。之後半年大市升三成。'},
+  {t:'咩都唔做',b:null,d:{disc:10},r:'你繼續揸住。'},
+  {t:'趁機會 rebalance 返',b:null,d:{disc:14,churn:0.4,conc:-0.15},r:'你將比例調返均衡。'}
+ ]},
+{id:11,bg:'TV_STUDIO',spr:['analyst','pro'],who:'analyst',
+ sig:'電視財經節目。',
+ txt:'「我哋維持目標價，預期未來十二個月有 25% 上升空間。」個分析師講得好肯定，背後啲圖表好專業。',
+ opts:[
+  {t:'跟目標價買入',b:'authority',d:{ego:6,disc:-10,churn:0.8,conc:0.2,dInv:0.25},r:'你跟咗。目標價之後被下調三次。'},
+  {t:'去搵佢過往準確率',b:null,d:{disc:16},r:'你查到佢過去兩年有六成預測落空。'},
+  {t:'只信自己嘅判斷',b:'overconf',d:{ego:10,disc:-4},r:'你唔信佢。但你自己嘅判斷都冇好過。'},
+  {t:'當佢係參考，唔當結論',b:null,d:{disc:10},r:'你記低咗，但冇因此改變倉位。'}
+ ]},
+{id:12,bg:'HOME_NIGHT',spr:['wulong','rookie'],who:null,
+ sig:'你發現交易手續費一個月食咗 3,800。',
+ txt:'你數返自己一個月做咗幾多次買賣⋯⋯29 次。你以為自己好勤力。',
+ opts:[
+  {t:'搵間平啲嘅券商',b:null,d:{disc:6,churn:0.3},r:'你轉咗平台。手續費平咗，但你交易得更加密。'},
+  {t:'減少交易次數',b:null,d:{disc:18,churnCap:0.15},r:'你定咗規矩：一個月最多兩次。',
+   why:'成本係唯一一樣你完全控制到、而且一定會發生嘅嘢。回報唔係。'},
+  {t:'唔緊要，賺得返',b:'mental',d:{ego:8,disc:-12,churn:1.5},r:'你唔理。呢筆錢一年後累積到成五萬。'},
+  {t:'做多啲交易攤薄成本',b:'doingsth',d:{disc:-15,churn:2.2},r:'呢個邏輯有問題，但你當時覺得好合理。'}
+ ]},
+{id:13,bg:'PARK',spr:['mike','yawn'],who:'mike',
+ sig:'Mike 喺公園瞓著咗。',
+ txt:'你行過去，見到佢個電話跌咗喺長櫈度，screen 都熄咗。你已經連續三晚睇盤睇到兩點。',
+ opts:[
+  {t:'嘲笑佢咁懶',b:null,d:{ego:8,disc:-4},r:'你心諗佢唔會發達。你當時真心咁諗。'},
+  {t:'突然覺得好攰',b:null,d:{disc:12,health:2},r:'你坐咗低，五分鐘乜都冇諗。好耐冇試過。'},
+  {t:'叫醒佢問佢戶口幾多',b:null,d:{disc:4},r:'佢話唔記得咗密碼，要慢慢搵返。'},
+  {t:'影低佢張相笑佢',b:null,d:{ego:5},r:'幾年後你翻返出呢張相，感覺完全唔同。'}
+ ]},
+{id:14,bg:'APP_VOID',spr:['wulong','rookie'],who:null,
+ sig:'突發：地緣政治新聞。期指夜盤急挫 4%。',
+ txt:'凌晨一點半。你瞓唔著。個手機喺枕頭邊震。',
+ opts:[
+  {t:'即刻喺夜盤沽晒',b:'panic',d:{disc:-18,churn:1.2,inv:0.05,health:-2},r:'你喺最低位附近沽晒。開市反彈 3%。',
+   why:'你而家全部係現金。想返場，你要再揀一次時機 —— 而通常都會揀喺個市升返之後。'},
+  {t:'放低電話，瞓覺',b:null,d:{disc:18,health:1},r:'第二朝起身，個市已經收復咗大半。'},
+  {t:'博反彈，加注',b:'overconf',d:{ego:10,disc:-8,dInv:0.3,churn:0.6,vol:2},r:'你估中咗。呢次估中會令你之後輸得更多。'},
+  {t:'開電視睇新聞睇到天光',b:'doingsth',d:{disc:-6,health:-2},r:'你睇咗三個鐘，個結論係：冇人知會點。'}
+ ]},
+{id:15,bg:'OFFICE',spr:['wulong','rookie'],who:null,
+ sig:'同事問你有咩好介紹。',
+ txt:'佢見你成日睇股票，以為你好識。你其實只係啱啱蝕完一筆。',
+ opts:[
+  {t:'介紹自己揸緊嗰隻',b:'confirm',d:{ego:12,disc:-10,commit:1,conc:0.1},r:'你講到好肯定。而家你更加唔可以認錯。'},
+  {t:'照直講自己都蝕緊',b:null,d:{disc:16},r:'你講咗真話。佢有啲失望，但你舒服咗。'},
+  {t:'叫佢買指數基金',b:null,d:{disc:14},r:'你講完之後諗：咁點解我自己唔咁做？'},
+  {t:'避開唔答',b:null,d:{disc:6},r:'你轉咗話題。'}
+ ]},
+{id:16,bg:'HOME_NIGHT',spr:['wulong','rookie_excited'],who:null,
+ sig:'你連續三次判斷正確。戶口 +14%。',
+ txt:'唔係彩數。你開始相信，你係睇得明個市嘅。你買咗本筆記簿，準備記低自己嘅「系統」。',
+ opts:[
+  {t:'加大注碼，把握手感',b:'hotHand',d:{ego:20,disc:-15,dInv:0.4,conc:0.25,vol:1.8,churn:0.8},r:'你將注碼加大一倍。'},
+  {t:'借孖展放大回報',b:'overconf',d:{ego:22,disc:-20,lev:1.5,vol:2,churn:0.6},r:'你開咗孖展戶口。呢個決定會喺跌市嗰陣等你。'},
+  {t:'照舊，唔改注碼',b:null,d:{disc:16},r:'你忍住咗。呢個係你做過最好嘅決定之一。'},
+  {t:'記低三次都係彩數嘅可能',b:null,d:{disc:20},r:'你喺筆記寫低：「樣本太細。」你之後會忘記呢一頁。'}
+ ]},
+{id:17,bg:'CHA_TENG',spr:['sinhing','panic'],who:'sinhing',
+ sig:'師兄好耐冇出現，今日突然搵你。',
+ txt:'「我⋯⋯我周轉唔到。你有冇 quota 可以借我啲？我下個月一定還。」佢件恤衫皺晒，眼有紅筋。',
+ opts:[
+  {t:'借，大家兄弟',b:null,d:{disc:-10,cashOut:0.12},r:'你借咗。佢冇還。你之後再冇見過佢。'},
+  {t:'唔借，但請佢食餐飯',b:null,d:{disc:12},r:'佢食完就走。你覺得有啲唔忍心，但你係啱嘅。'},
+  {t:'問佢究竟發生咩事',b:null,d:{disc:14},r:'原來佢用咗十倍槓桿。你嗰刻先明白佢啲「經驗」係咩。'},
+  {t:'避開唔覆',b:null,d:{disc:4},r:'你冇覆佢。心裡面有啲唔舒服。'}
+ ]},
+{id:18,bg:'APP_VOID',spr:['wulong','rookie'],who:null,
+ sig:'你嘅組合而家有 11 隻股票。',
+ txt:'每隻都有唔同理由買。你已經記唔起其中四隻當初點解會買。',
+ opts:[
+  {t:'再加多幾隻，分散風險',b:'complexity',d:{ego:8,disc:-12,churn:1.4,conc:-0.05},r:'你加到 15 隻。你嘅回報開始同指數一樣，但成本高好多。',
+   why:'十五隻股票已經接近指數嘅波動，但你要俾十五次買賣成本。你買咗個指數，用咗貴好多嘅價錢。'},
+  {t:'清走講唔出理由嗰四隻',b:null,d:{disc:18,churn:0.5,conc:-0.08},r:'你清走咗。個組合清爽咗。'},
+  {t:'集中火力落最好嗰兩隻',b:'overconf',d:{ego:12,disc:-8,conc:0.4,vol:2,churn:0.7},r:'你集中咗。波幅大咗好多。'},
+  {t:'全部換成指數基金',b:null,d:{disc:22,churn:0.8,dca:1,indexed:1},r:'你認咗輸。但呢個「輸」其實係贏。'}
+ ]},
+{id:19,bg:'ROOFTOP',spr:['wulong','rookie'],who:null,
+ sig:'你上咗天台抖氣。',
+ txt:'呢一年你賺咗 4%。同期指數升咗 11%。你做咗 180 次交易，睇咗大概 900 個鐘盤。',
+ opts:[
+  {t:'我技術仲未夠好，要學多啲',b:'illusion',d:{ego:10,disc:-6,cashOut:0.012},r:'你報咗個課程。三千蚊。'},
+  {t:'可能我根本唔應該咁做',b:null,d:{disc:20},r:'呢個念頭好快就過去。但佢種咗落去。'},
+  {t:'再畀多一年自己',b:null,d:{disc:4},r:'你決定再試一年。'},
+  {t:'計吓自己時薪',b:null,d:{disc:16},r:'你計完發現係負數。你笑咗出嚟，笑得好苦。'}
+ ]},
+{id:20,bg:'PARK',spr:['mike','smile'],who:'mike',
+ sig:'五年。Mike 請你飲奶茶。',
+ txt:'「聽講你好勤力喎。」佢笑笑口。你問返佢賺咗幾多，佢諗咗陣：「我睇吓⋯⋯哦，同大市差唔多囉。」',
+ opts:[
+  {t:'跟佢咁做',b:null,d:{disc:25,dca:1,indexed:1,churn:0.6,churnCap:0.1},r:'你將大部分錢轉咗去指數。你嘅第二個五年會好唔同。'},
+  {t:'我今年只係唔好彩',b:'selfserve',d:{ego:15,disc:-12},r:'你歸咎於運氣。呢個習慣會跟你好耐。'},
+  {t:'佢係悶，但佢係啱',b:null,d:{disc:18},r:'你承認咗，但冇即刻改。'},
+  {t:'我要證明有更好嘅方法',b:'ego',d:{ego:20,disc:-15},r:'你決定升級自己嘅方法。中手期開始。'}
+ ]}
+];
+
+
+/* ===================== scen2.js ===================== */
+/* ============================================================
+   場景 — 中手期（第 21-45 回合，第 5-12 年，35-42 歲）
+   呢個階段嘅偏誤唔再係情緒，係「扮理性」：
+   你有系統、有理由、有數據 —— 全部都係用嚟支持你想做嘅嘢。
+   ============================================================ */
+
+var SCEN_MID = [
+{id:21,bg:'HOME_NIGHT',spr:['wulong','mid'],who:null,
+ sig:'你砌好咗自己嘅交易系統。',
+ txt:'三個 monitor，五個指標，一個 Excel。你 backtest 過去十年，年化 34%。你望住個結果，手有啲震。',
+ opts:[
+  {t:'即刻用真錢跑',b:'illusion',d:{ego:25,disc:-18,dInv:0.4,churn:1.6,conc:0.2},r:'你落實咗。第一個月跑輸大市 6%。'},
+  {t:'先紙上交易半年',b:null,d:{disc:22},r:'半年後你發現實際同 backtest 差好遠。'},
+  {t:'再加多幾個指標優化',b:'complexity',d:{ego:15,disc:-20},r:'年化變咗 41%。你冇為意呢個叫過度擬合。'},
+  {t:'搵 out-of-sample 數據驗證',b:null,d:{disc:28},r:'跑出嚟只有 6%。你嘅系統其實冇用。',
+   why:'一個喺舊數據上面砌到完美嘅系統，通常只係記熟咗噪音。'}
+ ]},
+{id:22,bg:'TV_STUDIO',spr:['analyst','point'],who:'analyst',
+ sig:'分析師指住個圖表。',
+ txt:'「呢個係典型嘅杯柄形態，量能配合，突破在即。」你望住個圖，真係好似。你上個禮拜先睇過一模一樣嘅形態。',
+ opts:[
+  {t:'跟形態入貨',b:'pattern',d:{ego:12,disc:-15,churn:1.0,dInv:0.3,conc:0.2},r:'突破失敗。你止蝕。'},
+  {t:'搵返過去 50 個同樣形態統計',b:null,d:{disc:26},r:'成功率 51%。等同拋硬幣。'},
+  {t:'反向操作，人人睇到就冇用',b:'contrarian',d:{ego:15,disc:-10,churn:1.0,dInv:0.25,conc:0.2},r:'呢次啱咗。你以為自己發現咗規律。'},
+  {t:'唔理，繼續定投',b:null,d:{disc:20,dca:1},r:'你冇郁。'}
+ ]},
+{id:23,bg:'APP_VOID',spr:['wulong','mid'],who:null,
+ sig:'你揸嘅股票出咗負面新聞。',
+ txt:'你即刻上網搵資料。搵到十篇文，七篇睇淡，三篇睇好。',
+ opts:[
+  {t:'重點睇嗰三篇睇好嘅',b:'confirm',d:{ego:12,disc:-22,conc:0.1},r:'你安心咗。呢啲文係公關發嘅。'},
+  {t:'認真睇晒七篇睇淡嘅',b:null,d:{disc:26,churn:0.5,conc:-0.2},r:'你發現問題比想像中嚴重。你減咗倉。'},
+  {t:'搵人問吓意見',b:null,d:{disc:14},r:'你問咗三個人，兩個叫你揸住。你揀咗信嗰兩個。'},
+  {t:'即刻清倉唔問點解',b:'panic',d:{disc:-8,churn:1.1,dInv:-0.7},r:'你走咗。後來證明新聞係假嘅。'}
+ ]},
+{id:24,bg:'CHA_TENG',spr:['analyst','smirk'],who:'analyst',
+ sig:'私人飯局。分析師飲多咗兩杯。',
+ txt:'「我哋出報告⋯⋯你知啦，有時唔係我哋真係咁諗。個 client 想聽咩，我哋就寫咩。」佢笑得好冷。',
+ opts:[
+  {t:'以後唔再信賣方報告',b:null,d:{disc:24},r:'你刪咗五個 app。世界清靜咗。'},
+  {t:'咁我要學識睇穿佢哋',b:'illusion',d:{ego:18,disc:-12},r:'你以為自己睇得穿。你冇。'},
+  {t:'即係要反著嚟做',b:'contrarian',d:{ego:15,disc:-15,churn:1.0},r:'呢個結論太簡單。市場冇咁笨。'},
+  {t:'原來我一直喺度玩緊人哋設計嘅遊戲',b:null,d:{disc:22},r:'你安靜咗好耐。'}
+ ]},
+{id:25,bg:'HOME_NIGHT',spr:['wulong','mid_anxious'],who:null,
+ sig:'你嘅集中持倉跌咗 28%。',
+ txt:'你查過所有資料，你確信市場錯咗。呢間公司嘅價值明明唔止咁。',
+ opts:[
+  {t:'加大注碼，市場終會醒',b:'sunkcost',d:{ego:20,disc:-25,conc:0.35,dInv:0.35,churn:0.7},r:'你溝低咗。之後再跌 40%。'},
+  {t:'減一半，承認可能睇錯',b:null,d:{disc:26,churn:0.6,conc:-0.25},r:'好難。但你保住咗一半。'},
+  {t:'揸住，唔加唔減',b:null,d:{disc:12},r:'你冇郁。'},
+  {t:'寫低我睇錯嘅話會點',b:null,d:{disc:30},r:'你寫咗三個情境。第二個成真咗。你有準備。'}
+ ]},
+{id:26,bg:'APP_VOID',spr:['wulong','mid'],who:null,
+ sig:'某個新科技概念股全線爆升。',
+ txt:'每份報告都話呢個係十年一遇嘅革命。故事講得好完整：技術突破、需求爆發、贏家通吃。',
+ opts:[
+  {t:'重倉入場，呢次唔同',b:'narrative',d:{ego:25,disc:-25,conc:0.5,dInv:0.5,vol:2.8,churn:1.0},r:'你買喺高位。故事係真嘅，但價格已經反映晒。'},
+  {t:'買行業 ETF 分散啲',b:null,d:{disc:12,churn:0.5,dInv:0.25,conc:0.15,vol:1.6},r:'你買咗 ETF。至少唔會單一爆煲。'},
+  {t:'計吓現價隱含嘅增長率',b:null,d:{disc:28},r:'你計出要連續八年增長 60% 先合理。你冇買。'},
+  {t:'唔碰，繼續原本策略',b:null,d:{disc:20},r:'你錯過咗一浪。呢個「錯過」會喺唔久之後報復你。'}
+ ]},
+{id:27,bg:'OFFICE',spr:['wulong','mid'],who:null,
+ sig:'你開始睇唔起同事嘅理財方式。',
+ txt:'佢哋放定期，買保險，問你意見你都懶得詳細答。你已經係「識嘢」嗰個。',
+ opts:[
+  {t:'開個群組教人',b:'ego',d:{ego:25,disc:-15,commit:2},r:'你有咗聽眾。你更加唔可以認錯。'},
+  {t:'保持低調',b:null,d:{disc:18},r:'你冇講咁多。你保住咗轉軚嘅自由。'},
+  {t:'收費開班',b:'ego',d:{ego:30,disc:-20,commit:3,income:-0.0008},r:'你收咗學費。而家你嘅身份綁死咗你嘅倉位。'},
+  {t:'諗返自己其實跑輸緊',b:null,d:{disc:24},r:'你查咗數。你確實跑輸緊。你冇同人講。'}
+ ]},
+{id:28,bg:'TV_STUDIO',spr:['analyst','awkward'],who:'analyst',
+ sig:'分析師嘅目標價被打臉。',
+ txt:'佢喺鏡頭前尷尬咁解釋：「宏觀環境出現咗我哋預期以外嘅變化⋯⋯」',
+ opts:[
+  {t:'我早就知佢唔掂',b:'hindsight',d:{ego:20,disc:-18},r:'你冇早就知。你當時仲跟佢買咗。'},
+  {t:'翻查我自己有冇犯同樣錯',b:null,d:{disc:30},r:'你翻咗自己嘅記錄，發現一模一樣嘅藉口寫咗四次。'},
+  {t:'即係專家都唔可靠，靠自己',b:'overconf',d:{ego:18,disc:-12},r:'呢個結論一半啱。錯嘅係後半句。'},
+  {t:'冇人可以預測，包括我',b:null,d:{disc:26},r:'呢句你講得出，但做唔到。'}
+ ]},
+{id:29,bg:'HOME_NIGHT',spr:['wulong','mid_anxious'],who:null,
+ sig:'凌晨三點。你仲喺度睇美股。',
+ txt:'你已經連續兩個禮拜每晚瞓四個鐘。你太太問你係咪冇事，你話冇事。',
+ opts:[
+  {t:'繼續，呢個係關鍵時期',b:'doingsth',d:{ego:10,disc:-20,health:-3,income:-0.0012},r:'你頂咗多三個禮拜。之後病咗五日。'},
+  {t:'設定規矩：十一點後唔睇',b:null,d:{disc:28,health:2},r:'頭三日好辛苦。第四日開始，你發現冇分別。'},
+  {t:'轉做長線，唔使睇夜盤',b:null,d:{disc:30,churnCap:0.2,health:3},r:'你嘅睡眠回來咗。你嘅回報冇變差。'},
+  {t:'食安眠藥頂住',b:null,d:{disc:-10,health:-4},r:'你頂住咗。代價喺後面。'}
+ ]},
+{id:30,bg:'PARK',spr:['mike','calm'],who:'mike',
+ sig:'第八年。你同 Mike 對數。',
+ txt:'佢戶口升咗 22%。你升咗 9%。你做咗 240 次交易，佢做咗 12 次（月供）。',
+ opts:[
+  {t:'我承受咗更低風險',b:'selfserve',d:{ego:18,disc:-15},r:'其實你嘅波幅高過佢兩倍。你冇計過。'},
+  {t:'計清楚成本蝕咗幾多',b:null,d:{disc:30},r:'手續費同價差加埋 4.2%。即係你嘅超額回報全部餵咗券商。'},
+  {t:'轉一半去指數',b:null,d:{disc:32,dca:1,indexed:0.5,churn:0.6,churnCap:0.4},r:'你分咗一半出嚟。呢一半之後救咗你。'},
+  {t:'今年唔算，我啱啱轉緊策略',b:'excuse',d:{ego:15,disc:-18},r:'你每年都咁講。'}
+ ]},
+{id:31,bg:'APP_VOID',spr:['wulong','mid_anxious'],who:null,
+ sig:'你上回錯過嗰隻，再升多 80%。',
+ txt:'你望住個圖，個胃扭住。如果當初買咗⋯⋯你計過，大概係 60 萬。',
+ opts:[
+  {t:'而家追，唔可以再錯過',b:'regret',d:{ego:20,disc:-28,conc:0.45,dInv:0.5,vol:3,churn:1.2},r:'你喺頂部追入。三個月後腰斬。'},
+  {t:'細注追，起碼有份',b:'regret',d:{disc:-12,churn:0.7,conc:0.15,dInv:0.15,vol:3},r:'你追咗細注。仲係蝕。'},
+  {t:'接受錯過，唔係每浪都要食',b:null,d:{disc:32},r:'呢個係全個遊戲最難嘅決定之一。你做到咗。',
+   why:'你唔會食到每一浪。你只需要唔好喺最貴嘅時候上到最尾嗰班車。'},
+  {t:'去搵下一隻類似嘅',b:'lottery',d:{ego:15,disc:-22,churn:1.6,vol:3,conc:0.25},r:'你搵咗三隻。三隻都唔掂。'}
+ ]},
+{id:32,bg:'CHA_TENG',spr:['elder','serene'],who:'elder',
+ sig:'茶樓。你識到一位老前輩。',
+ txt:'「後生仔，你做咗幾年？」「七八年。」佢點點頭：「我做咗四十年。我最叻嗰十年，係我咩都冇做嗰十年。」',
+ opts:[
+  {t:'佢老啦，個市已經唔同',b:'recency',d:{ego:15,disc:-18},r:'你冇認真聽。呢句你好多年之後先明。'},
+  {t:'請教佢點解',b:null,d:{disc:28},r:'佢講咗兩個鐘。核心只有一句：「唔輸就係贏。」'},
+  {t:'問佢最大嘅一次蝕',b:null,d:{disc:26},r:'佢講咗。你發現佢嘅錯，你而家正喺度犯緊。'},
+  {t:'心諗：咁我豈不是白做咗七年',b:null,d:{disc:20,ego:-8},r:'呢個念頭好痛，但好有用。'}
+ ]},
+{id:33,bg:'HOME_NIGHT',spr:['wulong','mid'],who:null,
+ sig:'你決定加大槓桿。',
+ txt:'資金成本 5.5%，你嘅策略年化 12%。數學上，借錢係啱嘅。你計咗好多次。',
+ opts:[
+  {t:'借足，兩倍槓桿',b:'illusion',d:{ego:28,disc:-30,lev:2,vol:2,churn:0.6},r:'數學係啱嘅。但數學冇計波幅拖累同強制平倉。',
+   why:'槓桿放大嘅唔止回報，仲有波幅。同一個跌幅，你嘅損失係佢嘅兩倍，而你唔一定捱得到反彈嗰日。'},
+  {t:'借 1.3 倍，保守啲',b:null,d:{ego:12,disc:-10,lev:1.3,vol:1.3},r:'你借咗少少。壓力大咗，但仲頂得住。'},
+  {t:'唔借',b:null,d:{disc:26},r:'你冇借。跌市嗰陣你會慶幸。'},
+  {t:'先模擬最壞情況',b:null,d:{disc:32},r:'你計出跌 45% 就爆倉。你冇借。'}
+ ]},
+{id:34,bg:'OFFICE',spr:['wulong','mid_anxious'],who:null,
+ sig:'你喺公司做嘅嘢越嚟越少。',
+ txt:'老細搵你傾。「你近排係咪有啲嘢分心？」你嘅年度評核由 A 跌到 C。',
+ opts:[
+  {t:'索性辭職全職炒',b:'doingsth',d:{ego:25,disc:-30,income:-0.006,cashOut:0.06},r:'你辭咗職。冇咗人工，你嘅每個決定都變得更急。'},
+  {t:'收斂返，專心返工',b:null,d:{disc:30,income:0.003},r:'你嘅評核第二年返到 A。你嘅回報冇變差。',
+   why:'你嘅人工係你三十幾歲時最大嘅資產。佢加三成，通常打贏你所有交易加埋。'},
+  {t:'兩邊都做，頂得住',b:null,d:{disc:8,health:-2},r:'你頂咗一年。之後崩咗。'},
+  {t:'諗清楚份糧先係我最穩定嘅現金流',b:null,d:{disc:28,income:0.0025},r:'你將人工當成「無限期嘅債券」。呢個角度救咗你。'}
+ ]},
+{id:35,bg:'APP_VOID',spr:['wulong','mid'],who:null,
+ sig:'大市橫行三個月。',
+ txt:'冇升冇跌。你嘅系統冇訊號。你手指痕。',
+ opts:[
+  {t:'搵啲嘢嚟做，總好過乾等',b:'doingsth',d:{ego:10,disc:-25,churn:2.4},r:'你做咗七次交易，全部蝕手續費。'},
+  {t:'咩都唔做',b:null,d:{disc:30},r:'最難嘅一種行動。你做到咗。'},
+  {t:'去研究新市場，加密貨幣？',b:'lottery',d:{ego:15,disc:-22,churn:0.8,vol:4,dInv:0.12,conc:0.3},r:'你入咗一個你完全唔識嘅場。'},
+  {t:'趁機會執靚個組合',b:null,d:{disc:20,churn:0.4,conc:-0.1},r:'你 rebalance 咗。合理。'}
+ ]},
+{id:36,bg:'TV_STUDIO',spr:['sinhing','smug'],who:'sinhing',
+ sig:'師兄翻生咗，而家係網紅。',
+ txt:'佢喺鏡頭前講到天花龍鳳，收費群組收 888 一個月，三千人。佢比你賺得多好多 —— 賺你哋啲人嘅錢。',
+ opts:[
+  {t:'我都要開',b:'ego',d:{ego:30,disc:-25,commit:3,income:-0.001},r:'你開咗。你嘅收入來源由投資變成賣意見。'},
+  {t:'揭穿佢',b:null,d:{disc:14},r:'冇人信你。佢啲粉絲圍攻你。'},
+  {t:'明白晒：賣鏟先係賺錢嘅生意',b:null,d:{disc:26},r:'你明白咗，但你冇做。你保住咗自己。'},
+  {t:'訂閱嚟睇吓佢講咩',b:'fomo',d:{disc:-12,cashOut:0.004},r:'你畀咗 888。內容係免費新聞嘅複述。'}
+ ]},
+{id:37,bg:'HOME_NIGHT',spr:['wulong','mid'],who:null,
+ sig:'你翻返出五年前本筆記簿。',
+ txt:'第一頁寫住：「樣本太細。」你完全唔記得自己寫過。你而家嘅策略，係建基於 11 次交易嘅結果。',
+ opts:[
+  {t:'即刻停手，重新驗證',b:null,d:{disc:34,churnCap:0.3},r:'你停咗兩個月。呢兩個月你冇蝕過錢。'},
+  {t:'11 次夠喇，我有實戰經驗',b:'smallsample',d:{ego:22,disc:-25},r:'你繼續。'},
+  {t:'撕咗嗰頁',b:'avoid',d:{ego:15,disc:-30},r:'你唔想面對。呢個動作本身已經係答案。'},
+  {t:'由今日開始記低每一個決定',b:null,d:{disc:36},r:'你開始寫決策日誌。呢個習慣係你嘅救命草。'}
+ ]},
+{id:38,bg:'ROOFTOP',spr:['wulong','mid_anxious'],who:null,
+ sig:'⚠ 大市單日暴跌 12%。',
+ txt:'如果你有槓桿，你嘅券商而家應該打緊電話畀你。個天台好凍。',
+ opts:[
+  {t:'追加保證金，守住',b:'sunkcost',d:{ego:10,disc:-25,cashOut:0.25},r:'你抵押咗最後嘅現金。'},
+  {t:'即刻減槓桿，認低威',b:null,d:{disc:32,churn:0.6,lev:1},r:'你減咗。痛，但你活咗。'},
+  {t:'全部斬倉，離場',b:'panic',d:{disc:-15,churn:1.2,inv:0,lev:1},r:'你走喺最低位。六個月後大市新高。'},
+  {t:'趁跌買入，呢個係機會',b:null,d:{disc:20,dInv:0.3,churn:0.5},r:'如果你有現金，呢個係啱嘅。如果冇⋯⋯'}
+ ]},
+{id:39,bg:'CHA_TENG',spr:['elder','lecture'],who:'elder',
+ sig:'前輩見你面色青。',
+ txt:'「你係咪用咗槓桿？」你冇答。佢嘆咗口氣：「我當年都係。我用咗八年先還完。」',
+ opts:[
+  {t:'問佢點樣捱過',b:null,d:{disc:30},r:'「我唔捱。我認輸，由頭嚟過。」'},
+  {t:'我嘅情況唔同',b:'exception',d:{ego:20,disc:-25},r:'每個人都咁諗。'},
+  {t:'即刻打電話減倉',b:null,d:{disc:34,lev:1,churn:0.5},r:'你當場打咗。前輩點咗點頭。'},
+  {t:'唔想再講',b:null,d:{disc:5},r:'你走咗。'}
+ ]},
+{id:40,bg:'PARK',spr:['mike','shrug'],who:'mike',
+ sig:'Mike 見你瘦咗好多。',
+ txt:'「聽講你近排唔係太順？」佢冇追問，只係遞咗杯奶茶畀你。佢嘅戶口今年跌咗 18%，佢冇做過任何嘢。',
+ opts:[
+  {t:'佢都跌 18%，即係我唔算差',b:'comparison',d:{ego:12,disc:-15},r:'你跌咗 44%。你避開咗計數。'},
+  {t:'問佢跌咁多點解唔驚',b:null,d:{disc:30},r:'「我又唔使而家用啲錢。」佢答得好平淡。'},
+  {t:'照直講我而家好慘',b:null,d:{disc:26,health:2},r:'你講咗出嚟。好耐冇試過咁輕鬆。'},
+  {t:'講大話話自己好好',b:'facesave',d:{ego:18,disc:-20,health:-2},r:'你笑住講。返到屋企你喊咗。'}
+ ]},
+{id:41,bg:'APP_VOID',spr:['wulong','mid'],who:null,
+ sig:'市場開始復甦。',
+ txt:'你戶口由 -44% 回到 -22%。你開始諗，係咪應該加返注，追返啲損失。',
+ opts:[
+  {t:'加大注碼追返蝕咗嘅',b:'breakeven',d:{ego:20,disc:-28,dInv:0.5,conc:0.25,vol:2,churn:0.9},r:'呢個係賭徒思維。你嘅本金唔知道你蝕過錢。'},
+  {t:'照原本節奏，唔加碼',b:null,d:{disc:30},r:'你冇急。'},
+  {t:'趁低吸納指數基金',b:null,d:{disc:32,dca:1,indexed:1,dInv:0.3,churn:0.4},r:'你買咗指數。呢批貨會係你組合最好嘅部分。'},
+  {t:'清晒，唞一唞',b:null,d:{disc:16,churn:1.0,inv:0.05},r:'你離場。你錯過咗復甦，但你保住咗心理。'}
+ ]},
+{id:42,bg:'OFFICE',spr:['wulong','mid'],who:null,
+ sig:'你嘅群組成員問點解你嘅推介都跌。',
+ txt:'有人開始退 group。你之前收咗人哋學費。',
+ opts:[
+  {t:'話佢哋唔識揸，唔關我事',b:'blame',d:{ego:25,disc:-30},r:'你嘅信譽冇咗。你嘅自我保住咗。'},
+  {t:'公開認錯，退返啲錢',b:null,d:{disc:36,cashOut:0.05,ego:-15,commit:-2},r:'好痛。但你買返自由。'},
+  {t:'加碼推介，證明自己',b:'doubledown',d:{ego:30,disc:-35,conc:0.5,vol:2.5,dInv:0.3},r:'你將自尊押咗落個倉位度。'},
+  {t:'解散個群組',b:null,d:{disc:30,ego:-10,commit:-3},r:'你解散咗。你終於可以改變主意。'}
+ ]},
+{id:43,bg:'HOME_NIGHT',spr:['wulong','mid'],who:null,
+ sig:'你開始計自己十一年嘅總成績。',
+ txt:'呢個係你一直逃避嘅計算。你打開 Excel，手停咗喺半空。',
+ opts:[
+  {t:'計落去',b:null,d:{disc:36},r:'年化 3.1%。同期指數 9.4%。你望住個數字好耐。'},
+  {t:'算數，唔計',b:'avoid',d:{ego:15,disc:-30},r:'你關咗 Excel。你保護咗自己嘅感覺。'},
+  {t:'只計贏嗰啲',b:'selective',d:{ego:25,disc:-32},r:'計出嚟係 28%。你截圖 post 咗上網。'},
+  {t:'連手續費同時間成本都計',b:null,d:{disc:40},r:'加埋時間成本，你係負數。呢個係你人生最有價值嘅一個 Excel。'}
+ ]},
+{id:44,bg:'CHA_TENG',spr:['elder','silent'],who:'elder',
+ sig:'前輩冇講嘢，淨係飲茶。',
+ txt:'你問佢：「如果重嚟一次，你會點？」佢望住杯茶好耐好耐，先講：「我會早廿年開始咩都唔做。」',
+ opts:[
+  {t:'咁樣人生咪好悶？',b:null,d:{ego:12,disc:-10},r:'「悶？」佢笑咗。「我用咗四十年買呢個悶字。」'},
+  {t:'即刻明白咗',b:null,d:{disc:38},r:'你嗰刻真係明白咗。問題係，明白同做到係兩件事。'},
+  {t:'但佢而家咪好有錢？',b:'survivor',d:{ego:15,disc:-20},r:'你冇問佢同期有幾多人做同樣嘅嘢但輸清光。'},
+  {t:'問佢仲有冇得救',b:null,d:{disc:34},r:'「有。你今日就可以停。」'}
+ ]},
+{id:45,bg:'ROOFTOP',spr:['wulong','mid_anxious'],who:null,
+ sig:'十二年。轉捩點。',
+ txt:'你企喺天台。你今年四十二歲。你花咗十二年，證明咗一件事：你唔係股神。問題係，你肯唔肯承認。',
+ opts:[
+  {t:'全部轉指數，收工',b:null,d:{disc:45,dca:1,indexed:1,churn:0.8,churnCap:0.08,ego:-20},r:'你做咗。你嘅老手期會好唔同。'},
+  {t:'保留一成玩，九成指數',b:null,d:{disc:40,dca:1,indexed:0.9,churn:0.7,churnCap:0.2,ego:-10},r:'你留咗個玩具箱。呢個係最務實嘅方案。',
+   why:'畀個安全嘅位你玩，好過你迫自己完全戒，然後某一日一次過破戒。'},
+  {t:'我只係未搵到啱嘅方法',b:'illusion',d:{ego:25,disc:-25},r:'你決定再試。老手期開始。'},
+  {t:'我已經投入太多，唔可以而家放棄',b:'sunkcost',d:{ego:30,disc:-35,commit:2},r:'十二年唔係本錢，係已經花咗嘅錢。但你當佢係本錢。'}
+ ]}
+];
+
+
+/* ===================== scen3.js ===================== */
+/* ============================================================
+   場景 — 老手期（第 46-70 回合，第 12-20 年，42-50 歲）
+   呢個階段嘅偏誤唔關情緒事，都唔關理性事，係關身份事：
+   你嘅策略已經變成「你係邊個」，所以認錯 = 否定自己。
+   ============================================================ */
+
+var SCEN_VET = [
+{id:46,bg:'HOME_NIGHT',spr:['wulong','vet'],who:null,
+ sig:'十二年。你嘅辦公桌淨返一個 monitor。',
+ txt:'你唔再睇分鐘圖。你有咗自己嘅「風格」。你講得出點解每一個決定。問題係，你講得出唔代表你係啱。',
+ opts:[
+  {t:'相信自己嘅風格，堅持',b:'identity',d:{ego:20,disc:-15,conc:0.3},r:'風格同固執嘅分別，係結果。'},
+  {t:'每年強制檢討一次假設',b:null,d:{disc:35},r:'你定咗每年一月做 review。呢個習慣好過任何指標。'},
+  {t:'開始教下一代',b:'ego',d:{ego:25,disc:-18,commit:2},r:'你講嘅嘢，你自己都未做到。'},
+  {t:'減持，準備退場',b:null,d:{disc:30,churn:0.4,conc:-0.2},r:'你開始諗終局。好少人喺呢個位諗。'}
+ ]},
+{id:47,bg:'TV_STUDIO',spr:['analyst','pro'],who:'analyst',
+ sig:'你被邀請上財經節目。',
+ txt:'佢哋叫你做「資深投資者」。你望住個 studio，燈好光。你有五秒鐘決定講咩。',
+ opts:[
+  {t:'講一個大膽嘅預測',b:'attention',d:{ego:30,disc:-25,commit:3,conc:0.2},r:'節目效果好好。你而家綁死咗。'},
+  {t:'老實講：我唔知未來會點',b:null,d:{disc:38},r:'收視插水。監製冇再搵你。你保住咗自由。'},
+  {t:'講返基本原則就算',b:null,d:{disc:30},r:'悶，但冇錯。'},
+  {t:'推介自己揸緊嘅倉位',b:'talkbook',d:{ego:28,disc:-30,commit:3,conc:0.25},r:'你將自己嘅倉位變咗公開承諾。'}
+ ]},
+{id:48,bg:'APP_VOID',spr:['wulong','vet'],who:null,
+ sig:'一個你唔明嘅新板塊爆升。',
+ txt:'後生仔喺度賺緊快錢，用嘅方法你完全唔理解。你嘅第一反應係：呢啲係泡沫。',
+ opts:[
+  {t:'肯定係泡沫，唔碰',b:'dismiss',d:{ego:20,disc:-12},r:'你可能啱。你亦可能只係唔想學新嘢。'},
+  {t:'認真去學，搞清楚先判斷',b:null,d:{disc:36},r:'你學咗三個月。你嘅結論同之前一樣，但而家有根據。'},
+  {t:'沽空佢',b:'contrarian',d:{ego:28,disc:-30,lev:1.6,vol:4,conc:0.3,churn:1.0},r:'市場可以維持非理性，比你維持償付能力更耐。'},
+  {t:'細注參與，分散無知風險',b:null,d:{disc:22,dInv:0.06,conc:0.08,vol:3},r:'你買咗好細注。合理嘅謙卑。'}
+ ]},
+{id:49,bg:'CHA_TENG',spr:['elder','collapse'],who:'elder',
+ sig:'前輩病咗。',
+ txt:'佢喺醫院。佢個仔話，老豆一世人最後悔嘅，係佢六十歲嗰年又忍唔住重返市場，輸咗一半退休金。',
+ opts:[
+  {t:'佢老糊塗啫，我唔會咁',b:'exception',d:{ego:25,disc:-30},r:'到你六十歲嗰年，你會記得呢一刻。'},
+  {t:'即刻寫低我嘅退場計劃',b:null,d:{disc:42},r:'你寫咗。日期、金額、條件。呢張紙值好多錢。'},
+  {t:'問佢仔詳細啲',b:null,d:{disc:34},r:'原來觸發點只係一個朋友嘅一句話。'},
+  {t:'唔想面對，轉話題',b:'avoid',d:{disc:-15},r:'你走咗。呢件事會喺你腦入面留低。'}
+ ]},
+{id:50,bg:'PARK',spr:['mike','smile'],who:'mike',
+ sig:'Mike 話佢計過，佢而家唔做都夠用。',
+ txt:'佢冇辭職，但佢知道自己可以。你問佢做過幾多次交易，佢諗咗陣：「大概⋯⋯五十次？全部係月供。」',
+ opts:[
+  {t:'我仲有得追',b:'breakeven',d:{ego:22,disc:-22},r:'你仲有二十回合。'},
+  {t:'問佢個數係幾多',b:null,d:{disc:28},r:'佢講咗。你嘅係佢嘅四成。你笑唔出。'},
+  {t:'即刻全部轉指數',b:null,d:{disc:45,dca:1,indexed:1,churn:0.8,churnCap:0.08,ego:-25},r:'十幾年先做嘅決定。遲總好過冇。'},
+  {t:'恭喜佢，然後返屋企計數',b:null,d:{disc:32},r:'你計咗一晚。'}
+ ]},
+{id:51,bg:'HOME_NIGHT',spr:['wulong','vet'],who:null,
+ sig:'你嘅策略連續三年跑輸。',
+ txt:'你嘅解釋係：市場環境唔適合我嘅風格。呢個解釋你用咗三年。',
+ opts:[
+  {t:'再等，風格總會回來',b:'identity',d:{ego:22,disc:-28},r:'有啲風格永遠唔會回來。'},
+  {t:'承認策略可能已經失效',b:null,d:{disc:40,ego:-18},r:'最難嘅一句說話。你講咗。'},
+  {t:'加大注碼，趁低迷',b:'doubledown',d:{ego:25,disc:-32,conc:0.4,vol:2,dInv:0.3},r:'你將信念變咗注碼。'},
+  {t:'設一個客觀停損線',b:null,d:{disc:38},r:'「如果再跑輸兩年，我就轉指數。」你寫低咗。'}
+ ]},
+{id:52,bg:'OFFICE',spr:['wulong','vet'],who:null,
+ sig:'你四十三歲。同事仔升咗做你上司。',
+ txt:'你呢十幾年嘅心思有一半唔喺份工度。你嘅事業曲線同你嘅投資曲線，一樣咁平。',
+ opts:[
+  {t:'唔緊要，我遲早財自',b:'fantasy',d:{ego:20,disc:-20},r:'呢個「遲早」你講咗十年。'},
+  {t:'認真返工，人力資本先係最大資產',b:null,d:{disc:38,income:0.004},r:'你嘅人工加咗三成。呢個回報率打敗你所有交易。',
+   why:'呢個係全個遊戲入面，唯一一條唔使靠彩數就跑贏到 Mike 嘅路。'},
+  {t:'兩樣都放棄唔到',b:null,d:{disc:10,health:-2},r:'你繼續拉扯。'},
+  {t:'轉行做金融',b:'sunkcost',d:{ego:18,disc:-20,income:-0.002},r:'你入咗行，先發現入面啲人都靠賣鏟。'}
+ ]},
+{id:53,bg:'APP_VOID',spr:['wulong','vet'],who:null,
+ sig:'你有一隻股票揸咗八年。',
+ txt:'佢係你嘅「核心持倉」。你講得出佢嘅故事。你唔會賣。你甚至覺得佢係你嘅一部分。',
+ opts:[
+  {t:'永遠唔賣，呢隻係我嘅',b:'endowment',d:{ego:25,disc:-28,conc:0.4},r:'如果你今日冇揸住佢，你會唔會用現價買？你冇問過自己。'},
+  {t:'問自己：今日會唔會用現價買',b:null,d:{disc:40,churn:0.5,conc:-0.4},r:'答案係唔會。你賣咗。'},
+  {t:'減至合理比例',b:null,d:{disc:34,churn:0.4,conc:-0.25},r:'你由 40% 減到 15%。'},
+  {t:'再加碼，信念要堅定',b:'identity',d:{ego:28,disc:-30,conc:0.5,dInv:0.2},r:'信念唔會影響股價。'}
+ ]},
+{id:54,bg:'TV_STUDIO',spr:['sinhing','vanish'],who:'sinhing',
+ sig:'師兄嘅收費群組爆煲。',
+ txt:'新聞話佢涉嫌操縱市場。佢消失咗。三千個訂戶，好多人蝕清光。你當年差啲就跟咗佢。',
+ opts:[
+  {t:'我早就知佢有問題',b:'hindsight',d:{ego:20,disc:-20},r:'你冇早就知。你當年跟咗佢兩次。'},
+  {t:'諗返自己有冇做緊類似嘅嘢',b:null,d:{disc:38},r:'你檢視咗自己嘅群組發言。有啲你唔敢再睇。'},
+  {t:'覺得好彩',b:null,d:{disc:26},r:'好彩唔係策略。但你至少誠實。'},
+  {t:'去接收佢啲客',b:'ego',d:{ego:30,disc:-35,commit:3,income:-0.002},r:'你接手咗。你變成咗你當年鄙視嘅人。'}
+ ]},
+{id:55,bg:'HOME_NIGHT',spr:['wulong','vet'],who:null,
+ sig:'你個仔問你：「爸爸，投資係咩？」',
+ txt:'你張開口，發現自己唔知道應該教佢乜。你唔想佢行你嘅路。',
+ opts:[
+  {t:'教佢買指數，長期唔好郁',b:null,d:{disc:42},r:'你講完之後，靜咗好耐。你知道自己講咗咩。'},
+  {t:'教佢我嘅選股方法',b:'identity',d:{ego:25,disc:-30},r:'你教緊佢一個你自己都證明唔到嘅方法。'},
+  {t:'叫佢唔好掂股票',b:null,d:{disc:20},r:'過度反應。但可以理解。'},
+  {t:'話遲啲先講',b:'avoid',d:{disc:-10},r:'你避開咗。因為誠實嘅答案太難聽。'}
+ ]},
+{id:56,bg:'ROOFTOP',spr:['wulong','vet'],who:null,
+ sig:'大熊市。指數由高位跌 38%。',
+ txt:'你經歷過三次。你知道啲乜。問題係，知道同做到，依然係兩件事。',
+ opts:[
+  {t:'照計劃定投，一分唔郁',b:null,d:{disc:45,dca:1,indexed:1,dInv:0.2},r:'你嘅十幾年經驗，終於發揮咗一次真正嘅作用。'},
+  {t:'清倉避險，等塵埃落定',b:'markettime',d:{ego:20,disc:-28,churn:1.2,inv:0.05},r:'你避開咗最後 12% 跌幅，錯過咗之後 60% 反彈。',
+   why:'擇時要估中兩次：幾時走，同幾時返。第二次先係難嗰次。'},
+  {t:'借錢抄底',b:'overconf',d:{ego:30,disc:-35,lev:1.9,vol:2,dInv:0.3},r:'底可以有底下有底。'},
+  {t:'減持一半，留彈藥',b:null,d:{disc:24,churn:0.6,dInv:-0.35},r:'折衷。唔算錯。'}
+ ]},
+{id:57,bg:'CHA_TENG',spr:['analyst','smirk'],who:'analyst',
+ sig:'分析師而家係基金經理。',
+ txt:'「我哋今年跑輸大市 4%。」佢好平靜。「但我收 1.5% 管理費，規模 80 億。我唔需要跑贏。」',
+ opts:[
+  {t:'即刻明白整個行業嘅結構',b:null,d:{disc:40},r:'你明白咗：你係佢哋嘅產品，唔係客戶。'},
+  {t:'我要開基金',b:'ego',d:{ego:30,disc:-25,commit:3},r:'你想收人哋管理費。你變成咗個結構嘅一部分。'},
+  {t:'咁我自己做仲好',b:'overconf',d:{ego:22,disc:-15},r:'一半啱。但你嘅成本其實仲高過佢。'},
+  {t:'買最平嘅指數基金就得',b:null,d:{disc:38,dca:1,indexed:1,churn:0.5},r:'你揀咗收費最低嗰隻。'}
+ ]},
+{id:58,bg:'APP_VOID',spr:['wulong','vet'],who:null,
+ sig:'你嘅組合十六年年化：5.8%。',
+ txt:'同期指數：10.2%。差距 4.4%。喺十六年複利之下，呢個差距係一層樓。',
+ opts:[
+  {t:'計清楚差咗幾多錢',b:null,d:{disc:42},r:'你計咗出嚟。你望住個數字。'},
+  {t:'我有學到嘢，唔算白費',b:'consolation',d:{ego:18,disc:-20},r:'學費好貴。學到嘅嘢係：唔好交呢筆學費。'},
+  {t:'即刻全轉指數',b:null,d:{disc:48,dca:1,indexed:1,churn:0.9,churnCap:0.06,ego:-25},r:'十六年。你終於做咗。'},
+  {t:'唔睇，繼續原本咁做',b:'avoid',d:{ego:20,disc:-32},r:'你關咗個試算表。'}
+ ]},
+{id:59,bg:'PARK',spr:['mike','yawn'],who:'mike',
+ sig:'Mike 帶住個細路喺公園。',
+ txt:'佢已經冇返工。佢話啲錢仲喺度，佢每年只提取 4%。佢問你：「你退到未？」',
+ opts:[
+  {t:'快啦，仲差少少',b:'fantasy',d:{ego:15,disc:-18},r:'你講咗十年「仲差少少」。'},
+  {t:'照直講：未，可能唔會',b:null,d:{disc:38},r:'佢冇安慰你。佢只係坐咗喺你隔籬。'},
+  {t:'問佢個 4% 點計',b:null,d:{disc:34},r:'佢解釋咗。好簡單。簡單到你覺得自己過去十幾年好荒謬。'},
+  {t:'轉話題',b:'avoid',d:{disc:-8},r:'你講咗啲天氣。'}
+ ]},
+{id:60,bg:'HOME_NIGHT',spr:['wulong','vet'],who:null,
+ sig:'你太太問：「我哋幾時可以買樓？」',
+ txt:'你嘅投資戶口，喺過去十幾年，由 30 萬變成⋯⋯你唔想講個數。',
+ opts:[
+  {t:'講真話',b:null,d:{disc:44,health:3},r:'佢冇鬧你。佢只係話：「咁我哋一齊諗。」'},
+  {t:'講大咗個數',b:'facesave',d:{ego:20,disc:-35,health:-4},r:'呢個謊你要維持落去。'},
+  {t:'話再等多兩年',b:'fantasy',d:{ego:12,disc:-22},r:'兩年又兩年。'},
+  {t:'即刻清倉買樓',b:null,d:{disc:30,inv:0.1,churn:1.0,cashOut:0.3},r:'你退咗場。至少你有個屋企。'}
+ ]},
+{id:61,bg:'APP_VOID',spr:['wulong','vet'],who:null,
+ sig:'一個新機會。有人搵你合資做私募。',
+ txt:'回報聲稱年化 20%，鎖三年。條數睇落好靚。你十幾年經驗話你：太靚喇。',
+ opts:[
+  {t:'投，呢個係最後翻身機會',b:'desperation',d:{ego:25,disc:-40,conc:0.6,cashOut:0.3,vol:4,dInv:0.4},r:'兩年後對方失聯。'},
+  {t:'查清楚審計同託管先',b:null,d:{disc:42},r:'你查到冇獨立託管。你走咗。'},
+  {t:'細注參與',b:'fomo',d:{disc:-15,cashOut:0.07,vol:4,conc:0.15},r:'細注都係全蝕。'},
+  {t:'拒絕，我唔再玩呢啲',b:null,d:{disc:40},r:'你十幾年嘅經驗，終於換到一次「唔」。'}
+ ]},
+{id:62,bg:'TV_STUDIO',spr:['wulong','vet'],who:null,
+ sig:'有人邀請你寫書。',
+ txt:'書名建議：《我的投資之路》。編輯話：「讀者鍾意成功故事。」',
+ opts:[
+  {t:'寫，但寫真相',b:null,d:{disc:44,ego:-15},r:'賣得好差。但係你寫嘅係真嘢。'},
+  {t:'寫成功故事，揀啲贏嘅講',b:'selective',d:{ego:32,disc:-35,commit:3},r:'賣咗三萬本。你騙咗三萬個人。'},
+  {t:'唔寫',b:null,d:{disc:32},r:'你冇資格教人。你知道。'},
+  {t:'寫一本叫人唔好學我嘅書',b:null,d:{disc:48,ego:-20},r:'呢本書救咗幾個人。你永遠唔會知係邊幾個。'}
+ ]},
+{id:63,bg:'ROOFTOP',spr:['wulong','vet_broken'],who:null,
+ sig:'你四十七歲。',
+ txt:'你企喺同一個天台。十三年前你都企過。嗰時你三十四歲，你以為你會贏。',
+ opts:[
+  {t:'我仲有十幾年，追得返',b:'breakeven',d:{ego:20,disc:-25},r:'複利需要時間。你剩返嘅時間唔多。'},
+  {t:'接受咗，轉指數，收工',b:null,d:{disc:48,dca:1,indexed:1,churn:0.9,churnCap:0.06,ego:-30},r:'你落樓梯嗰陣，腳步輕咗。'},
+  {t:'再博一鋪大嘅',b:'desperation',d:{ego:30,disc:-40,lev:2,conc:0.6,vol:4,dInv:0.4},r:'絕望嘅注碼從來冇好結果。'},
+  {t:'寫低我學到嘅嘢畀個仔',b:null,d:{disc:45},r:'你寫咗三頁紙。第一句係：「唔好學我。」'}
+ ]},
+{id:64,bg:'CHA_TENG',spr:['elder','serene'],who:'elder',
+ sig:'你而家坐咗前輩嗰個位。',
+ txt:'有個後生仔坐低問你：「阿叔，你做咗幾耐？」你聽到自己講：「十七八年。」佢眼有光。',
+ opts:[
+  {t:'教佢我嘅方法',b:'identity',d:{ego:28,disc:-32},r:'你將自己嘅失敗包裝成經驗傳咗落去。'},
+  {t:'叫佢買指數，唔好學我',b:null,d:{disc:46},r:'佢有啲失望。好多年後佢會多謝你。'},
+  {t:'講返我最大嗰次錯',b:null,d:{disc:44},r:'你講咗四十五分鐘。你自己都喊咗。'},
+  {t:'話佢知呢行冇捷徑',b:null,d:{disc:36},r:'佢冇聽入耳。你當年都冇。'}
+ ]},
+{id:65,bg:'HOME_NIGHT',spr:['wulong','vet'],who:null,
+ sig:'你發現自己已經半年冇睇過股價。',
+ txt:'唔係因為紀律。係因為攰。個組合喺你唔理佢嘅時候，升咗 14%。',
+ opts:[
+  {t:'即刻返去積極管理',b:'doingsth',d:{ego:20,disc:-30,churn:2.2},r:'你嘅介入令個組合半年後跌返轉頭。'},
+  {t:'保持唔理',b:null,d:{disc:44,churnCap:0.1},r:'你嘅無為，係你十幾年最好嘅策略。'},
+  {t:'將呢件事記低',b:null,d:{disc:40},r:'你寫低：「我嘅介入係負價值。」'},
+  {t:'覺得係彩數',b:'dismiss',d:{ego:15,disc:-20},r:'你唔肯接受一個咁簡單嘅結論。'}
+ ]},
+{id:66,bg:'APP_VOID',spr:['wulong','vet'],who:null,
+ sig:'牛市。所有人都賺緊錢。',
+ txt:'新入場嘅後生仔今年賺咗 60%。佢哋話你嗰套已經過時。你聽落好熟。',
+ opts:[
+  {t:'加碼追上，唔想被時代淘汰',b:'fomo',d:{ego:28,disc:-35,dInv:0.4,conc:0.3,vol:2.5,churn:1.0},r:'你追咗。你十幾年前都係咁做。'},
+  {t:'減倉，估頂',b:'markettime',d:{ego:22,disc:-25,churn:1.0,dInv:-0.5},r:'牛市可以維持好耐。'},
+  {t:'照計劃，唔加唔減',b:null,d:{disc:46},r:'你冇郁。呢個係紀律，唔係運氣。'},
+  {t:'講畀佢哋聽泡沫會爆',b:'ego',d:{ego:20,disc:-15},r:'冇人聽。你當年都冇聽。'}
+ ]},
+{id:67,bg:'PARK',spr:['mike','shrug'],who:'mike',
+ sig:'Mike 攤開手。',
+ txt:'「我真係冇做過咩特別嘅嘢。」佢好誠懇。「我淨係⋯⋯冇停過買，冇賣過。」',
+ opts:[
+  {t:'佢只係好彩，遇著好年代',b:'survivor',d:{ego:20,disc:-22},r:'部分啱。但你嘅時代同佢一樣。'},
+  {t:'接受咗：簡單就係答案',b:null,d:{disc:46},r:'你花咗十幾年學一件五分鐘可以講完嘅事。'},
+  {t:'問佢有冇後悔過',b:null,d:{disc:38},r:'「有。我後悔冇早三年開始。」'},
+  {t:'心裡面仲係唔服',b:'ego',d:{ego:25,disc:-28},r:'唔服係最貴嘅情緒。'}
+ ]},
+{id:68,bg:'ROOFTOP',spr:['wulong','vet'],who:null,
+ sig:'倒數第三回合。你要決定最後嘅配置。',
+ txt:'你剩返嘅時間唔多。你嘅每一個決定，而家嘅權重比十幾年前大好多。',
+ opts:[
+  {t:'全部指數，鎖死',b:null,d:{disc:50,dca:1,indexed:1,churn:0.7,churnCap:0.05,conc:-0.6},r:'你做咗最後嘅簡化。'},
+  {t:'保守配置，加債券',b:null,d:{disc:42,dInv:-0.2,conc:-0.3,churn:0.5},r:'你降低咗波幅。合理嘅年紀，合理嘅選擇。'},
+  {t:'最後博一鋪',b:'desperation',d:{ego:30,disc:-45,lev:2,conc:0.7,vol:4,dInv:0.5},r:'你將十幾年押喺最後三個回合。'},
+  {t:'維持現狀',b:null,d:{disc:20},r:'你冇郁。'}
+ ]},
+{id:69,bg:'HOME_NIGHT',spr:['wulong','vet'],who:null,
+ sig:'倒數第二回合。',
+ txt:'你打開個試算表，望住十九年嘅記錄。每一行都係一個決定。每一個決定嗰陣，你都覺得自己好合理。',
+ opts:[
+  {t:'逐行睇返，標記邊啲係情緒',b:null,d:{disc:50},r:'你數到好多個情緒決定。'},
+  {t:'關咗佢，唔想睇',b:'avoid',d:{ego:15,disc:-30},r:'你關咗。'},
+  {t:'導出嚟，寄畀個仔',b:null,d:{disc:48},r:'你寫咗：「呢個係一份反面教材。」'},
+  {t:'只睇最好嗰十行',b:'selective',d:{ego:25,disc:-32},r:'嗰十行好靚。佢哋唔代表任何嘢。'}
+ ]},
+{id:70,bg:'PARK',spr:['wulong','vet'],who:'mike',
+ sig:'最後一回合。你五十歲。',
+ txt:'你同 Mike 坐喺同一張長櫈。十幾年前你哋喺呢度傾過偈。佢問：「值唔值得？」',
+ opts:[
+  {t:'值得，我學到好多',b:'consolation',d:{ego:15,disc:-10},r:'你講嘅時候，自己都唔太肯定。'},
+  {t:'唔值得。我應該一開始就聽你',b:null,d:{disc:50},r:'佢冇講嘢。佢遞咗杯奶茶畀你。'},
+  {t:'我唔知',b:null,d:{disc:40},r:'呢個可能係最誠實嘅答案。'},
+  {t:'下次我會做得更好',b:'fantasy',d:{ego:20,disc:-20},r:'冇下次。呢個就係最後一回合。'}
+ ]}
+];
+
+
+/* ===================== audio.js ===================== */
+/* ============================================================
+   音訊引擎
+   所有事件都對齊 ctx.currentTime，用 lookahead scheduler 排，
+   唔靠 setTimeout 排音符（嗰樣每個 tick 會漂移 5-30ms）。
+   每個音 = detune 雙振盪器 + 泛音 + sub bass + 低通 + 完整 ADSR。
+   三個階段各有自己嘅和弦進行同速度，由明亮行去沉重。
+   ============================================================ */
+var AUD = {
+ ctx:null, on:true, started:false,
+ master:null, musicBus:null, sfxBus:null, revSend:null,
+ phase:'rookie', _look:null, _next:0, _step:0,
+ MUSIC_MAX:0.32,
+ /* 階段音樂之間，仲有一層跟住劇情走嘅緊張度。
+    佢係由「你而家距離自己嘅高位跌咗幾多」計出嚟 —— 純粹係玩家已經
+    知道嘅資料，唔會洩露下一個回合嘅市場。緊張度上升時：
+    旋律變疏、濾波收暗、低頻嗡鳴浮返上嚟。 */
+ tension:0, _tTarget:0,
+ setTension:function(v){ this._tTarget=Math.max(0,Math.min(1,v||0)); },
+
+ init:function(){
+  if(this.ctx)return;
+  var C=window.AudioContext||window.webkitAudioContext; if(!C)return;
+  var t=this.ctx=new C();
+  this.master=t.createGain(); this.master.gain.value=0.9;
+  var comp=t.createDynamicsCompressor();
+  comp.threshold.value=-14; comp.knee.value=22; comp.ratio.value=5;
+  comp.attack.value=0.004; comp.release.value=0.22;
+  var tone=t.createBiquadFilter();
+  tone.type='highshelf'; tone.frequency.value=3400; tone.gain.value=-5;
+  this.master.connect(comp); comp.connect(tone); tone.connect(t.destination);
+  this.musicBus=t.createGain(); this.musicBus.gain.value=0;
+  this.sfxBus=t.createGain();   this.sfxBus.gain.value=0.5;
+  this.musicBus.connect(this.master); this.sfxBus.connect(this.master);
+  var rev=t.createConvolver(); rev.buffer=this._ir(2.4,2.6);
+  var rg=t.createGain(); rg.gain.value=0.9;
+  rev.connect(rg); rg.connect(this.master);
+  this.revSend=t.createGain(); this.revSend.gain.value=1; this.revSend.connect(rev);
+  this.started=true;
+ },
+ _ir:function(dur,decay){
+  var t=this.ctx, sr=t.sampleRate, n=Math.floor(sr*dur), b=t.createBuffer(2,n,sr);
+  for(var ch=0;ch<2;ch++){ var d=b.getChannelData(ch);
+   for(var i=0;i<n;i++){ var x=i/n, v=(Math.random()*2-1)*Math.pow(1-x,decay);
+    if(i<sr*0.02)v*=0.35; d[i]=v; } }
+  return b;
+ },
+ resume:function(){ if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume(); },
+ _fade:function(to,dur){
+  if(!this.ctx)return;
+  var g=this.musicBus.gain,n=this.ctx.currentTime;
+  g.cancelScheduledValues(n); g.setValueAtTime(g.value,n);
+  g.linearRampToValueAtTime(to*this.MUSIC_MAX,n+(dur||0.4));
+ },
+
+ note:function(o){
+  if(!this.ctx||!this.on)return;
+  var t=this.ctx, at=o.at!=null?o.at:t.currentTime;
+  var dur=o.dur||0.6, peak=o.gain!=null?o.gain:0.18, dest=o.dest||this.sfxBus;
+  var vca=t.createGain(); vca.gain.value=0;
+  var flt=t.createBiquadFilter(); flt.type='lowpass';
+  flt.frequency.setValueAtTime(o.cutoff||2600,at);
+  if(o.sweep)flt.frequency.exponentialRampToValueAtTime(Math.max(120,o.sweep),at+dur*0.9);
+  flt.Q.value=o.q||0.7;
+  var spread=o.spread==null?5:o.spread;      // was `-o.spread||-5` — a precedence bug
+  var mk=function(type,det,lvl,mult){
+   var osc=t.createOscillator(); osc.type=type;
+   osc.frequency.setValueAtTime(o.f*(mult||1),at);
+   if(o.glide)osc.frequency.exponentialRampToValueAtTime(o.glide*(mult||1),at+dur*0.8);
+   osc.detune.value=det;
+   var g=t.createGain(); g.gain.value=lvl;
+   osc.connect(g); g.connect(flt); osc.start(at); osc.stop(at+dur+0.12);
+  };
+  var wave=o.type||'triangle';
+  mk(wave,-spread,1.0); mk(wave,spread,1.0);
+  if(o.harm)mk('sine',0,o.harm,2);
+  if(o.sub) mk('sine',0,o.sub,0.5);
+  var a=o.a!=null?o.a:0.012, d=o.d!=null?o.d:dur*0.35,
+      s=o.s!=null?o.s:0.55,  r=o.r!=null?o.r:dur*0.5, g=vca.gain;
+  g.setValueAtTime(0,at);
+  g.linearRampToValueAtTime(peak,at+a);
+  g.linearRampToValueAtTime(peak*s,at+a+d);
+  g.setValueAtTime(peak*s,at+dur);
+  g.exponentialRampToValueAtTime(0.0001,at+dur+r);   // never ramp to exactly 0
+  flt.connect(vca); vca.connect(dest);
+  if(o.rev&&this.revSend){var rs=t.createGain();rs.gain.value=o.rev;vca.connect(rs);rs.connect(this.revSend);}
+ },
+ noise:function(o){
+  if(!this.ctx||!this.on)return;
+  var t=this.ctx, at=o.at!=null?o.at:t.currentTime, dur=o.dur||0.2, sr=t.sampleRate;
+  var n=Math.max(1,Math.floor(sr*dur)), buf=t.createBuffer(1,n,sr), d=buf.getChannelData(0);
+  for(var i=0;i<n;i++)d[i]=Math.random()*2-1;
+  var src=t.createBufferSource(); src.buffer=buf;
+  var f=t.createBiquadFilter(); f.type=o.ftype||'bandpass';
+  f.frequency.setValueAtTime(o.f||1200,at);
+  if(o.sweep)f.frequency.exponentialRampToValueAtTime(Math.max(80,o.sweep),at+dur);
+  f.Q.value=o.q||1.2;
+  var g=t.createGain();
+  g.gain.setValueAtTime(0,at);
+  g.gain.linearRampToValueAtTime(o.gain||0.12,at+(o.a||0.006));
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  src.connect(f); f.connect(g); g.connect(o.dest||this.sfxBus);
+  if(o.rev&&this.revSend){var rs=t.createGain();rs.gain.value=o.rev;g.connect(rs);rs.connect(this.revSend);}
+  src.start(at); src.stop(at+dur+0.05);
+ },
+ duck:function(amt,dur){
+  if(!this.ctx||!this.musicBus)return;
+  var g=this.musicBus.gain,n=this.ctx.currentTime,base=this.MUSIC_MAX;
+  g.cancelScheduledValues(n); g.setValueAtTime(g.value,n);
+  g.linearRampToValueAtTime(base*(1-amt),n+0.04);
+  g.linearRampToValueAtTime(base,n+(dur||0.55));
+ },
+
+ /* ---------- 音效 ---------- */
+ click:function(){ if(!this.ctx)return; var t=this.ctx.currentTime;
+  this.noise({at:t,dur:0.045,f:2000,q:1.6,gain:0.10});
+  this.note({at:t,f:660,dur:0.05,gain:0.055,a:0.002,d:0.02,s:0.1,r:0.05,cutoff:3200}); },
+ hover:function(){ if(!this.ctx)return;
+  this.note({f:1180,dur:0.035,type:'sine',gain:0.022,a:0.002,d:0.015,s:0.1,r:0.03}); },
+ select:function(){ if(!this.ctx)return; var t=this.ctx.currentTime;
+  this.note({at:t,f:523.25,dur:0.10,gain:0.10,harm:0.25,rev:0.10,cutoff:3000});
+  this.note({at:t+0.075,f:783.99,dur:0.20,gain:0.09,harm:0.30,rev:0.16,cutoff:3400}); },
+ good:function(){ if(!this.ctx)return; this.duck(0.45,0.7); var t=this.ctx.currentTime,S=this;
+  [523.25,659.25,783.99,1046.5].forEach(function(f,i){
+   S.note({at:t+i*0.065,f:f,dur:0.16,gain:0.085,harm:0.28,rev:0.20,cutoff:3600,a:0.006,r:0.28}); }); },
+ bad:function(){ if(!this.ctx)return; this.duck(0.55,0.9); var t=this.ctx.currentTime,S=this;
+  [392,329.63,261.63].forEach(function(f,i){
+   S.note({at:t+i*0.10,f:f,dur:0.26,type:'sine',gain:0.10,sub:0.4,rev:0.18,cutoff:1700,a:0.008,r:0.4}); });
+  this.note({at:t,f:90,glide:62,dur:0.42,type:'sine',gain:0.16,a:0.004,d:0.12,s:0.3,r:0.35,cutoff:400}); },
+ alarm:function(){ if(!this.ctx)return; this.duck(0.7,1.2); var t=this.ctx.currentTime;
+  for(var k=0;k<2;k++){ var at=t+k*0.42;
+   this.note({at:at,f:233.08,dur:0.30,type:'sawtooth',gain:0.075,cutoff:1500,sweep:600,rev:0.14,a:0.01,r:0.2});
+   this.note({at:at,f:329.63,dur:0.30,type:'sawtooth',gain:0.065,cutoff:1500,sweep:600,a:0.01,r:0.2}); }
+  this.noise({at:t,dur:0.5,f:300,q:0.8,gain:0.05,sweep:120}); },
+ heartbeat:function(){ if(!this.ctx)return; this.duck(0.35,0.7);
+  var t=this.ctx.currentTime,S=this;
+  var thump=function(at,g){
+   S.note({at:at,f:74,glide:44,dur:0.16,type:'sine',gain:g,a:0.006,d:0.05,s:0.25,r:0.16,cutoff:260});
+   S.noise({at:at,dur:0.07,f:130,q:1.1,gain:g*0.28,ftype:'lowpass'}); };
+  thump(t,0.28); thump(t+0.30,0.20); },
+ page:function(){ if(!this.ctx)return;
+  this.noise({dur:0.34,f:900,sweep:3200,q:0.7,gain:0.045,rev:0.25,a:0.05}); },
+ type:function(){ if(!this.ctx||!this.on)return; if(Math.random()<0.55)return;
+  this.noise({dur:0.014,f:1100+Math.random()*700,q:2.2,gain:0.016}); },
+
+ /* ---------- 音樂 ---------- */
+ PHASES:{
+  rookie:{bpm:82,root:220.00,prog:[[0,4,7],[5,9,12],[-3,2,5],[2,5,9]],
+   padType:'triangle',motif:[0,4,7,4,9,7,4,2],padGain:0.05,bassGain:0.10,leadGain:0.055,density:0.85},
+  mid:{bpm:96,root:196.00,prog:[[0,3,7],[0,3,6],[-2,3,5],[-4,3,7]],
+   padType:'sawtooth',motif:[0,3,7,6,3,0,-2,3],padGain:0.032,bassGain:0.11,leadGain:0.05,density:1.0},
+  vet:{bpm:60,root:146.83,prog:[[0,7,12],[-5,2,7],[0,5,10],[-2,3,10]],
+   padType:'sine',motif:[0,7,5,0,-5,0,3,0],padGain:0.055,bassGain:0.085,leadGain:0.04,density:0.55}
+ },
+ startMusic:function(p){
+  this.init(); if(!this.ctx)return;
+  this.phase=p; this.stopMusic(); if(!this.on)return;
+  this._step=0; this._next=this.ctx.currentTime+0.1;
+  this._fade(0.9,1.2);
+  var S=this; this._look=setInterval(function(){S._sched();},25);
+ },
+ stopMusic:function(){ if(this._look){clearInterval(this._look);this._look=null;} },
+ setPhase:function(p){
+  if(p===this.phase&&this._look)return;
+  if(!this.ctx){this.phase=p;return;}
+  this._fade(0,0.6);
+  var S=this; setTimeout(function(){S.startMusic(p);},640);
+ },
+ _sched:function(){
+  if(!this.ctx||!this.on)return;
+  var cfg=this.PHASES[this.phase]||this.PHASES.rookie;
+  var spb=60/cfg.bpm/2, horizon=this.ctx.currentTime+0.12, guard=0;
+  while(this._next<horizon&&guard++<24){
+   this._emit(this._step,this._next,cfg); this._next+=spb; this._step++;
+  }
+ },
+ _emit:function(step,at,cfg){
+  var bar=Math.floor(step/8)%cfg.prog.length, beat=step%8, chord=cfg.prog[bar], S=this;
+  var semi=function(n){return cfg.root*Math.pow(2,n/12);};
+  /* 緊張度慢慢行去目標，唔會一格跳晒 —— 音樂唔應該喺一個回合之間急轉 */
+  this.tension+=(this._tTarget-this.tension)*0.02;
+  var T=this.tension;
+  if(beat===0){
+   this.note({at:at,f:semi(chord[0])/2,dur:0.9,type:'sine',gain:cfg.bassGain,
+    sub:0.5,cutoff:420,a:0.02,d:0.2,s:0.6,r:0.5,dest:this.musicBus});
+  }else if(beat===4&&cfg.density>0.7){
+   this.note({at:at,f:semi(chord[0]+7)/2,dur:0.5,type:'sine',gain:cfg.bassGain*0.6,
+    cutoff:380,a:0.02,d:0.15,s:0.5,r:0.3,dest:this.musicBus});
+  }
+  if(beat===0){
+   var padCut=(this.phase==='mid'?1500:2000)*(1-T*0.45);   // 越緊張越暗
+   chord.forEach(function(n,i){
+    S.note({at:at,f:semi(n),dur:8*(60/cfg.bpm/2)*0.92,type:cfg.padType,
+     gain:cfg.padGain*(i===0?1:0.72)*(1+T*0.25),spread:7+T*6,
+     cutoff:padCut,a:0.55,d:0.6,s:0.75,r:1.4,rev:0.42,dest:S.musicBus});
+   });
+   /* 回撤深嗰陣，低音多一個小二度嘅摩擦 —— 唔會蓋過旋律，但坐喺底下唔舒服 */
+   if(T>0.45)
+    this.note({at:at,f:semi(chord[0]+1)/2,dur:1.6,type:'sine',gain:0.05*T,
+     cutoff:260,a:0.6,d:0.4,s:0.7,r:1.2,rev:0.4,dest:this.musicBus});
+  }
+  var m=cfg.motif[beat];
+  var play=this.phase==='vet'?(beat%2===0):(beat!==3&&beat!==7);
+  if(play&&m!=null&&Math.random()<cfg.density*(1-T*0.55)){   // 越緊張旋律越疏
+   this.note({at:at,f:semi(m+12),dur:0.30,gain:cfg.leadGain,harm:0.22,spread:4,
+    cutoff:2800,a:0.02,d:0.12,s:0.4,r:0.5,rev:0.35,dest:this.musicBus});
+  }
+  if(this.phase==='mid'){
+   if(beat===2||beat===6)
+    this.note({at:at,f:semi(chord[1]+12),dur:0.11,gain:cfg.leadGain*0.5,
+     cutoff:2200,a:0.005,d:0.05,s:0.25,r:0.14,dest:this.musicBus,rev:0.2});
+   if(beat===7&&Math.floor(step/8)%2===1)
+    this.noise({at:at,dur:0.07,f:5200,q:2.5,gain:0.013,dest:this.musicBus,rev:0.3});
+  }
+  if(this.phase==='vet'&&step%32===0){
+   this.note({at:at,f:semi(chord[0])/4,dur:3.2,type:'sine',gain:0.06,
+    a:1.0,d:0.8,s:0.7,r:2.0,cutoff:300,rev:0.5,dest:this.musicBus});
+  }
+ },
+ setOn:function(v){
+  this.on=!!v;
+  if(this.on){ this.init(); this.resume();
+   if(this.ctx){var g=this.master.gain,n=this.ctx.currentTime;
+    g.cancelScheduledValues(n);g.setValueAtTime(g.value,n);g.linearRampToValueAtTime(0.9,n+0.25);}
+   this.startMusic(this.phase);
+  }else{ this.stopMusic();
+   if(this.ctx){var g2=this.master.gain,n2=this.ctx.currentTime;
+    g2.cancelScheduledValues(n2);g2.setValueAtTime(g2.value,n2);g2.linearRampToValueAtTime(0,n2+0.25);}
+  }
+  return this.on;
+ },
+
+ /* ---------- 結局終止式 ---------- */
+ endSting:function(kind){
+  this.stopMusic(); this.init(); if(!this.ctx)return;
+  this._fade(0.9,0.3);
+  var t=this.ctx.currentTime+0.15, B=this.musicBus, S=this;
+  var N=function(at,f,dur,g,o){
+   var base={at:at,f:f,dur:dur,gain:g,rev:0.45,dest:B,type:'triangle',a:0.03,r:dur*0.7};
+   for(var k in (o||{}))base[k]=o[k];
+   S.note(base);
+  };
+  if(kind==='BLOWUP'||kind==='EARLY_RUIN'){
+   [220,174.61,138.59,110].forEach(function(f,i){N(t+i*0.34,f,1.5,0.11,{type:'sine',sub:0.5,cutoff:900});});
+   N(t+1.5,103.83,3.0,0.09,{type:'sine',sub:0.6,cutoff:500});
+   N(t+1.5,146.83,3.0,0.06,{type:'sine',cutoff:500});
+  }else if(kind==='TRUE_ALPHA'||kind==='WU_WEI'){
+   [261.63,392,523.25].forEach(function(f,i){N(t+i*0.42,f,1.6,0.085,{harm:0.3,cutoff:3000});});
+   [261.63,329.63,392,523.25].forEach(function(f){N(t+1.5,f,3.2,0.055,{harm:0.25,cutoff:2600});});
+  }else if(kind==='LUCKY_FOOL'){
+   /* 先奏勝利大調，然後和聲變質 —— 用聲音講返「你贏咗，但唔係因為你叻」 */
+   [523.25,659.25,783.99].forEach(function(f,i){N(t+i*0.28,f,0.9,0.085,{harm:0.3});});
+   N(t+1.15,830.61,2.6,0.07,{type:'sawtooth',cutoff:1400,sweep:600});
+   N(t+1.15,622.25,2.6,0.07,{type:'sawtooth',cutoff:1400,sweep:600});
+   N(t+1.15,155.56,3.2,0.09,{type:'sine',sub:0.5,cutoff:400});
+  }else if(kind==='AWAKENING'){
+   [293.66,392,440].forEach(function(f,i){N(t+i*0.36,f,1.8,0.075,{cutoff:2400});});
+   [329.63,440,493.88].forEach(function(f){N(t+1.5,f,3.0,0.055,{harm:0.2,cutoff:2400});});
+  }else{
+   [220,196,174.61].forEach(function(f,i){N(t+i*0.45,f,1.9,0.075,{type:'sine',cutoff:1300});});
+   N(t+1.6,220,3.4,0.06,{type:'sine',cutoff:1000});
+   N(t+1.6,261.63,3.4,0.045,{type:'sine',cutoff:1000});
+  }
+ }
+};
+
+
+/* ===================== ui.js ===================== */
+/* ============================================================
+   遊戲迴圈 · 介面 · 存檔
+   ============================================================ */
+var AB='assets/',EXT='.webp';
+var SPRITES={
+ wulong:{rookie:'chr_wulong_01_rookie',rookie_excited:'chr_wulong_02_rookie_excited',
+  mid:'chr_wulong_03_mid',mid_anxious:'chr_wulong_04_mid_anxious',
+  vet:'chr_wulong_05_vet',vet_broken:'chr_wulong_06_vet_broken'},
+ mike:{calm:'chr_mike_01_calm',smile:'chr_mike_02_smile',yawn:'chr_mike_03_yawn',shrug:'chr_mike_04_shrug'},
+ sinhing:{smug:'chr_sinhing_01_smug',secretive:'chr_sinhing_02_secretive',
+  panic:'chr_sinhing_03_panic',vanish:'chr_sinhing_04_vanish'},
+ analyst:{pro:'chr_analyst_01_pro',point:'chr_analyst_02_point',
+  awkward:'chr_analyst_03_awkward',smirk:'chr_analyst_04_smirk'},
+ elder:{serene:'chr_elder_01_serene',lecture:'chr_elder_02_lecture',
+  silent:'chr_elder_03_silent',collapse:'chr_elder_04_collapse'}
+};
+var BGS={HOME_NIGHT:'bg_01_home_desk_night',CHA_TENG:'bg_02_cha_chaan_teng',
+ OFFICE:'bg_03_office',ROOFTOP:'bg_04_rooftop_night',PARK:'bg_05_park_bench',
+ TV_STUDIO:'bg_06_tv_studio',APP_VOID:'bg_07_app_void'};
+var NAMES={mike:'Mike',sinhing:'師兄',analyst:'陳分析師',elder:'陳伯'};
+function chrURL(w,s){return AB+'chr/'+SPRITES[w][s]+EXT;}
+function bgURL(k){return AB+'bg/'+BGS[k]+EXT;}
+function cgURL(n){return AB+'cg/'+n+EXT;}
+function uiURL(n){return AB+'ui/'+n+EXT;}
+
+var ALL_SCEN=SCEN_ROOKIE.concat(SCEN_MID,SCEN_VET);
+function $(id){return document.getElementById(id);}
+function fmt(n){return '$'+Math.round(n).toLocaleString('en-US');}
+function fmtSigned(n){return (n<0?'-$':'+$')+Math.abs(Math.round(n)).toLocaleString('en-US');}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+var G=null, typing=null, curScen=null, locked=false;
+var OPTS={speed:17,sound:1,tags:0};
+
+/* ---------- 設定 ---------- */
+var OPT_KEY='wulongcha:opts';
+function loadOpts(){
+ try{var o=JSON.parse(localStorage.getItem(OPT_KEY));if(o)for(var k in o)OPTS[k]=o[k];}catch(e){}
+ if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches&&OPTS.speed>7)OPTS.speed=0;
+}
+function saveOpts(){try{localStorage.setItem(OPT_KEY,JSON.stringify(OPTS));}catch(e){}}
+function syncSeg(id,val){
+ var seg=$(id);if(!seg)return;
+ [].forEach.call(seg.children,function(b){b.classList.toggle('on',+b.dataset.v===+val);});
+}
+function applyOpts(){
+ syncSeg('segSpeed',OPTS.speed);syncSeg('segSound',OPTS.sound);syncSeg('segTags',OPTS.tags);
+ AUD.on=!!OPTS.sound;
+}
+
+/* newGame / drift / applyChoice / optionsFor / phaseOf 全部喺 engine.js，
+   同 Node 測試共用同一份，唔會走樣。 */
+
+/* ---------- 畫面切換 ---------- */
+function show(id){
+ ['title','game','end'].forEach(function(s){$(s).classList.toggle('on',s===id);});
+}
+
+/* ---------- 回合迴圈 ---------- */
+function nextTurn(){
+ if(G.turn>=TURNS){finish();return;}
+ if(isRuined(G)){G.ruinTurn=G.turn;finish();return;}
+ if((G.turn===20||G.turn===45)&&!G.reviewed[G.turn]){
+  G.reviewed[G.turn]=1;showReview(G.turn);return;
+ }
+ G.turn++;
+ /* 自動存檔要喺 drift() 之前 —— 讀檔嗰陣 nextTurn() 會再行一次 drift()，
+    如果存嘅係 drift 之後嘅姿態，讀返嚟就會被 drift 兩次。 */
+ if(G.turn>1)saveGame();
+ drift(G);
+ var sc=ALL_SCEN[G.turn-1]; curScen=sc; locked=false;
+ var ph=phaseOf(G.turn);
+ AUD.setPhase(ph);
+ /* 音樂緊張度跟你自己嘅回撤走。用你已經見到嘅淨值歷史計，
+    唔會攞下一個回合嘅市場資料 —— 音樂唔可以劇透。 */
+ var pk=0,h=G.sim.hist;
+ for(var i=0;i<h.length;i++)pk=Math.max(pk,h[i]);
+ AUD.setTension(pk>0?clamp((1-h[h.length-1]/pk)/0.32,0,1):0);
+ $('tNum').textContent=G.turn;
+ $('tWhen').textContent='第 '+Math.round(yearAt(G.turn))+' 年 · '+ageAt(G.turn)+'歲';
+ $('tPhase').textContent=PHASE_LABEL[ph];
+
+ var nb=bgURL(sc.bg);
+ if($('bg').dataset.cur!==nb){
+  $('bg').style.opacity='0';
+  setTimeout(function(){$('bg').style.backgroundImage="url('"+nb+"')";
+   $('bg').dataset.cur=nb;$('bg').style.opacity='1';},160);
+ }
+ setFigure(sc);
+ if(sc.who&&NAMES[sc.who]){$('nameTag').style.display='block';$('spkName').textContent=NAMES[sc.who];}
+ else $('nameTag').style.display='none';
+
+ $('sig').textContent=sc.sig;
+ $('res').classList.remove('on');
+ $('opts').innerHTML='';
+ AUD.page();
+ typeText(sc.txt,function(){renderOpts(sc);});
+ drawChart(); updHUD();
+}
+
+function setFigure(sc){
+ var who=sc.spr[0], st=sc.spr[1];
+ if(who==='wulong'){
+  var stage=G.turn<=20?'rookie':G.turn<=45?'mid':'vet';
+  var behind=G.sim.eq<mikeAt(G,G.turn-1)*0.85;
+  var auto=stage;
+  if(G.ego>200&&stage==='mid')auto='mid_anxious';
+  else if(behind&&stage==='mid')auto='mid_anxious';
+  else if(behind&&stage==='vet')auto='vet_broken';
+  else if(!behind&&stage==='rookie'&&G.turn>1)auto='rookie_excited';
+  if(SPRITES.wulong[auto])st=auto;
+ }
+ var src=chrURL(who,st), A=$('figA'), B=$('figB');
+ if(A.dataset.cur===src){A.classList.add('in');return;}
+ /* 真正嘅 crossfade：
+    舊圖搬去後層之後，要即刻設做完全不透明（暫時熄咗 transition），
+    否則佢會由 0 淡「入」—— 即係舊圖同新圖一齊淡入，
+    睇落就好似舊人物遲遲唔肯消失。
+    然後兩張喺同一幀開始反方向過渡，先至係交叉淡出。 */
+ var done=false;
+ var swap=function(){
+  if(done)return; done=true;      // cache 命中時 onload 同 complete 可能兩邊都行
+  if(A.dataset.cur){
+   B.src=A.src;
+   B.style.transition='none'; B.classList.add('in');
+   void B.offsetWidth;                       // 迫佢即刻套用
+   B.style.transition='';
+  }
+  A.style.transition='none'; A.classList.remove('in');
+  void A.offsetWidth;
+  A.style.transition='';
+  A.src=src; A.dataset.cur=src;
+  requestAnimationFrame(function(){
+   A.classList.add('in');       // 新圖 0 -> 1
+   B.classList.remove('in');    // 舊圖 1 -> 0，同一幀開始
+  });
+ };
+ var img=new Image();
+ img.onload=img.onerror=swap;
+ img.src=src;
+ if(img.complete)swap();        // 已經喺 cache 嘅話 onload 可能唔會再射
+}
+
+function typeText(txt,cb){
+ var el=$('body');el.textContent='';
+ if(typing){clearInterval(typing);typing=null;}
+ if(!OPTS.speed){el.textContent=txt;cb&&cb();el.onclick=null;return;}
+ var i=0;
+ typing=setInterval(function(){
+  el.textContent=txt.slice(0,++i);
+  if(i%2===0)AUD.type();
+  if(i>=txt.length){clearInterval(typing);typing=null;cb&&cb();}
+ },OPTS.speed);
+ el.onclick=function(){
+  if(typing){clearInterval(typing);typing=null;el.textContent=txt;cb&&cb();}
+ };
+}
+
+function renderOpts(sc){
+ var box=$('opts');box.innerHTML='';
+ optionsFor(G,sc).forEach(function(o,i){
+  var b=document.createElement('button');
+  b.className='opt'+(o.extra?' extra':'');
+  var tag=(OPTS.tags&&o.b)?'<span class="btag">'+esc(BIAS[o.b][0])+'</span>':'';
+  b.innerHTML='<span class="k">'+('ABCDE'[i]||'·')+'</span><span class="otxt">'+esc(o.t)+'</span>'+tag;
+  b.onmouseenter=function(){AUD.hover();};
+  b.onclick=function(){choose(o,sc);};
+  box.appendChild(b);
+ });
+}
+
+function choose(opt,sc){
+ if(locked)return; locked=true;
+ AUD.select();
+ [].forEach.call(document.querySelectorAll('.opt'),function(b){b.disabled=true;});
+ var out=commitChoice(G,opt,sc);
+
+ setTimeout(function(){
+  if(G.sim.forced&&G.sim.forced!==G._forcedSeen){G._forcedSeen=G.sim.forced;AUD.alarm();}
+  else if(out.rp>0.06)AUD.good();
+  else if(out.rp<-0.08)AUD.bad();
+  else if(G.posture.lev>1.3||G.posture.conc>0.55)AUD.heartbeat();
+ },240);
+
+ $('resTxt').textContent=opt.r;
+ var why='';
+ if(opt.why)why+=opt.why;
+ if(G.sim.forced&&G.sim.forced!==G._forcedShown){
+  G._forcedShown=G.sim.forced;
+  why+=(why?'<br>':'')+'<span class="tag">強制平倉</span> 你嘅自有資金跌穿咗維持水平，券商幫你斬咗倉。'+
+   '你唔係揀走 —— 你係被人趕走，而且要俾滑點。';
+ }
+ if(opt.b&&OPTS.tags)
+  why+=(why?'<br>':'')+'<span class="tag">'+esc(BIAS[opt.b][0])+'</span> '+esc(BIAS[opt.b][1]);
+ if(why){$('resWhy').style.display='block';$('resWhy').innerHTML=why;}
+ else $('resWhy').style.display='none';
+
+ $('res').classList.add('on');
+ drawChart(); updHUD(); shock(out.rp);
+ $('res').scrollIntoView({block:'nearest',behavior:OPTS.speed?'smooth':'auto'});
+}
+
+function shock(rp){
+ var f=$('flash');if(!f)return;
+ var col=null,mag=0;
+ if(rp<=-0.12){col='rgba(192,74,62,';mag=Math.min(1,(-rp-0.12)/0.35);}
+ else if(rp>=0.10){col='rgba(79,148,99,';mag=Math.min(1,(rp-0.10)/0.30);}
+ if(!col)return;
+ f.style.background='radial-gradient(ellipse at center, transparent 28%, '+col+(0.18+mag*0.42).toFixed(2)+') 100%)';
+ f.classList.add('hit');
+ if(rp<=-0.20){$('app').classList.add('shake');setTimeout(function(){$('app').classList.remove('shake');},420);}
+ setTimeout(function(){f.classList.remove('hit');},110);
+}
+
+/* ---------- HUD ---------- */
+function updHUD(){
+ var m=mikeAt(G,G.turn);
+ $('hNav').textContent=fmt(G.sim.eq);
+ $('hBen').textContent=fmt(m);
+ var gap=m>0?(G.sim.eq/m-1)*100:0;
+ var g=$('hGap');
+ g.textContent=(gap>=0?'+':'')+gap.toFixed(1)+'%';
+ g.className=gap>=0?'up':'dn';
+}
+
+function drawChart(){
+ var c=$('chart'),W=c.clientWidth,H=c.clientHeight;
+ if(!W||!H)return;
+ var dpr=window.devicePixelRatio||1;
+ c.width=W*dpr;c.height=H*dpr;
+ var x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+ x.clearRect(0,0,W,H);
+ var a=G.sim.hist,b=G.mikeHist,n=a.length;
+ var mx=0,mn=Infinity;
+ for(var i=0;i<n;i++){mx=Math.max(mx,a[i],b[i]);mn=Math.min(mn,a[i],b[i]);}
+ var pad=5,rng=(mx-mn)||1;
+ var X=function(i){return pad+(W-pad*2)*(i/TURNS);};
+ var Y=function(v){return H-pad-(H-pad*2)*((v-mn)/rng);};
+ var big=$('chartWrap').classList.contains('big');
+ /* 你唔喺市場嘅時段：底色帶 */
+ if(big){
+  x.fillStyle='rgba(232,228,217,.07)';
+  for(var k=0;k<G.sim.invFracHist.length;k++){
+   if(G.sim.invFracHist[k]<0.5)x.fillRect(X(k),pad,Math.max(1,X(k+1)-X(k)),H-pad*2);
+  }
+ }
+ x.strokeStyle='rgba(122,158,143,.9)';x.lineWidth=1.4;x.beginPath();
+ for(i=0;i<n;i++)i?x.lineTo(X(i),Y(b[i])):x.moveTo(X(i),Y(b[i]));
+ x.stroke();
+ var last=a[n-1],lb=b[n-1];
+ x.strokeStyle=last>=lb?'rgba(79,148,99,1)':'rgba(192,74,62,1)';
+ x.lineWidth=1.9;x.beginPath();
+ for(i=0;i<n;i++)i?x.lineTo(X(i),Y(a[i])):x.moveTo(X(i),Y(a[i]));
+ x.stroke();
+ x.fillStyle=x.strokeStyle;x.beginPath();x.arc(X(n-1),Y(last),2.6,0,7);x.fill();
+ x.font='9px sans-serif';x.fillStyle='rgba(122,158,143,.95)';
+ x.fillText('Mike',Math.min(W-28,X(n-1)+4),Y(lb)+3);
+ if(big){
+  x.fillStyle='rgba(232,228,217,.55)';
+  x.fillText('淺色 = 你唔喺市場嗰啲回合',8,H-7);
+ }
+}
+$('chartWrap').onclick=function(){
+ this.classList.toggle('big');
+ setTimeout(drawChart,320);
+};
+
+/* ---------- 存檔 ----------
+   只存 seed + 決定序列 + 敘事計數。
+   讀檔時用 seed 重生成市場、用決定序列重播出淨值 —— 完全對得返，
+   而且檔案細好多。 */
+var SAVE_KEY='wulongcha:save2', SAVE_VER=3;
+function serialise(){
+ return JSON.stringify({v:SAVE_VER,t:Date.now(),seed:G.seed,name:G.name,turn:G.turn,
+  decs:G.decs,posture:G.posture,ego:G.ego,disc:G.disc,health:G.health,commit:G.commit,
+  biasCount:G.biasCount,biasLog:G.biasLog,choices:G.choices,reviewed:G.reviewed,
+  idleTurns:G.idleTurns});
+}
+function saveGame(){
+ try{
+  var blob=serialise();
+  if(window.storage&&window.storage.set){try{window.storage.set(SAVE_KEY,blob)['catch'](function(){});}catch(e){}}
+  try{localStorage.setItem(SAVE_KEY,blob);}catch(e){}
+  return true;
+ }catch(e){return false;}
+}
+function applySave(o){
+ if(!o||o.v!==SAVE_VER)return false;
+ G=newGame(o.name,o.seed);
+ G.turn=o.turn; G.decs=o.decs||[]; G.posture=o.posture||G.posture;
+ G.ego=o.ego||0; G.disc=o.disc||0; G.health=o.health||0; G.commit=o.commit||0;
+ G.biasCount=o.biasCount||{}; G.biasLog=o.biasLog||[]; G.choices=o.choices||[];
+ G.reviewed=o.reviewed||{}; G.idleTurns=o.idleTurns||0;
+ G.sim=replay(G.path,G.decs,{});
+ return true;
+}
+function readSaveRaw(){
+ return new Promise(function(res){
+  if(window.storage&&window.storage.get){
+   try{window.storage.get(SAVE_KEY).then(function(r){
+    if(r&&r.value)return res(r.value);
+    try{res(localStorage.getItem(SAVE_KEY));}catch(e){res(null);}
+   })['catch'](function(){try{res(localStorage.getItem(SAVE_KEY));}catch(e){res(null);}});
+   return;
+  }catch(e){}
+  }
+  try{res(localStorage.getItem(SAVE_KEY));}catch(e){res(null);}
+ });
+}
+function clearSave(){
+ if(window.storage&&window.storage['delete']){try{window.storage['delete'](SAVE_KEY)['catch'](function(){});}catch(e){}}
+ try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+}
+
+/* ---------- 階段結算 ---------- */
+var PHASE_META={
+ 20:{eyebrow:'PHASE I · REVIEW',title:'新手期結算'},
+ 45:{eyebrow:'PHASE II · REVIEW',title:'中手期結算'}
+};
+function phaseSlice(turn){
+ var from=turn===20?0:20,a=G.sim.hist,b=G.mikeHist;
+ var mine=a[from]>0?(a[turn]/a[from]-1):0;
+ var bench=b[from]>0?(b[turn]/b[from]-1):0;
+ var biases=G.biasLog.filter(function(x){return x.turn>from&&x.turn<=turn;});
+ var cnt={};biases.forEach(function(x){cnt[x.b]=(cnt[x.b]||0)+1;});
+ var top=Object.keys(cnt).map(function(k){return [k,cnt[k]];})
+  .sort(function(p,q){return q[1]-p[1];}).slice(0,3);
+ var peak=-Infinity,dd=0;
+ for(var i=from;i<=turn;i++){peak=Math.max(peak,a[i]);if(peak>0)dd=Math.min(dd,a[i]/peak-1);}
+ var out=0;for(i=from;i<G.sim.invFracHist.length&&i<turn;i++)if(G.sim.invFracHist[i]<0.5)out++;
+ return {from:from,to:turn,mine:mine,bench:bench,biases:biases.length,top:top,dd:dd,out:out};
+}
+function kv(l,v){return '<div class="kv"><span class="l">'+l+'</span><span class="v">'+v+'</span></div>';}
+function showReview(turn){
+ var M0=PHASE_META[turn];if(!M0){nextTurn();return;}
+ var d=phaseSlice(turn);
+ AUD.page();
+ $('rvEyebrow').textContent=M0.eyebrow;
+ $('rvTitle').textContent=M0.title;
+ var pc=function(v){return (v>=0?'+':'')+(v*100).toFixed(1)+'%';};
+ var cls=function(v){return v>=0?'up':'dn';};
+ $('rvStats').innerHTML=
+  kv('你嘅回報','<span class="'+cls(d.mine)+'">'+pc(d.mine)+'</span>')+
+  kv('Mike 回報','<span class="'+cls(d.bench)+'">'+pc(d.bench)+'</span>')+
+  kv('你嘅淨值',fmt(G.sim.hist[turn]))+
+  kv('Mike 淨值',fmt(G.mikeHist[turn]))+
+  kv('最大回撤','<span class="dn">'+(d.dd*100).toFixed(1)+'%</span>')+
+  kv('情緒決定',d.biases+' / '+(d.to-d.from)+' 次')+
+  kv('累計買賣成本',fmt(G.sim.tradeCost))+
+  kv('唔喺市場嘅回合',d.out+' 個');
+ drawReviewChart(d);
+ var gap=d.mine-d.bench,v;
+ if(gap>0.05)v='呢個階段你跑贏咗 Mike。要留意嘅係：短期跑贏可以純粹係波幅，唔一定係技術。你係咪承受咗更大風險換返嚟？';
+ else if(gap>-0.03)v='你同 Mike 差唔多。但你做咗好多決定，佢乜都冇做。同樣結果之下，你付出咗時間、精神同手續費。';
+ else if(gap>-0.15)v='你落後咗 Mike。差距睇落唔算大，但呢個就係「溫水煮蛙」嘅開始 —— 每個階段輸少少，複利落去就係一層樓。';
+ else v='你明顯落後。而家係最好嘅檢討時機：你嘅損失係嚟自市場，定係嚟自你自己嘅決定？';
+ $('rvVerdict').textContent=v;
+ $('rvBias').innerHTML=d.top.length
+  ? '呢個階段你最常觸發嘅偏誤：<br>'+d.top.map(function(p){
+     return '· <b style="color:var(--gold)">'+esc(BIAS[p[0]][0])+'</b> ×'+p[1]+' — '+esc(BIAS[p[0]][1]);}).join('<br>')
+  : '呢個階段你冇觸發過任何認知偏誤。';
+ var sv=$('rvSave');sv.textContent='儲存進度';sv.classList.remove('ok');
+ $('review').classList.add('on');
+}
+function drawReviewChart(d){
+ var c=$('rvChart');if(!c)return;
+ var W=c.clientWidth||480,H=120,dpr=window.devicePixelRatio||1;
+ c.width=W*dpr;c.height=H*dpr;
+ var x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+ var a=G.sim.hist,b=G.mikeHist,n=d.to+1,mx=0,mn=Infinity;
+ for(var i=0;i<n;i++){mx=Math.max(mx,a[i],b[i]);mn=Math.min(mn,a[i],b[i]);}
+ var pad=8,rng=(mx-mn)||1;
+ var X=function(i){return pad+(W-pad*2)*(i/Math.max(1,n-1));};
+ var Y=function(v){return H-pad-(H-pad*2)*((v-mn)/rng);};
+ if(d.from>0){
+  x.strokeStyle='rgba(232,228,217,.18)';x.setLineDash([3,3]);x.lineWidth=1;
+  x.beginPath();x.moveTo(X(d.from),pad);x.lineTo(X(d.from),H-pad);x.stroke();x.setLineDash([]);
+ }
+ x.strokeStyle='rgba(122,158,143,.9)';x.lineWidth=1.5;x.beginPath();
+ for(i=0;i<n;i++)i?x.lineTo(X(i),Y(b[i])):x.moveTo(X(i),Y(b[i]));x.stroke();
+ x.strokeStyle=a[n-1]>=b[n-1]?'rgba(79,148,99,1)':'rgba(192,74,62,1)';
+ x.lineWidth=2;x.beginPath();
+ for(i=0;i<n;i++)i?x.lineTo(X(i),Y(a[i])):x.moveTo(X(i),Y(a[i]));x.stroke();
+ x.font='9px sans-serif';x.fillStyle='rgba(122,158,143,.95)';
+ x.fillText('Mike',Math.max(4,X(n-1)-26),Y(b[n-1])-5);
+}
+
+/* ---------- 決定紀錄 ---------- */
+function showLog(){
+ var h='';
+ if(!G.choices.length)h='<div style="color:var(--dim);font-size:12.5px">仲未有決定。</div>';
+ for(var i=G.choices.length-1;i>=0;i--){
+  var c=G.choices[i];
+  h+='<div class="logrow"><div class="t">第 '+c.turn+' 回合 · 第 '+Math.round(yearAt(c.turn))+' 年</div>'+
+     '<div>'+esc(c.opt)+'</div>'+
+     (c.bias?'<div class="b">'+esc(BIAS[c.bias][0])+' — '+esc(BIAS[c.bias][1])+'</div>':'')+
+     '</div>';
+ }
+ $('logList').innerHTML=h;
+ $('logOvl').classList.add('on');
+}
+
+/* ---------- 結局 ---------- */
+function finish(){
+ var mikeEq=mikeAt(G,G.decs.length);
+ G.mike={eq:mikeEq};
+ var mc=monteCarlo(G.decs,400);
+ var kind=judge(G,mc.win);
+ G.ended=kind;
+ var inf=ENDING_INFO[kind];
+ clearSave();
+ AUD.endSting(kind);
+ show('end');
+ $('end').scrollTop=0;
+ $('endCg').style.backgroundImage="url('"+cgURL(inf.cg)+"')";
+ $('eName').textContent=inf.n;
+ var endTurn=G.ruinTurn||G.decs.length;
+ $('eTag').textContent='第 '+endTurn+' 回合 · '+Math.round(yearAt(endTurn))+' 年 · '+
+  G.name+' · 最終 '+fmt(G.sim.eq);
+ $('eDesc').textContent=inf.d;
+
+ var A=attribute(G);
+ var h='';
+
+ /* --- 對照 --- */
+ h+='<div class="sec">最終對照</div>';
+ h+=stat('你（'+esc(G.name)+'）',fmt(G.sim.eq));
+ h+=stat('Mike（指數，乜都冇做）',fmt(mikeEq));
+ var gapPc=mikeEq>0?(G.sim.eq/mikeEq-1)*100:0;
+ h+=stat('差距','<span class="'+(gapPc>=0?'up':'dn')+'">'+(gapPc>=0?'+':'')+gapPc.toFixed(1)+'%</span>');
+ h+=stat('相差金額','<span class="'+(gapPc>=0?'up':'dn')+'">'+fmt(Math.abs(A.gap))+'</span>');
+ var L=levelOf(G.sim.eq),LM=levelOf(mikeEq);
+ h+=stat('你嘅財富階梯',L[0]+'　<span style="color:var(--dim);font-size:11px">'+L[1]+'</span>');
+ h+=stat('Mike 嘅財富階梯',LM[0]+'　<span style="color:var(--dim);font-size:11px">'+LM[1]+'</span>');
+ h+='<div class="foot">二十年入面你總共投入咗 '+fmt(START+G.sim.contributed)+
+    '（起步 '+fmt(START)+' + 儲蓄 '+fmt(G.sim.contributed)+'）。'+
+    (HAS_SITE?'階梯分級同教學網一致，見 '+chLink('CH13','退休篇')+'。':'')+'</div>';
+
+ /* --- 幸運兒 / 真 Alpha 揭盅 --- */
+ if(kind==='LUCKY_FOOL'){
+  h+='<div class="note"><b>你贏咗，但唔係因為你叻。</b><br><br>'+
+   '我哋攞你實際做過嘅 '+G.decs.length+' 個決定，原封不動咁擺去 400 個唔同嘅市場歷史入面重跑。'+
+   '同一套行為，唔同嘅市場：<b>只有 '+(mc.win*100).toFixed(0)+'% 嘅時空你會跑贏 Mike</b>，'+
+   '中位數係佢嘅 '+mc.med.toFixed(2)+' 倍。<br><br>'+
+   '你今次贏咗，係因為你今次抽中咗嗰條路。你嘅做法本身冇優勢。</div>';
+ }else if(kind==='TRUE_ALPHA'){
+  h+='<div class="note good"><b>而且唔係彩數。</b><br><br>'+
+   '同一套行為擺去 400 個唔同市場，<b>'+(mc.win*100).toFixed(0)+'% 嘅時空你都跑贏</b>。'+
+   '呢個唔係運氣，係結構性優勢。<br><br>'+
+   '但你要睇清楚你贏喺邊 —— 睇返下面「你嘅人工」嗰一行。</div>';
+ }else if(kind==='WU_WEI'){
+  h+='<div class="note good"><b>你做到咗最難嗰樣嘢。</b><br><br>'+
+   '你嘅結果同 Mike 幾乎一模一樣。呢個唔係打和，呢個就係目標本身 —— '+
+   '因為 Mike 嘅回報就係市場嘅回報，而市場嘅回報，已經係絕大部分人攞唔到嘅嘢。</div>';
+ }
+
+ /* --- 歸因（重點） --- */
+ h+='<div class="sec">差距係邊度嚟嘅</div>';
+ h+='<div class="foot" style="margin:-4px 0 12px">'+
+  '我哋攞返你今次玩嗰條一模一樣嘅市場路徑，同你一模一樣嘅七十個決定，'+
+  '每次淨係熄咗其中一樣嘢再重跑一次。分別就係嗰樣嘢嘅代價。</div>';
+ var items=[
+  ['交易成本',A.cost,'買賣佣金、印花稅、價差、基金費用。','CH2'],
+  ['唔喺市場',A.timing,'你沽咗貨、或者留住現金冇入場嗰啲回合。','CH2'],
+  ['集中持倉',A.conc,'押重注落單一注碼，包括爆地雷嘅風險。','CH3'],
+  ['槓桿',A.lev,'借錢嘅利息，加上被強制平倉嘅損失。','CH7'],
+  ['你嘅人工',-A.income,'事業選擇令你儲蓄增長快咗（或者慢咗）。','CH7']
+ ];
+ var maxAbs=1;
+ items.forEach(function(it){maxAbs=Math.max(maxAbs,Math.abs(it[1]));});
+ items.forEach(function(it){
+  var v=it[1],w=Math.abs(v)/maxAbs*100;
+  var cost=v>0;   // 正數 = 熄咗佢你會多錢 = 佢係一個代價
+  h+='<div class="attr"><div class="top"><span>'+it[0]+'</span>'+
+   '<span class="amt '+(cost?'dn':'up')+'">'+(cost?'−':'+')+fmt(Math.abs(v))+'</span></div>'+
+   '<div class="track"><i style="width:'+w.toFixed(1)+'%;background:'+
+   (cost?'var(--red)':'var(--green)')+'"></i></div>'+
+   '<div class="why">'+it[2]+(HAS_SITE?'　'+chLink(it[3]):'')+'</div></div>';
+ });
+ h+='<div class="note plain">呢五個數字加埋唔會啱啱好等於總差距。'+
+  '因為佢哋互相影響 —— 舉個例，如果你冇用槓桿，你嗰次強制平倉就唔會發生，'+
+  '咁你被逼賣出嘅成本亦都會消失。<br><br>'+
+  '四樣一齊熄嘅話：你會有 <b>'+fmt(A.you+A.all)+'</b>，'+
+  '即係比而家多 '+fmt(Math.abs(A.all))+'。<br><br>'+
+  '<b>值得留意嘅係邊個數字最穩定。</b>成本係唯一一樣一定發生、而且完全喺你控制範圍之內嘅嘢。'+
+  '集中同擇時係賭博 —— 有時幫到你，有時害死你，但長期期望值係負。</div>';
+
+ /* --- 成本明細 --- */
+ h+='<div class="sec">成本明細</div>';
+ h+=stat('買賣成本（佣金／印花稅／價差）',fmt(G.sim.tradeCost));
+ h+=stat('基金／產品費用',fmt(G.sim.fundFee));
+ h+=stat('孖展利息',fmt(G.sim.marginCost));
+ h+=stat('課程、訂閱、借出去嘅錢',fmt(G.sim.spent));
+ h+=stat('強制平倉次數',(G.sim.forced||0)+' 次');
+ var outTurns=G.sim.invFracHist.filter(function(v){return v<0.5;}).length;
+ h+=stat('唔喺市場嘅回合',outTurns+' / '+G.decs.length+' 個');
+ h+=stat('情緒驅動嘅決定',G.biasLog.length+' / '+G.decs.length+' 次');
+
+ /* --- Monte Carlo --- */
+ h+='<div class="sec">同樣嘅行為，四百個平行時空</div>';
+ h+='<canvas class="cv" id="mc" height="170"></canvas>';
+ h+='<div class="note plain" id="mcTxt"></div>';
+
+ /* --- 偏誤 + 返去邊一課 --- */
+ var ent=Object.keys(G.biasCount).map(function(k){return [k,G.biasCount[k]];})
+  .sort(function(a,b){return b[1]-a[1];});
+ h+='<div class="sec">你嘅偏誤，同要補返邊一課</div>';
+ if(!ent.length){
+  h+='<div class="e-desc" style="font-size:13.5px">你冇觸發過任何認知偏誤。呢個非常罕見。</div>';
+ }else{
+  var mxb=ent[0][1];
+  ent.slice(0,12).forEach(function(p){
+   h+='<div class="biasrow"><span class="bn">'+esc(BIAS[p[0]][0])+'</span>'+
+    '<span class="bar"><i style="width:'+(p[1]/mxb*100)+'%"></i></span>'+
+    '<span class="bc">'+p[1]+'</span></div>'+
+    '<div class="biasdesc">'+esc(BIAS[p[0]][1])+
+    (HAS_SITE?'　→ '+biasLink(p[0]):'')+'</div>';
+  });
+ }
+
+ /* --- 關鍵決定回顧 --- */
+ h+='<div class="sec">關鍵決定回顧</div>';
+ var key=G.choices.filter(function(c){return c.bias;}).slice(0,8);
+ if(!key.length)h+='<div class="e-desc" style="font-size:13.5px">冇偏誤決定可以回顧。</div>';
+ key.forEach(function(c){
+  var sc=ALL_SCEN[c.scen-1],alt=sc?sc.opts.filter(function(o){return !o.b;})[0]:null;
+  h+='<div class="logrow"><div class="t">第 '+c.turn+' 回合 · 第 '+Math.round(yearAt(c.turn))+' 年</div>'+
+   '<div>你揀咗：'+esc(c.opt)+'</div>'+
+   '<div class="b">'+esc(BIAS[c.bias][0])+' — '+esc(BIAS[c.bias][1])+'</div>'+
+   (alt?'<div class="t" style="margin-top:4px">另一個選擇：'+esc(alt.t)+'</div>':'')+'</div>';
+ });
+
+ /* --- Mike --- */
+ h+='<div class="sec">Mike 嘅二十年</div>';
+ h+='<img class="mikeimg" src="'+uiURL('ui_mike_four_seasons')+'" alt="">';
+ h+='<div class="foot">佢做咗大約五十次交易，全部係月供。佢冇睇過盤，冇追過消息，冇同人爭論過。'+
+    '佢嘅回報，就係市場本身嘅回報。<br><br>'+
+    '呢個遊戲唔係想話你聽「你贏唔到」。係想話你聽：<b>你唔使贏。</b>'+
+    '攞到市場本身嘅回報，已經打贏咗絕大部分落場嘅人 —— 而攞到佢，唔需要技術，'+
+    '只需要你喺二十年入面，每一次心郁郁嗰陣，都揀唔郁。</div>';
+
+ /* --- 返教學網 --- */
+ if(HAS_SITE){
+  h+='<div class="sec">跟住去邊</div>';
+  h+='<div class="foot" style="font-size:12.5px;line-height:2.1">'+
+   '· '+chLink('CH6','點樣對付上面嗰啲偏誤')+'<br>'+
+   '· '+chLink('CH2','費用點樣蠶食你嘅回報')+'<br>'+
+   '· '+chLink('CH3','點解分散唔係「買多幾隻」')+'<br>'+
+   '· '+chLink('CH5','實際上第一個組合應該點砌')+'<br>'+
+   '· '+chLink('APA','點樣分辨真定假嘅投資主張')+'</div>';
+ }
+
+ h+='<div class="endbtns">'+
+  '<button class="btn sm" id="again">再玩一次</button>'+
+  '<button class="btn sm ghost" id="ng2">開住偏誤標籤再玩</button>'+
+  (HAS_SITE?'<button class="btn sm ghost" id="toSite">返教學網</button>':'')+
+  '</div>';
+ h+='<div class="foot">開住偏誤標籤，每個選項旁邊會寫明佢對應邊種偏誤。'+
+  '你會發現：就算你明知係偏誤，你依然想揀。</div>';
+
+ $('eExtra').innerHTML=h;
+ /* 即刻鎖定個比率再傳入去 —— 唔可以喺 timer 入面先讀 G，
+    因為嗰陣玩家可能已經撳咗「再玩一次」，G 換咗做新一局。 */
+ var mineRatio=mikeEq>0?G.sim.eq/mikeEq:0;
+ setTimeout(function(){drawMC(mc,mineRatio);},50);
+ $('again').onclick=function(){AUD.click();OPTS.tags=0;saveOpts();show('title');AUD.startMusic('rookie');};
+ $('ng2').onclick=function(){AUD.click();OPTS.tags=1;saveOpts();applyOpts();startGame(G.name);};
+ if($('toSite'))$('toSite').onclick=function(){location.href='../新手篇/06-行為偏誤點應對/';};
+}
+function stat(l,v){return '<div class="stat"><span>'+l+'</span><span class="v">'+v+'</span></div>';}
+
+function drawMC(mc,mine){
+ var c=$('mc');if(!c)return;
+ var W=c.clientWidth,H=170,dpr=window.devicePixelRatio||1;
+ if(!W)return;
+ c.width=W*dpr;c.height=H*dpr;
+ var x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+ var res=mc.ratios,N=res.length;
+ var below=0;for(var i=0;i<N;i++)if(res[i]<mine)below++;
+ var pctl=below/N*100;
+ var lo=0,hi=Math.max(1.35,res[Math.floor(N*0.985)]);
+ var B=42,bins=new Array(B);for(i=0;i<B;i++)bins[i]=0;
+ res.forEach(function(r){var b=Math.min(B-1,Math.floor((r-lo)/(hi-lo)*B));if(b>=0)bins[b]++;});
+ var mxb=Math.max.apply(null,bins),pad=20;
+ bins.forEach(function(v,i){
+  var bw=(W-pad*2)/B,bx=pad+i*bw,bh=(H-34)*(v/mxb);
+  var ctr=lo+(i+0.5)/B*(hi-lo);
+  x.fillStyle=ctr>1?'rgba(79,148,99,.55)':'rgba(192,74,62,.42)';
+  x.fillRect(bx,H-24-bh,Math.max(1,bw-1),bh);
+ });
+ var x1=pad+(1-lo)/(hi-lo)*(W-pad*2);
+ x.strokeStyle='rgba(122,158,143,.9)';x.lineWidth=1.4;x.setLineDash([4,3]);
+ x.beginPath();x.moveTo(x1,6);x.lineTo(x1,H-24);x.stroke();x.setLineDash([]);
+ x.font='9px sans-serif';x.textAlign='center';
+ x.fillStyle='rgba(122,158,143,.95)';x.fillText('Mike',x1,H-12);
+ var xm=pad+(Math.min(mine,hi)-lo)/(hi-lo)*(W-pad*2);
+ x.strokeStyle='#e8e4d9';x.lineWidth=2;
+ x.beginPath();x.moveTo(xm,6);x.lineTo(xm,H-24);x.stroke();
+ x.fillStyle='#e8e4d9';x.fillText('你今次',xm,H-12);
+ x.textAlign='left';
+
+ $('mcTxt').innerHTML=
+  '每一條柱 = 一個平行時空。橫軸係你最後有 Mike 嘅幾多倍。<br><br>'+
+  '· 跑贏 Mike 嘅時空：<b>'+(mc.win*100).toFixed(1)+'%</b><br>'+
+  '· 中位數：Mike 嘅 <b>'+mc.med.toFixed(2)+'</b> 倍<br>'+
+  '· 你今次嘅結果排喺第 <b>'+pctl.toFixed(0)+'</b> 百分位<br><br>'+
+  (pctl>85?'今次嘅行情對你嘅做法特別友好。同一套嘢，大部分時空結果差好遠。'
+   :pctl<15?'今次嘅行情對你嘅做法特別唔友好。不過就算喺最好嘅時空，呢套做法嘅期望值一樣有限。'
+   :'你今次嘅結果，喺你自己做法嘅正常範圍之內。');
+}
+
+/* ---------- 啟動 ---------- */
+function startGame(name){
+ G=newGame(name);
+ show('game');
+ AUD.startMusic('rookie');
+ nextTurn();
+}
+function resumeGame(){
+ show('game');
+ AUD.startMusic(phaseOf(Math.max(1,G.turn)));
+ G.turn=Math.max(0,G.turn-1);   // nextTurn() 會加返
+ nextTurn();
+}
+
+loadOpts();applyOpts();
+$('titleBg').style.backgroundImage="url('"+uiURL('ui_title_keyart')+"')";
+if(!HAS_SITE){var lk=$('lnkCh6');if(lk)lk.style.display='none';}
+
+$('startBtn').onclick=function(){
+ AUD.init();AUD.resume();AUD.select();
+ var nm=($('nameIn').value||'烏龍茶').trim().slice(0,8)||'烏龍茶';
+ startGame(nm);
+};
+$('nameIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('startBtn').click();});
+$('next').onclick=function(){AUD.click();nextTurn();};
+$('rvNext').onclick=function(){AUD.click();$('review').classList.remove('on');nextTurn();};
+$('rvSave').onclick=function(){AUD.select();var b=$('rvSave');
+ if(saveGame()){b.textContent='已儲存 ✓';b.classList.add('ok');}else b.textContent='儲存失敗';};
+$('logBtn').onclick=function(){AUD.click();showLog();};
+$('logClose').onclick=function(){AUD.click();$('logOvl').classList.remove('on');};
+$('setBtn').onclick=function(){AUD.click();applyOpts();$('setOvl').classList.add('on');};
+$('setClose').onclick=function(){AUD.click();$('setOvl').classList.remove('on');};
+$('setSave').onclick=function(){AUD.select();var b=$('setSave');
+ if(G&&saveGame()){b.textContent='已儲存 ✓';b.classList.add('ok');}else b.textContent='儲存失敗';};
+
+function bindSeg(id,key,after){
+ var seg=$(id);if(!seg)return;
+ [].forEach.call(seg.children,function(b){
+  b.onclick=function(){OPTS[key]=+b.dataset.v;saveOpts();applyOpts();AUD.click();after&&after();};
+ });
+}
+bindSeg('segSpeed','speed');
+bindSeg('segSound','sound',function(){AUD.setOn(OPTS.sound);});
+bindSeg('segTags','tags',function(){if(curScen&&!locked)renderOpts(curScen);});
+
+document.addEventListener('keydown',function(e){
+ if($('review').classList.contains('on')){if(e.key==='Enter'||e.key===' ')$('rvNext').click();return;}
+ if($('logOvl').classList.contains('on')||$('setOvl').classList.contains('on')){
+  if(e.key==='Escape'){$('logOvl').classList.remove('on');$('setOvl').classList.remove('on');}return;
+ }
+ if(!$('game').classList.contains('on'))return;
+ if($('res').classList.contains('on')){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();$('next').click();}return;
+ }
+ var i='abcde'.indexOf(e.key.toLowerCase());
+ if(i>=0){var b=document.querySelectorAll('.opt')[i];if(b&&!b.disabled)b.click();}
+});
+window.addEventListener('resize',function(){if(G&&$('game').classList.contains('on'))drawChart();});
+
+/* 有存檔先出「繼續」 */
+readSaveRaw().then(function(raw){
+ if(!raw)return;
+ var o=null;try{o=JSON.parse(raw);}catch(e){}
+ if(!o||o.v!==SAVE_VER)return;
+ $('contWrap').style.display='block';
+ $('contInfo').textContent=(o.name||'烏龍茶')+' · 第 '+o.turn+' 回合 · '+
+  new Date(o.t||Date.now()).toLocaleDateString();
+ $('contBtn').onclick=function(){
+  AUD.init();AUD.resume();AUD.select();
+  if(applySave(o))resumeGame();
+  else $('contInfo').textContent='讀取失敗，請開新遊戲';
+ };
+});
+
+</script>
+</body>
+</html>
