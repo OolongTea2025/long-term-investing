@@ -1,7 +1,10 @@
 /* 記住上次睇到邊頁 + 自動返到嗰度。
    - 每頁記低當前位置（首頁、404 除外），並記低首頁 URL。
-   - 首頁行為：只要有紀錄就「永遠」自動跳返上次嗰頁（用 replace）。
-     例外：URL 帶住 ?home（由固定「🏠 首頁」掣去），就唔跳、正常顯示首頁。
+   - 首頁行為：由站外（書籤、分享連結、搜尋結果）入首頁，只要有紀錄
+     就自動跳返上次嗰頁（用 replace）。
+     例外：URL 帶住 ?home 就唔跳、正常顯示首頁。
+   - 站內所有指返首頁嘅連結都會自動帶上 ?home，所以喺站入面撳「首頁」
+     真係去到首頁。（見 tagHomeLinks，唔加呢樣就返唔到首頁。）
    - 每個內容頁都注入一個固定「🏠 首頁」掣，畀用家隨時返首頁簡介。
    - 新訪客冇紀錄 → 唔跳。撳「繼續睇返」旁邊嘅 ✕ 清除 → 唔再跳。
    - 相容 Material instant navigation（document$）。 */
@@ -54,6 +57,46 @@
     return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'home';
   }
 
+  /* 站內每一條「指返首頁」嘅連結都要帶住 ?home。
+     Material 每頁最少有三條：左邊欄嘅「首頁」、頂部 logo／站名、
+     手機側欄嗰個 logo。三條都係淨淨哋指去站根,冇 ?home。
+     而首頁一見到有紀錄又冇 ?home 就會 replace 走 —— 即係話讀者喺站
+     入面撳任何一條「首頁」,都會即刻被掟返去佢啱啱睇緊嗰一章,
+     站內根本冇路返到首頁,得返 resume.js 自己噴出嚟嗰粒浮動掣做到。
+     （呢粒掣本身就係用 ?home,佢一直都 work,問題係得佢一個 work。）
+
+     所以喺呢度統一補返：凡係解到去「當前語言嘅站根」嗰啲連結,加 ?home。
+     由站外冷入首頁嘅連結唔會經過呢度,所以「回頭客自動接返上次睇到邊」
+     嗰個原意完全冇變 —— 淨係站內撳先唔跳。 */
+  function addHome(a) {
+    var u;
+    try { u = new URL(a.href); } catch (e) { return; }
+    if (/(^|[?&])home(=|&|$)/.test(u.search)) return;   // 已經有,唔好加兩次
+    a.setAttribute('href',
+      u.origin + u.pathname + (u.search ? u.search + '&home' : '?home') + u.hash);
+  }
+
+  function tagHomeLinks(isHome) {
+    var root;
+    try { root = new URL(siteRoot()); } catch (e) { return; }
+
+    var links = document.querySelectorAll('a[href]');
+    for (var i = 0; i < links.length; i++) {
+      var u;
+      try { u = new URL(links[i].href); } catch (e) { continue; }
+      if (u.origin === root.origin && u.pathname === root.pathname) addHome(links[i]);
+    }
+
+    /* 喺首頁,語言切換掣指去嘅一定係「另一種語言嘅首頁」,所以佢哋一樣
+       要帶 ?home —— 唔係嘅話,喺繁體首頁撳「廣東話」會去到廣東話首頁,
+       跟住即刻被掟去讀者上次睇嘅廣東話章節。
+       只可以喺首頁咁做：喺章節頁,語言切換掣指嘅係對應嗰一章,唔係首頁。 */
+    if (isHome) {
+      var alts = document.querySelectorAll('a[hreflang]');
+      for (var j = 0; j < alts.length; j++) addHome(alts[j]);
+    }
+  }
+
   function ensureHomeBtn(isHome) {
     var b = document.getElementById('resume-home-btn');
     if (isHome) { if (b) b.style.display = 'none'; return; }
@@ -90,6 +133,7 @@
       var title = (document.title || '').split(' - ')[0].trim();
 
       ensureHomeBtn(isHome);
+      tagHomeLinks(isHome);
 
       if (!isHome) {
         // 內容頁：記低位置（404 除外）
@@ -111,10 +155,10 @@
       try { d = JSON.parse(raw); } catch (e) { return; }
       if (!d || !d.u || d.u === path) { slot.style.display = 'none'; return; }
 
-      // 冇帶 ?home → 永遠自動跳返上次嗰頁
+      // 冇帶 ?home → 即係由站外入嚟（書籤／分享連結／搜尋結果），自動接返上次
       if (!stay) { location.replace(d.u); return; }
 
-      // 帶 ?home（用家主動返首頁）→ 唔跳，顯示「繼續睇返」畀佢一撳返去
+      // 帶 ?home（站內撳「首頁」或者浮動掣）→ 唔跳，顯示「繼續睇返」畀佢一撳返去
       showBanner(slot, d, path);
     } catch (e) { /* storage 唔用得就靜靜算數 */ }
   }
