@@ -1,0 +1,8 @@
+{#-
+  Material 冇 zh-HK 嘅介面翻譯檔（只有 zh-Hant / zh-TW），但呢個站係廣東話，
+  所以 <html lang> 應該係 zh-HK 而唔係 zh-Hant —— 對螢幕閱讀器同搜尋引擎都準確啲。
+  做法：介面字串全部借 zh-Hant，淨係將 "language" 呢個 key 覆蓋成 zh-HK
+  （base.html 就係用 lang.t("language") 去寫 <html lang="...">）。
+-#}
+{% import "partials/languages/zh-Hant.html" as base %}
+{% macro t(key) %}{% if key == "language" %}zh-HK{% else %}{{ base.t(key) }}{% endif %}{% endmacro %}

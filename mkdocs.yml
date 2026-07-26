@@ -13,7 +13,11 @@ theme:
   logo: images/logo.svg
   font: false            # 中文用系統字型,唔 load 外部 webfont(快、私隱好)
   features:
-    - navigation.instant
+    # navigation.instant 拿走咗（2026-07-25，加台灣版嗰陣）：
+    # 佢同 mkdocs-static-i18n 嘅「語言切換去返同一頁」唔兼容，
+    # 而且會令 mkdocs build --strict 出 warning 直接 fail 咗 CI。
+    # 換返嚟：讀者喺第 9 章撳「繁體中文」，會去到台灣版第 9 章而唔係首頁。
+    # 個站係靜態、又冇 load 外部字型，全頁 reload 嘅代價好細。
     - navigation.tracking
     - navigation.top
     - navigation.footer
@@ -39,6 +43,65 @@ plugins:
   # 亦切唔出「再平衡」呢類術語 —— 所以要落自訂詞典。
   - search:
       jieba_dict_user: jieba_user_dict.txt
+  # 台灣版（zh-TW）。檔案結構 = suffix：xxx.md 係廣東話（預設、留喺根目錄），
+  # xxx.zh-TW.md 係台灣版（行 /tw/）。廣東話版**必須**留喺根，否則已經分享咗
+  # 出去嘅連結全部會斷。檔名刻意保持廣東話 —— 改檔名等於改 URL。
+  - i18n:
+      docs_structure: suffix
+      languages:
+        - locale: zh-HK
+          default: true
+          name: 廣東話
+          build: true
+        - locale: zh-TW
+          name: 繁體中文
+          build: true
+          site_name: 長期投資入門
+          site_description: 從零開始的被動指數投資指南 — 免費、隨便看、傳下去
+          copyright: >-
+            免費知識 · 歡迎自由分享與傳承 📖 ·
+            內容採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>
+            授權（姓名標示 · 非商業性 · 相同方式分享）
+          nav_translations:
+            首頁: 首頁
+            📍 搵自己嘅 Level: 📍 找出自己的 Level
+            🟢 新手篇: 🟢 新手篇
+            1　你適合主動定被動投資？: 1　你適合主動還是被動投資？
+            2　被動指數係咩,散戶點解會輸: 2　被動指數是什麼,散戶為何會輸
+            3　分散風險原理: 3　分散風險的原理
+            4　點解買全世界: 4　為什麼買全世界
+            5　你嘅第一個組合: 5　你的第一個組合
+            6　行為偏誤點應對: 6　行為偏誤怎麼應對
+            🟡 進階篇: 🟡 進階篇
+            7　配置路線 & 槓桿: 7　配置路線 & 槓桿
+            8　終身100%股票？: 8　終身100%股票？
+            9　真正嘅風險: 9　真正的風險
+            10　因子投資: 10　因子投資
+            11　債券完整指南: 11　債券完整指南
+            12　其他資產與迷思: 12　其他資產與迷思
+            🔵 退休篇: 🔵 退休篇
+            13　提早退休 & 要幾多錢: 13　提早退休 & 要多少錢
+            14　提領策略 & 序列風險: 14　提領策略 & 序列風險
+            🔴 進階選讀: 🔴 進階選讀
+            A　市場點運作: A　市場怎麼運作
+            B　資產定價模型: B　資產定價模型
+            C　各因子成因: C　各因子成因
+            D　行為金融學 & 市場異象: D　行為金融學 & 市場異象
+            E　硬核資產定價: E　硬核資產定價
+            F　因子進階: F　因子進階
+            📚 附錄: 📚 附錄
+            A　邏輯謬誤 & 思維工具: A　邏輯謬誤 & 思維工具
+            B　窮人點投資: B　窮人怎麼投資
+            C　參考書單 & 來源: C　參考書單 & 來源
+            🎮 互動遊戲: 🎮 互動遊戲（廣東話）
+
+hooks:
+  # build 完之後將搜尋索引按語言拆兩份(廣東話 / 台灣版),否則兩邊搜尋
+  # 會撈埋一齊出結果。另一半喺 overrides/main.html。詳情見個檔頭嘅註解。
+  - hooks/i18n_search_split.py
+  # 根目錄 404.html 會畀最後 build 嗰個語言（台灣版）覆寫,呢個 hook 寫返
+  # 預設語言（廣東話）嗰版落去。詳情見個檔頭嘅註解。
+  - hooks/default_lang_404.py
 
 extra_css:
   - stylesheets/extra.css
@@ -97,4 +160,9 @@ nav:
       - C　參考書單 & 來源: 附錄/03-參考書單與來源.md
   - 🎮 互動遊戲: 遊戲.md
 
-copyright: 免費知識 · 歡迎自由分享同傳承 📖
+# 頁尾。Material 會照原樣出 HTML,所以擺得落連結。
+# 授權全文喺 repo 根目錄嘅 LICENSE;台灣版嘅版本喺上面 i18n 嗰度覆寫。
+copyright: >-
+  免費知識 · 歡迎自由分享同傳承 📖 ·
+  內容採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>
+  授權（署名 · 非商業 · 相同方式分享）

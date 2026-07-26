@@ -6,8 +6,19 @@
    - 新訪客冇紀錄 → 唔跳。撳「繼續睇返」旁邊嘅 ✕ 清除 → 唔再跳。
    - 相容 Material instant navigation（document$）。 */
 (function () {
-  var KEY = 'lti:lastpage';   // 上次嗰頁 {u,t}
-  var HOME = 'lti:home';      // 首頁 URL（capture 返嚟，方便砌「返首頁」連結）
+  /* 紀錄要「逐個語言版本」分開存。
+     自從加咗台灣版（廣東話留喺根、zh-TW 行 /zh-TW/），兩個版本係同一個
+     origin，即係共用同一份 localStorage；而兩個首頁都有 #resume-slot,
+     兩邊都會自動 replace 去「上次嗰頁」。如果得一條 key,就會出現：
+     讀者睇完台灣版第 7 章 → 之後開廣東話首頁 → 被掟返去台灣版第 7 章
+     （反方向一樣中招）,而且佢除咗 ?home 之外冇路可逃 —— 同之前個 404
+     bug 係同一種「困住讀者」嘅模式。
+     用 <html lang>（根 = zh-HK, 台灣版 = zh-TW）做 key 嘅後綴,
+     兩邊各自記各自嘅進度,永遠唔會互相掟。
+     舊 key 唔使 migrate：現有讀者最多係首頁正常顯示一次,之後照記。 */
+  var LANG = (document.documentElement.getAttribute('lang') || 'x').trim();
+  var KEY = 'lti:lastpage:' + LANG;   // 上次嗰頁 {u,t}
+  var HOME = 'lti:home:' + LANG;      // 首頁 URL（capture 返嚟，方便砌「返首頁」連結）
 
   /* 站根喺邊，要問返 Material 攞，唔可以用 location.origin + '/'。
      GitHub Pages 嘅 project site 住喺 https://<user>.github.io/<repo>/ 之下，
