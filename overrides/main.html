@@ -20,7 +20,10 @@
   {%- set card = config.site_url ~ "images/social-card.png" -%}
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ config.site_name }}">
-  <meta property="og:locale" content="{{ 'zh_TW' if config.theme.language == 'zh-TW' else 'zh_HK' }}">
+  {#- og:locale 要 language_TERRITORY。theme.language 係 i18n 逐個語言設嘅。 -#}
+  {%- set og_locales = {"zh-TW": "zh_TW", "zh-HK": "zh_HK", "en": "en_US"} -%}
+  {%- set card_alt = config.site_name ~ " · " ~ config.site_description -%}
+  <meta property="og:locale" content="{{ og_locales.get(config.theme.language, 'zh_HK') }}">
   <meta property="og:title" content="{{ page_title }}">
   <meta property="og:description" content="{{ page_desc }}">
   <meta property="og:url" content="{{ page.canonical_url if page else config.site_url }}">
@@ -28,37 +31,48 @@
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="長線投資入門 —— 由零開始嘅被動指數投資指南">
+  <meta property="og:image:alt" content="{{ card_alt }}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ page_title }}">
   <meta name="twitter:description" content="{{ page_desc }}">
   <meta name="twitter:image" content="{{ card }}">
-  <meta name="twitter:image:alt" content="長線投資入門 —— 由零開始嘅被動指數投資指南">
+  <meta name="twitter:image:alt" content="{{ card_alt }}">
   <link rel="apple-touch-icon" href="{{ 'images/apple-touch-icon.png' | url }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ 'images/favicon.png' | url }}">
 
   <!--
-    台灣版嘅搜尋索引 —— 呢段係 hooks/i18n_search_split.py 嘅另一半。
+    非預設語言嘅搜尋索引 —— 呢段係 hooks/i18n_search_split.py 嘅另一半。
 
     Material 係 hard-code 咁 fetch `new URL("search/search_index.json", base)`,
-    而 base 兩種語言都係指返網站根,冇任何設定改得到。所以喺台灣版嘅頁,
-    喺 bundle.js 行之前截住嗰個 request,轉去 zh-TW/search/search_index.json。
+    而 base 每個語言都係指返網站根,冇任何設定改得到。所以喺非預設語言嘅頁,
+    喺 bundle.js 行之前截住嗰個 request,轉去 <locale>/search/search_index.json。
 
     ⚠ 一定要 inline 喺 <head>：Material 個 bundle 一 load 就即刻建立呢個
     request,而 extra_javascript 係喺 bundle 後面先 load —— 擺去嗰度就太遲。
+
+    語言清單由 config.extra.alternate 生成（mkdocs-static-i18n 自己填嘅,
+    亦即係語言切換掣用嗰份）,所以喺 mkdocs.yml 加語言唔使再改呢度。
   -->
   <script>
     (function () {
-      // 用網址判斷,唔用 <html lang> —— 索引本身就係按 zh-TW/ 呢個網址前綴
-      // 拆嘅,而且 404 頁嘅 lang 唔一定準（佢係最後一次 build 出嘅模板）。
-      if (location.pathname.indexOf("/zh-TW/") === -1) return;
+      // 用網址判斷,唔用 <html lang> —— 索引本身就係按網址前綴拆嘅,
+      // 而且 404 頁嘅 lang 唔一定準（佢係最後一次 build 出嘅模板）。
+      // 預設語言（廣東話）冇前綴,所以佢喺呢度永遠唔會 match,啱晒。
+      // 所有檔名都係中文,唔會有目錄叫 "en" 或者 "zh-TW" 撞名。
+      var LOCALES = [{% for alt in config.extra.alternate or [] %}{{ alt.lang | tojson }}{{ "," if not loop.last }}{% endfor %}];
+      var prefix = null;
+      for (var i = 0; i < LOCALES.length; i++) {
+        if (location.pathname.indexOf("/" + LOCALES[i] + "/") !== -1) { prefix = LOCALES[i]; break; }
+      }
+      if (!prefix) return;
 
-      // 只改「根目錄嗰個」索引;已經指住 zh-TW/ 嘅唔好再改
+      // 只改「根目錄嗰個」索引;已經指住 <locale>/ 嘅唔好再改
       var RE = /(^|\/)search\/search_index\.json(\?.*)?$/;
+      var TARGET = prefix + "/search/search_index.json";
       function retarget(url) {
         return (typeof url === "string" && RE.test(url) &&
-                url.indexOf("/zh-TW/search/") === -1)
-          ? url.replace(/search\/search_index\.json/, "zh-TW/search/search_index.json")
+                url.indexOf("/" + TARGET) === -1)
+          ? url.replace(/search\/search_index\.json/, TARGET)
           : url;
       }
 

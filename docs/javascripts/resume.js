@@ -23,6 +23,19 @@
   var KEY = 'lti:lastpage:' + LANG;   // 上次嗰頁 {u,t}
   var HOME = 'lti:home:' + LANG;      // 首頁 URL（capture 返嚟，方便砌「返首頁」連結）
 
+  /* 呢個檔噴出嚟嘅字要跟返頁面語言。
+     （加英文版之前呢啲字係 hardcode 廣東話嘅，所以台灣版一路都出緊
+     「繼續睇返上次」；一併喺呢度修埋。） */
+  var STRINGS = {
+    'zh-HK': { home: '🏠 首頁', homeAria: '返首頁',
+               resume: '繼續睇返上次：', lastPage: '上次嗰頁', clear: '清除' },
+    'zh-TW': { home: '🏠 首頁', homeAria: '回首頁',
+               resume: '繼續看上次：', lastPage: '上次那一頁', clear: '清除' },
+    'en':    { home: '🏠 Home', homeAria: 'Back to home',
+               resume: 'Pick up where you left off: ', lastPage: 'the page you were on', clear: 'Dismiss' }
+  };
+  var T = STRINGS[LANG] || STRINGS[LANG.split('-')[0]] || STRINGS['zh-HK'];
+
   /* 站根喺邊，要問返 Material 攞，唔可以用 location.origin + '/'。
      GitHub Pages 嘅 project site 住喺 https://<user>.github.io/<repo>/ 之下，
      origin + '/' 會去咗 <user>.github.io/ —— 即係 404 或者第二個網站。
@@ -104,8 +117,8 @@
       b = document.createElement('a');
       b.id = 'resume-home-btn';
       b.className = 'resume-home-btn';
-      b.setAttribute('aria-label', '返首頁');
-      b.innerHTML = '🏠 首頁';
+      b.setAttribute('aria-label', T.homeAria);
+      b.textContent = T.home;
       document.body.appendChild(b);
     }
     b.href = homeHref();
@@ -114,9 +127,9 @@
 
   function showBanner(slot, d, path) {
     slot.innerHTML =
-      '<span class="resume-ico">↩</span> 繼續睇返上次：' +
-      '<a href="' + d.u + '">' + (d.t || '上次嗰頁') + '</a>' +
-      '<button type="button" class="resume-x" aria-label="清除">✕</button>';
+      '<span class="resume-ico">↩</span> ' + T.resume +
+      '<a href="' + d.u + '">' + (d.t || T.lastPage) + '</a>' +
+      '<button type="button" class="resume-x" aria-label="' + T.clear + '">✕</button>';
     slot.style.display = '';
     var x = slot.querySelector('.resume-x');
     if (x) x.addEventListener('click', function () {

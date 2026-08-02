@@ -43,9 +43,10 @@ plugins:
   # 亦切唔出「再平衡」呢類術語 —— 所以要落自訂詞典。
   - search:
       jieba_dict_user: jieba_user_dict.txt
-  # 台灣版（zh-TW）。檔案結構 = suffix：xxx.md 係廣東話（預設、留喺根目錄），
-  # xxx.zh-TW.md 係台灣版（行 /tw/）。廣東話版**必須**留喺根，否則已經分享咗
-  # 出去嘅連結全部會斷。檔名刻意保持廣東話 —— 改檔名等於改 URL。
+  # 多語言。檔案結構 = suffix：xxx.md 係廣東話（預設、留喺根目錄），
+  # xxx.zh-TW.md 係台灣版（行 /zh-TW/），xxx.en.md 係英文版（行 /en/）。
+  # 廣東話版**必須**留喺根，否則已經分享咗出去嘅連結全部會斷。
+  # 檔名刻意保持廣東話 —— 改檔名等於改 URL，三個語言共用同一套 URL 結構。
   - i18n:
       docs_structure: suffix
       languages:
@@ -94,6 +95,49 @@ plugins:
             B　窮人點投資: B　窮人怎麼投資
             C　參考書單 & 來源: C　參考書單 & 來源
             🎮 互動遊戲: 🎮 互動遊戲（廣東話）
+        - locale: en
+          name: English
+          build: true
+          site_name: Long-Term Investing 101
+          site_description: >-
+            A beginner's guide to passive index investing —
+            free, open to everyone, made to be passed on.
+          copyright: >-
+            Free knowledge · share it and pass it on 📖 ·
+            Licensed <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>
+            (Attribution · NonCommercial · ShareAlike)
+          nav_translations:
+            首頁: Home
+            📍 搵自己嘅 Level: 📍 Find your Level
+            🟢 新手篇: 🟢 Beginner
+            1　你適合主動定被動投資？: 1. Active or passive — which are you?
+            2　被動指數係咩,散戶點解會輸: 2. What indexing is, and why most people lose
+            3　分散風險原理: 3. How diversification actually works
+            4　點解買全世界: 4. Why buy the whole world
+            5　你嘅第一個組合: 5. Your first portfolio
+            6　行為偏誤點應對: 6. Handling your own biases
+            🟡 進階篇: 🟡 Intermediate
+            7　配置路線 & 槓桿: 7. Allocation path & leverage
+            8　終身100%股票？: 8. 100% stocks for life?
+            9　真正嘅風險: 9. What risk really is
+            10　因子投資: 10. Factor investing
+            11　債券完整指南: 11. Bonds — the full guide
+            12　其他資產與迷思: 12. Other assets & myths
+            🔵 退休篇: 🔵 Retirement
+            13　提早退休 & 要幾多錢: 13. Early retirement & how much you need
+            14　提領策略 & 序列風險: 14. Withdrawal strategy & sequence risk
+            🔴 進階選讀: 🔴 Optional deep dives
+            A　市場點運作: A. How markets work
+            B　資產定價模型: B. Asset pricing models
+            C　各因子成因: C. Where the factors come from
+            D　行為金融學 & 市場異象: D. Behavioural finance & anomalies
+            E　硬核資產定價: E. Hardcore asset pricing
+            F　因子進階: F. Factors, advanced
+            📚 附錄: 📚 Appendix
+            A　邏輯謬誤 & 思維工具: A. Logical fallacies & thinking tools
+            B　窮人點投資: B. Investing when money is tight
+            C　參考書單 & 來源: C. Reading list & sources
+            🎮 互動遊戲: 🎮 Interactive game (Cantonese)
 
 hooks:
   # build 完之後將搜尋索引按語言拆兩份(廣東話 / 台灣版),否則兩邊搜尋

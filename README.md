@@ -2,7 +2,7 @@
 
 一個免費、由零開始嘅**被動指數投資**教學網站。14 章正文 + 6 篇進階選讀 + 3 篇附錄 + 一個互動遊戲。
 
-### 👉 [睇網站（廣東話）](https://OolongTea2025.github.io/long-term-investing/) · [繁體中文版](https://OolongTea2025.github.io/long-term-investing/zh-TW/) · [🎮 互動遊戲](https://OolongTea2025.github.io/long-term-investing/game/)
+### 👉 [睇網站（廣東話）](https://OolongTea2025.github.io/long-term-investing/) · [繁體中文版](https://OolongTea2025.github.io/long-term-investing/zh-TW/) · [English](https://OolongTea2025.github.io/long-term-investing/en/) · [🎮 互動遊戲](https://OolongTea2025.github.io/long-term-investing/game/)
 
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -22,13 +22,14 @@ python -m mkdocs serve      # → http://127.0.0.1:8000/long-term-investing/
 ## 結構
 
 ```
-docs/                  所有內容。xxx.md = 廣東話,xxx.zh-TW.md = 繁體中文
+docs/                  所有內容。xxx.md = 廣東話,xxx.zh-TW.md = 繁體中文,
+                       xxx.en.md = English。檔名／URL 三種語言共用。
   javascripts/         resume.js(記住上次睇邊頁)、figzoom.js(手機睇圖)
   game/                遊戲成品 —— build 出嚟嘅,唔好直接改
 game-src/              遊戲原始碼
 hooks/                 build 用嘅兩個 hook,改之前睇檔頭註解
 overrides/             og/twitter meta、自訂 404、zh-HK 語言檔
-mkdocs.yml             設定、目錄、兩種語言
+mkdocs.yml             設定、目錄、三種語言
 jieba_user_dict.txt    中文搜尋詞典(冇佢就搵唔到「再平衡」)
 ```
 

@@ -12,6 +12,16 @@
   var MIN_W = 540;          // 640 * 11/13 ≈ 540，即係字唔會細過 11px
   var NARROW = 700;
 
+  /* 掣上面嘅字要跟返頁面語言。（加英文版之前呢啲字係 hardcode 廣東話嘅，
+     所以台灣版一路都出緊「放大睇」；一併喺呢度修埋。） */
+  var STRINGS = {
+    'zh-HK': { zoom: '⤢ 放大睇', zoomAria: '放大睇呢張圖', close: '閂', fallback: '圖表' },
+    'zh-TW': { zoom: '⤢ 放大看', zoomAria: '放大看這張圖', close: '關閉', fallback: '圖表' },
+    'en':    { zoom: '⤢ Enlarge', zoomAria: 'Enlarge this figure', close: 'Close', fallback: 'Figure' }
+  };
+  var LANG = (document.documentElement.getAttribute('lang') || 'x').trim();
+  var T = STRINGS[LANG] || STRINGS[LANG.split('-')[0]] || STRINGS['zh-HK'];
+
   function wrap(fig) {
     if (fig.dataset.zoomReady) return;
     var svg = fig.querySelector('svg');
@@ -26,8 +36,8 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'lti-zoom';
-    btn.setAttribute('aria-label', '放大睇呢張圖');
-    btn.innerHTML = '⤢ 放大睇';
+    btn.setAttribute('aria-label', T.zoomAria);
+    btn.textContent = T.zoom;
     box.parentNode.insertBefore(btn, box.nextSibling);
     btn.addEventListener('click', function () { open(fig, svg); });
 
@@ -52,7 +62,7 @@
       ovl.innerHTML =
         '<div class="lti-ovl-bar">' +
         '<span class="lti-ovl-t"></span>' +
-        '<button type="button" class="lti-ovl-x" aria-label="閂">✕</button>' +
+        '<button type="button" class="lti-ovl-x" aria-label="' + T.close + '">✕</button>' +
         '</div><div class="lti-ovl-body"></div>';
       document.body.appendChild(ovl);
       ovl.addEventListener('click', function (e) {
@@ -63,7 +73,7 @@
       });
     }
     var titleEl = fig.querySelector('.lti-cap-title');
-    ovl.querySelector('.lti-ovl-t').textContent = titleEl ? titleEl.textContent : '圖表';
+    ovl.querySelector('.lti-ovl-t').textContent = titleEl ? titleEl.textContent : T.fallback;
     var body = ovl.querySelector('.lti-ovl-body');
     body.innerHTML = '';
     var clone = svg.cloneNode(true);
