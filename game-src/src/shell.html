@@ -299,27 +299,23 @@ canvas.cv{width:100%;background:rgba(232,228,217,.035);border-radius:2px;display
 <section class="scr on" id="title">
  <div id="titleBg"></div><div class="veil"></div>
  <div class="inner">
-  <div class="t-eyebrow">投資行為模擬</div>
-  <h1 class="t-main">烏龍茶的<br>投資人生</h1>
-  <div class="t-sub">七十個決定 · 二十年 · 一個對照組</div>
+  <div class="t-eyebrow" data-t="titleEyebrow">投資行為模擬</div>
+  <h1 class="t-main" data-th="titleMain">烏龍茶的<br>投資人生</h1>
+  <div class="t-sub" data-t="titleSub">七十個決定 · 二十年 · 一個對照組</div>
   <div class="t-rule"></div>
   <div class="namewrap">
-   <label>你嘅名</label>
+   <label data-t="nameLabel">你嘅名</label>
    <input id="nameIn" maxlength="8" value="烏龍茶" autocomplete="off">
   </div>
-  <button class="btn" id="startBtn">開始</button>
+  <button class="btn" id="startBtn" data-t="btnStart">開始</button>
   <div id="contWrap" style="display:none">
-   <button class="btn sm ghost" id="contBtn">繼續上次進度</button>
+   <button class="btn sm ghost" id="contBtn" data-t="btnContinue">繼續上次進度</button>
    <div id="contInfo"></div>
   </div>
-  <p class="t-note">
-   你三十歲，有 <b>$300,000</b>，每個季度儲到啲錢。<br>
-   有個叫 <b>Mike</b> 嘅人同你一齊開始。佢第一日買晒指數基金，<br>
-   之後每個季度照供，二十年冇再做過任何嘢。<br><br>
-   遊戲完咗會話你知：你同佢嘅差距，<br>究竟係邊幾樣嘢造成，每樣值幾多錢。
-  </p>
+  <!-- 內容由 ui.js 填（要塞返起步金額，而金額跟語言換貨幣） -->
+  <p class="t-note" id="tNote"></p>
   <div class="t-links">
-   <a href="../新手篇/06-行為偏誤點應對/" id="lnkCh6">← 返《長線投資入門》</a>
+   <a href="../新手篇/06-行為偏誤點應對/" id="lnkCh6" data-t="backToSite">← 返《長線投資入門》</a>
   </div>
  </div>
 </section>
@@ -333,19 +329,21 @@ canvas.cv{width:100%;background:rgba(232,228,217,.035);border-radius:2px;display
    <div class="tb-phase" id="tPhase">新手期</div>
   </div>
   <div class="tb-money">
-   <div class="row"><span class="lbl">你</span><span id="hNav">$300,000</span></div>
-   <div class="row"><span class="lbl">Mike</span><span class="bench" id="hBen">$300,000</span></div>
-   <div class="row"><span class="lbl">差距</span><span id="hGap">—</span></div>
+   <div class="row"><span class="lbl" data-t="hudYou">你</span><span id="hNav"></span></div>
+   <div class="row"><span class="lbl">Mike</span><span class="bench" id="hBen"></span></div>
+   <div class="row"><span class="lbl" data-t="hudGap">差距</span><span id="hGap">—</span></div>
   </div>
   <div id="tbBtns">
-   <button class="iconbtn" id="logBtn" title="決定紀錄" aria-label="決定紀錄">☰</button>
-   <button class="iconbtn" id="setBtn" title="設定" aria-label="設定">⚙</button>
+   <button class="iconbtn" id="logBtn" title="決定紀錄" aria-label="決定紀錄"
+    data-t-title="logTitle" data-t-aria="logTitle">☰</button>
+   <button class="iconbtn" id="setBtn" title="設定" aria-label="設定"
+    data-t-title="setTitle" data-t-aria="setTitle">⚙</button>
   </div>
  </div>
 
- <div id="chartWrap" title="點一下放大">
+ <div id="chartWrap" title="點一下放大" data-t-title="chartZoom">
   <canvas id="chart"></canvas>
-  <div id="chartHint">你 vs Mike</div>
+  <div id="chartHint" data-t="chartHint">你 vs Mike</div>
  </div>
 
  <div id="stagewrap">
@@ -361,7 +359,7 @@ canvas.cv{width:100%;background:rgba(232,228,217,.035);border-radius:2px;display
   <div id="res">
    <div id="resTxt"></div>
    <div id="resWhy" style="display:none"></div>
-   <button class="btn sm" id="next">繼 續</button>
+   <button class="btn sm" id="next" data-t="btnNextSpaced">繼 續</button>
   </div>
  </div>
 </section>
@@ -387,37 +385,41 @@ canvas.cv{width:100%;background:rgba(232,228,217,.035);border-radius:2px;display
  <div class="verdict" id="rvVerdict"></div>
  <div style="font-size:11.5px;line-height:1.85;color:var(--dim)" id="rvBias"></div>
  <div class="cardbtns">
-  <button class="btn sm ghost" id="rvSave">儲存進度</button>
-  <button class="btn sm" id="rvNext">繼續</button>
+  <button class="btn sm ghost" id="rvSave" data-t="btnSave">儲存進度</button>
+  <button class="btn sm" id="rvNext" data-t="btnNext">繼續</button>
  </div>
 </div></div>
 
 <div class="ovl" id="logOvl"><div class="card">
  <div class="eyebrow">DECISION LOG</div>
- <h2>你嘅決定紀錄</h2>
+ <h2 data-t="logHead">你嘅決定紀錄</h2>
  <div class="rule"></div>
  <div id="logList"></div>
- <div class="cardbtns"><button class="btn sm" id="logClose">閂</button></div>
+ <div class="cardbtns"><button class="btn sm" id="logClose" data-t="btnClose">閂</button></div>
 </div></div>
 
 <div class="ovl" id="setOvl"><div class="card">
  <div class="eyebrow">SETTINGS</div>
- <h2>設定</h2>
+ <h2 data-t="setHead">設定</h2>
  <div class="rule"></div>
- <div class="setrow"><span>文字速度</span>
+ <!-- 語言：啲掣由 ui.js 跟 LANGS 生成，每粒寫自己嗰種語言嘅名
+      （所以唔會被 overlay 換）。加語言只需要加個 lang/*.js，唔使改呢度。 -->
+ <div class="setrow"><span data-t="setLang">語言</span>
+  <span class="seg" id="segLang"></span></div>
+ <div class="setrow"><span data-t="setSpeed">文字速度</span>
   <span class="seg" id="segSpeed">
-   <button data-v="34">慢</button><button data-v="17">正常</button>
-   <button data-v="7">快</button><button data-v="0">即時</button>
+   <button data-v="34" data-t="spdSlow">慢</button><button data-v="17" data-t="spdNormal">正常</button>
+   <button data-v="7" data-t="spdFast">快</button><button data-v="0" data-t="spdInstant">即時</button>
   </span></div>
- <div class="setrow"><span>音樂同音效</span>
-  <span class="seg" id="segSound"><button data-v="1">開</button><button data-v="0">閂</button></span></div>
- <div class="setrow"><span>顯示偏誤標籤</span>
-  <span class="seg" id="segTags"><button data-v="1">開</button><button data-v="0">閂</button></span></div>
- <div class="foot">「顯示偏誤標籤」會喺每個選項旁邊寫明佢對應邊種認知偏誤。
+ <div class="setrow"><span data-t="setSound">音樂同音效</span>
+  <span class="seg" id="segSound"><button data-v="1" data-t="onLabel">開</button><button data-v="0" data-t="offLabel">閂</button></span></div>
+ <div class="setrow"><span data-t="setTags">顯示偏誤標籤</span>
+  <span class="seg" id="segTags"><button data-v="1" data-t="onLabel">開</button><button data-v="0" data-t="offLabel">閂</button></span></div>
+ <div class="foot" data-t="setFoot">「顯示偏誤標籤」會喺每個選項旁邊寫明佢對應邊種認知偏誤。
   打完一次之後預設會開。你會發現：就算明知係偏誤，你依然想揀。</div>
  <div class="cardbtns">
-  <button class="btn sm ghost" id="setSave">儲存進度</button>
-  <button class="btn sm" id="setClose">閂</button>
+  <button class="btn sm ghost" id="setSave" data-t="btnSave">儲存進度</button>
+  <button class="btn sm" id="setClose" data-t="btnClose">閂</button>
  </div>
 </div></div>
 

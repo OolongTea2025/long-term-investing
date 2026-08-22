@@ -94,7 +94,7 @@ plugins:
             A　邏輯謬誤 & 思維工具: A　邏輯謬誤 & 思維工具
             B　窮人點投資: B　窮人怎麼投資
             C　參考書單 & 來源: C　參考書單 & 來源
-            🎮 互動遊戲: 🎮 互動遊戲（廣東話）
+            🎮 互動遊戲: 🎮 互動遊戲
         - locale: en
           name: English
           build: true
@@ -137,7 +137,7 @@ plugins:
             A　邏輯謬誤 & 思維工具: A. Logical fallacies & thinking tools
             B　窮人點投資: B. Investing when money is tight
             C　參考書單 & 來源: C. Reading list & sources
-            🎮 互動遊戲: 🎮 Interactive game (Cantonese)
+            🎮 互動遊戲: 🎮 Interactive game
 
 hooks:
   # build 完之後將搜尋索引按語言拆兩份(廣東話 / 台灣版),否則兩邊搜尋

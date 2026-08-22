@@ -25,13 +25,12 @@ function uiURL(n){return AB+'ui/'+n+EXT;}
 
 var ALL_SCEN=SCEN_ROOKIE.concat(SCEN_MID,SCEN_VET);
 function $(id){return document.getElementById(id);}
-function fmt(n){return '$'+Math.round(n).toLocaleString('en-US');}
-function fmtSigned(n){return (n<0?'-$':'+$')+Math.abs(Math.round(n)).toLocaleString('en-US');}
+/* fmt / fmtSigned 搬咗去 i18n.js —— 佢哋要跟語言換貨幣。 */
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 var G=null, typing=null, curScen=null, locked=false;
-var OPTS={speed:17,sound:1,tags:0};
+var OPTS={speed:17,sound:1,tags:0,lang:''};
 
 /* ---------- 設定 ---------- */
 var OPT_KEY='wulongcha:opts';
@@ -42,10 +41,11 @@ function loadOpts(){
 function saveOpts(){try{localStorage.setItem(OPT_KEY,JSON.stringify(OPTS));}catch(e){}}
 function syncSeg(id,val){
  var seg=$(id);if(!seg)return;
- [].forEach.call(seg.children,function(b){b.classList.toggle('on',+b.dataset.v===+val);});
+ [].forEach.call(seg.children,function(b){b.classList.toggle('on',b.dataset.v===String(val));});
 }
 function applyOpts(){
  syncSeg('segSpeed',OPTS.speed);syncSeg('segSound',OPTS.sound);syncSeg('segTags',OPTS.tags);
+ syncSeg('segLang',LANG);
  AUD.on=!!OPTS.sound;
 }
 
@@ -78,7 +78,7 @@ function nextTurn(){
  for(var i=0;i<h.length;i++)pk=Math.max(pk,h[i]);
  AUD.setTension(pk>0?clamp((1-h[h.length-1]/pk)/0.32,0,1):0);
  $('tNum').textContent=G.turn;
- $('tWhen').textContent='第 '+Math.round(yearAt(G.turn))+' 年 · '+ageAt(G.turn)+'歲';
+ $('tWhen').textContent=t('turnWhen',Math.round(yearAt(G.turn)),ageAt(G.turn));
  $('tPhase').textContent=PHASE_LABEL[ph];
 
  var nb=bgURL(sc.bg);
@@ -188,8 +188,7 @@ function choose(opt,sc){
  if(opt.why)why+=opt.why;
  if(G.sim.forced&&G.sim.forced!==G._forcedShown){
   G._forcedShown=G.sim.forced;
-  why+=(why?'<br>':'')+'<span class="tag">強制平倉</span> 你嘅自有資金跌穿咗維持水平，券商幫你斬咗倉。'+
-   '你唔係揀走 —— 你係被人趕走，而且要俾滑點。';
+  why+=(why?'<br>':'')+'<span class="tag">'+esc(t('tagForced'))+'</span> '+t('forcedWhy');
  }
  if(opt.b&&OPTS.tags)
   why+=(why?'<br>':'')+'<span class="tag">'+esc(BIAS[opt.b][0])+'</span> '+esc(BIAS[opt.b][1]);
@@ -258,7 +257,7 @@ function drawChart(){
  x.fillText('Mike',Math.min(W-28,X(n-1)+4),Y(lb)+3);
  if(big){
   x.fillStyle='rgba(232,228,217,.55)';
-  x.fillText('淺色 = 你唔喺市場嗰啲回合',8,H-7);
+  x.fillText(t('chartOutBand'),8,H-7);
  }
 }
 $('chartWrap').onclick=function(){
@@ -315,8 +314,8 @@ function clearSave(){
 
 /* ---------- 階段結算 ---------- */
 var PHASE_META={
- 20:{eyebrow:'PHASE I · REVIEW',title:'新手期結算'},
- 45:{eyebrow:'PHASE II · REVIEW',title:'中手期結算'}
+ 20:{eyebrow:'PHASE I · REVIEW',title:'rvTitle20'},
+ 45:{eyebrow:'PHASE II · REVIEW',title:'rvTitle45'}
 };
 function phaseSlice(turn){
  var from=turn===20?0:20,a=G.sim.hist,b=G.mikeHist;
@@ -337,30 +336,30 @@ function showReview(turn){
  var d=phaseSlice(turn);
  AUD.page();
  $('rvEyebrow').textContent=M0.eyebrow;
- $('rvTitle').textContent=M0.title;
+ $('rvTitle').textContent=t(M0.title);
  var pc=function(v){return (v>=0?'+':'')+(v*100).toFixed(1)+'%';};
  var cls=function(v){return v>=0?'up':'dn';};
  $('rvStats').innerHTML=
-  kv('你嘅回報','<span class="'+cls(d.mine)+'">'+pc(d.mine)+'</span>')+
-  kv('Mike 回報','<span class="'+cls(d.bench)+'">'+pc(d.bench)+'</span>')+
-  kv('你嘅淨值',fmt(G.sim.hist[turn]))+
-  kv('Mike 淨值',fmt(G.mikeHist[turn]))+
-  kv('最大回撤','<span class="dn">'+(d.dd*100).toFixed(1)+'%</span>')+
-  kv('情緒決定',d.biases+' / '+(d.to-d.from)+' 次')+
-  kv('累計買賣成本',fmt(G.sim.tradeCost))+
-  kv('唔喺市場嘅回合',d.out+' 個');
+  kv(t('kvYourRet'),'<span class="'+cls(d.mine)+'">'+pc(d.mine)+'</span>')+
+  kv(t('kvMikeRet'),'<span class="'+cls(d.bench)+'">'+pc(d.bench)+'</span>')+
+  kv(t('kvYourNav'),fmt(G.sim.hist[turn]))+
+  kv(t('kvMikeNav'),fmt(G.mikeHist[turn]))+
+  kv(t('kvMaxDD'),'<span class="dn">'+(d.dd*100).toFixed(1)+'%</span>')+
+  kv(t('kvEmoDec'),t('unitTimes',d.biases,d.to-d.from))+
+  kv(t('kvTradeCost'),fmt(G.sim.tradeCost))+
+  kv(t('kvOutTurns'),t('unitCount',d.out));
  drawReviewChart(d);
  var gap=d.mine-d.bench,v;
- if(gap>0.05)v='呢個階段你跑贏咗 Mike。要留意嘅係：短期跑贏可以純粹係波幅，唔一定係技術。你係咪承受咗更大風險換返嚟？';
- else if(gap>-0.03)v='你同 Mike 差唔多。但你做咗好多決定，佢乜都冇做。同樣結果之下，你付出咗時間、精神同手續費。';
- else if(gap>-0.15)v='你落後咗 Mike。差距睇落唔算大，但呢個就係「溫水煮蛙」嘅開始 —— 每個階段輸少少，複利落去就係一層樓。';
- else v='你明顯落後。而家係最好嘅檢討時機：你嘅損失係嚟自市場，定係嚟自你自己嘅決定？';
+ if(gap>0.05)v=t('rvVerdictWin');
+ else if(gap>-0.03)v=t('rvVerdictTie');
+ else if(gap>-0.15)v=t('rvVerdictSoft');
+ else v=t('rvVerdictBad');
  $('rvVerdict').textContent=v;
  $('rvBias').innerHTML=d.top.length
-  ? '呢個階段你最常觸發嘅偏誤：<br>'+d.top.map(function(p){
+  ? t('rvBiasHead')+'<br>'+d.top.map(function(p){
      return '· <b style="color:var(--gold)">'+esc(BIAS[p[0]][0])+'</b> ×'+p[1]+' — '+esc(BIAS[p[0]][1]);}).join('<br>')
-  : '呢個階段你冇觸發過任何認知偏誤。';
- var sv=$('rvSave');sv.textContent='儲存進度';sv.classList.remove('ok');
+  : t('rvBiasNone');
+ var sv=$('rvSave');sv.textContent=t('btnSave');sv.classList.remove('ok');
  $('review').classList.add('on');
 }
 function drawReviewChart(d){
@@ -389,10 +388,10 @@ function drawReviewChart(d){
 /* ---------- 決定紀錄 ---------- */
 function showLog(){
  var h='';
- if(!G.choices.length)h='<div style="color:var(--dim);font-size:12.5px">仲未有決定。</div>';
+ if(!G.choices.length)h='<div style="color:var(--dim);font-size:12.5px">'+esc(t('logEmpty'))+'</div>';
  for(var i=G.choices.length-1;i>=0;i--){
   var c=G.choices[i];
-  h+='<div class="logrow"><div class="t">第 '+c.turn+' 回合 · 第 '+Math.round(yearAt(c.turn))+' 年</div>'+
+  h+='<div class="logrow"><div class="t">'+esc(t('logTurn',c.turn,Math.round(yearAt(c.turn))))+'</div>'+
      '<div>'+esc(c.opt)+'</div>'+
      (c.bias?'<div class="b">'+esc(BIAS[c.bias][0])+' — '+esc(BIAS[c.bias][1])+'</div>':'')+
      '</div>';
@@ -416,56 +415,43 @@ function finish(){
  $('endCg').style.backgroundImage="url('"+cgURL(inf.cg)+"')";
  $('eName').textContent=inf.n;
  var endTurn=G.ruinTurn||G.decs.length;
- $('eTag').textContent='第 '+endTurn+' 回合 · '+Math.round(yearAt(endTurn))+' 年 · '+
-  G.name+' · 最終 '+fmt(G.sim.eq);
+ $('eTag').textContent=t('eTag',endTurn,Math.round(yearAt(endTurn)),G.name,fmt(G.sim.eq));
  $('eDesc').textContent=inf.d;
 
  var A=attribute(G);
  var h='';
 
  /* --- 對照 --- */
- h+='<div class="sec">最終對照</div>';
- h+=stat('你（'+esc(G.name)+'）',fmt(G.sim.eq));
- h+=stat('Mike（指數，乜都冇做）',fmt(mikeEq));
+ h+='<div class="sec">'+esc(t('secCompare'))+'</div>';
+ h+=stat(esc(t('statYou',G.name)),fmt(G.sim.eq));
+ h+=stat(esc(t('statMike')),fmt(mikeEq));
  var gapPc=mikeEq>0?(G.sim.eq/mikeEq-1)*100:0;
- h+=stat('差距','<span class="'+(gapPc>=0?'up':'dn')+'">'+(gapPc>=0?'+':'')+gapPc.toFixed(1)+'%</span>');
- h+=stat('相差金額','<span class="'+(gapPc>=0?'up':'dn')+'">'+fmt(Math.abs(A.gap))+'</span>');
- var L=levelOf(G.sim.eq),LM=levelOf(mikeEq);
- h+=stat('你嘅財富階梯',L[0]+'　<span style="color:var(--dim);font-size:11px">'+L[1]+'</span>');
- h+=stat('Mike 嘅財富階梯',LM[0]+'　<span style="color:var(--dim);font-size:11px">'+LM[1]+'</span>');
- h+='<div class="foot">二十年入面你總共投入咗 '+fmt(START+G.sim.contributed)+
-    '（起步 '+fmt(START)+' + 儲蓄 '+fmt(G.sim.contributed)+'）。'+
-    (HAS_SITE?'階梯分級同教學網一致，見 '+chLink('CH13','退休篇')+'。':'')+'</div>';
+ h+=stat(esc(t('statGap')),'<span class="'+(gapPc>=0?'up':'dn')+'">'+(gapPc>=0?'+':'')+gapPc.toFixed(1)+'%</span>');
+ h+=stat(esc(t('statGapAmt')),'<span class="'+(gapPc>=0?'up':'dn')+'">'+fmt(Math.abs(A.gap))+'</span>');
+ var LV=levelOf(G.sim.eq),LM=levelOf(mikeEq);
+ h+=stat(esc(t('statYourLvl')),LV[0]+'　<span style="color:var(--dim);font-size:11px">'+LV[1]+'</span>');
+ h+=stat(esc(t('statMikeLvl')),LM[0]+'　<span style="color:var(--dim);font-size:11px">'+LM[1]+'</span>');
+ h+='<div class="foot">'+t('footTotalIn',fmt(START+G.sim.contributed),fmt(START),fmt(G.sim.contributed))+
+    (HAS_SITE?t('footLadder',chLink('CH13',t('footLadderCh'))):'')+'</div>';
 
  /* --- 幸運兒 / 真 Alpha 揭盅 --- */
  if(kind==='LUCKY_FOOL'){
-  h+='<div class="note"><b>你贏咗，但唔係因為你叻。</b><br><br>'+
-   '我哋攞你實際做過嘅 '+G.decs.length+' 個決定，原封不動咁擺去 400 個唔同嘅市場歷史入面重跑。'+
-   '同一套行為，唔同嘅市場：<b>只有 '+(mc.win*100).toFixed(0)+'% 嘅時空你會跑贏 Mike</b>，'+
-   '中位數係佢嘅 '+mc.med.toFixed(2)+' 倍。<br><br>'+
-   '你今次贏咗，係因為你今次抽中咗嗰條路。你嘅做法本身冇優勢。</div>';
+  h+='<div class="note">'+t('noteLucky',G.decs.length,(mc.win*100).toFixed(0),mc.med.toFixed(2))+'</div>';
  }else if(kind==='TRUE_ALPHA'){
-  h+='<div class="note good"><b>而且唔係彩數。</b><br><br>'+
-   '同一套行為擺去 400 個唔同市場，<b>'+(mc.win*100).toFixed(0)+'% 嘅時空你都跑贏</b>。'+
-   '呢個唔係運氣，係結構性優勢。<br><br>'+
-   '但你要睇清楚你贏喺邊 —— 睇返下面「你嘅人工」嗰一行。</div>';
+  h+='<div class="note good">'+t('noteAlpha',(mc.win*100).toFixed(0))+'</div>';
  }else if(kind==='WU_WEI'){
-  h+='<div class="note good"><b>你做到咗最難嗰樣嘢。</b><br><br>'+
-   '你嘅結果同 Mike 幾乎一模一樣。呢個唔係打和，呢個就係目標本身 —— '+
-   '因為 Mike 嘅回報就係市場嘅回報，而市場嘅回報，已經係絕大部分人攞唔到嘅嘢。</div>';
+  h+='<div class="note good">'+t('noteWuWei')+'</div>';
  }
 
  /* --- 歸因（重點） --- */
- h+='<div class="sec">差距係邊度嚟嘅</div>';
- h+='<div class="foot" style="margin:-4px 0 12px">'+
-  '我哋攞返你今次玩嗰條一模一樣嘅市場路徑，同你一模一樣嘅七十個決定，'+
-  '每次淨係熄咗其中一樣嘢再重跑一次。分別就係嗰樣嘢嘅代價。</div>';
+ h+='<div class="sec">'+esc(t('secAttr'))+'</div>';
+ h+='<div class="foot" style="margin:-4px 0 12px">'+t('attrIntro')+'</div>';
  var items=[
-  ['交易成本',A.cost,'買賣佣金、印花稅、價差、基金費用。','CH2'],
-  ['唔喺市場',A.timing,'你沽咗貨、或者留住現金冇入場嗰啲回合。','CH2'],
-  ['集中持倉',A.conc,'押重注落單一注碼，包括爆地雷嘅風險。','CH3'],
-  ['槓桿',A.lev,'借錢嘅利息，加上被強制平倉嘅損失。','CH7'],
-  ['你嘅人工',-A.income,'事業選擇令你儲蓄增長快咗（或者慢咗）。','CH7']
+  [t('attrCost'),A.cost,t('attrCostWhy'),'CH2'],
+  [t('attrTiming'),A.timing,t('attrTimingWhy'),'CH2'],
+  [t('attrConc'),A.conc,t('attrConcWhy'),'CH3'],
+  [t('attrLev'),A.lev,t('attrLevWhy'),'CH7'],
+  [t('attrIncome'),-A.income,t('attrIncomeWhy'),'CH7']
  ];
  var maxAbs=1;
  items.forEach(function(it){maxAbs=Math.max(maxAbs,Math.abs(it[1]));});
@@ -478,36 +464,30 @@ function finish(){
    (cost?'var(--red)':'var(--green)')+'"></i></div>'+
    '<div class="why">'+it[2]+(HAS_SITE?'　'+chLink(it[3]):'')+'</div></div>';
  });
- h+='<div class="note plain">呢五個數字加埋唔會啱啱好等於總差距。'+
-  '因為佢哋互相影響 —— 舉個例，如果你冇用槓桿，你嗰次強制平倉就唔會發生，'+
-  '咁你被逼賣出嘅成本亦都會消失。<br><br>'+
-  '四樣一齊熄嘅話：你會有 <b>'+fmt(A.you+A.all)+'</b>，'+
-  '即係比而家多 '+fmt(Math.abs(A.all))+'。<br><br>'+
-  '<b>值得留意嘅係邊個數字最穩定。</b>成本係唯一一樣一定發生、而且完全喺你控制範圍之內嘅嘢。'+
-  '集中同擇時係賭博 —— 有時幫到你，有時害死你，但長期期望值係負。</div>';
+ h+='<div class="note plain">'+t('attrNote',fmt(A.you+A.all),fmt(Math.abs(A.all)))+'</div>';
 
  /* --- 成本明細 --- */
- h+='<div class="sec">成本明細</div>';
- h+=stat('買賣成本（佣金／印花稅／價差）',fmt(G.sim.tradeCost));
- h+=stat('基金／產品費用',fmt(G.sim.fundFee));
- h+=stat('孖展利息',fmt(G.sim.marginCost));
- h+=stat('課程、訂閱、借出去嘅錢',fmt(G.sim.spent));
- h+=stat('強制平倉次數',(G.sim.forced||0)+' 次');
+ h+='<div class="sec">'+esc(t('secCostDetail'))+'</div>';
+ h+=stat(esc(t('statTradeCost')),fmt(G.sim.tradeCost));
+ h+=stat(esc(t('statFundFee')),fmt(G.sim.fundFee));
+ h+=stat(esc(t('statMargin')),fmt(G.sim.marginCost));
+ h+=stat(esc(t('statSpent')),fmt(G.sim.spent));
+ h+=stat(esc(t('statForced')),esc(t('unitTimesN',G.sim.forced||0)));
  var outTurns=G.sim.invFracHist.filter(function(v){return v<0.5;}).length;
- h+=stat('唔喺市場嘅回合',outTurns+' / '+G.decs.length+' 個');
- h+=stat('情緒驅動嘅決定',G.biasLog.length+' / '+G.decs.length+' 次');
+ h+=stat(esc(t('statOutTurns')),esc(t('unitOutOf',outTurns,G.decs.length)));
+ h+=stat(esc(t('statEmoDec')),esc(t('unitTimes',G.biasLog.length,G.decs.length)));
 
  /* --- Monte Carlo --- */
- h+='<div class="sec">同樣嘅行為，四百個平行時空</div>';
+ h+='<div class="sec">'+esc(t('secMC'))+'</div>';
  h+='<canvas class="cv" id="mc" height="170"></canvas>';
  h+='<div class="note plain" id="mcTxt"></div>';
 
  /* --- 偏誤 + 返去邊一課 --- */
  var ent=Object.keys(G.biasCount).map(function(k){return [k,G.biasCount[k]];})
   .sort(function(a,b){return b[1]-a[1];});
- h+='<div class="sec">你嘅偏誤，同要補返邊一課</div>';
+ h+='<div class="sec">'+esc(t('secBias'))+'</div>';
  if(!ent.length){
-  h+='<div class="e-desc" style="font-size:13.5px">你冇觸發過任何認知偏誤。呢個非常罕見。</div>';
+  h+='<div class="e-desc" style="font-size:13.5px">'+esc(t('biasNone'))+'</div>';
  }else{
   var mxb=ent[0][1];
   ent.slice(0,12).forEach(function(p){
@@ -520,44 +500,39 @@ function finish(){
  }
 
  /* --- 關鍵決定回顧 --- */
- h+='<div class="sec">關鍵決定回顧</div>';
+ h+='<div class="sec">'+esc(t('secKey'))+'</div>';
  var key=G.choices.filter(function(c){return c.bias;}).slice(0,8);
- if(!key.length)h+='<div class="e-desc" style="font-size:13.5px">冇偏誤決定可以回顧。</div>';
+ if(!key.length)h+='<div class="e-desc" style="font-size:13.5px">'+esc(t('keyNone'))+'</div>';
  key.forEach(function(c){
   var sc=ALL_SCEN[c.scen-1],alt=sc?sc.opts.filter(function(o){return !o.b;})[0]:null;
-  h+='<div class="logrow"><div class="t">第 '+c.turn+' 回合 · 第 '+Math.round(yearAt(c.turn))+' 年</div>'+
-   '<div>你揀咗：'+esc(c.opt)+'</div>'+
+  h+='<div class="logrow"><div class="t">'+esc(t('logTurn',c.turn,Math.round(yearAt(c.turn))))+'</div>'+
+   '<div>'+esc(t('keyPicked',c.opt))+'</div>'+
    '<div class="b">'+esc(BIAS[c.bias][0])+' — '+esc(BIAS[c.bias][1])+'</div>'+
-   (alt?'<div class="t" style="margin-top:4px">另一個選擇：'+esc(alt.t)+'</div>':'')+'</div>';
+   (alt?'<div class="t" style="margin-top:4px">'+esc(t('keyAlt',alt.t))+'</div>':'')+'</div>';
  });
 
  /* --- Mike --- */
- h+='<div class="sec">Mike 嘅二十年</div>';
+ h+='<div class="sec">'+esc(t('secMike'))+'</div>';
  h+='<img class="mikeimg" src="'+uiURL('ui_mike_four_seasons')+'" alt="">';
- h+='<div class="foot">佢做咗大約五十次交易，全部係月供。佢冇睇過盤，冇追過消息，冇同人爭論過。'+
-    '佢嘅回報，就係市場本身嘅回報。<br><br>'+
-    '呢個遊戲唔係想話你聽「你贏唔到」。係想話你聽：<b>你唔使贏。</b>'+
-    '攞到市場本身嘅回報，已經打贏咗絕大部分落場嘅人 —— 而攞到佢，唔需要技術，'+
-    '只需要你喺二十年入面，每一次心郁郁嗰陣，都揀唔郁。</div>';
+ h+='<div class="foot">'+t('mikeFoot')+'</div>';
 
  /* --- 返教學網 --- */
  if(HAS_SITE){
-  h+='<div class="sec">跟住去邊</div>';
+  h+='<div class="sec">'+esc(t('secNext'))+'</div>';
   h+='<div class="foot" style="font-size:12.5px;line-height:2.1">'+
-   '· '+chLink('CH6','點樣對付上面嗰啲偏誤')+'<br>'+
-   '· '+chLink('CH2','費用點樣蠶食你嘅回報')+'<br>'+
-   '· '+chLink('CH3','點解分散唔係「買多幾隻」')+'<br>'+
-   '· '+chLink('CH5','實際上第一個組合應該點砌')+'<br>'+
-   '· '+chLink('APA','點樣分辨真定假嘅投資主張')+'</div>';
+   '· '+chLink('CH6',t('nextCh6'))+'<br>'+
+   '· '+chLink('CH2',t('nextCh2'))+'<br>'+
+   '· '+chLink('CH3',t('nextCh3'))+'<br>'+
+   '· '+chLink('CH5',t('nextCh5'))+'<br>'+
+   '· '+chLink('APA',t('nextApA'))+'</div>';
  }
 
  h+='<div class="endbtns">'+
-  '<button class="btn sm" id="again">再玩一次</button>'+
-  '<button class="btn sm ghost" id="ng2">開住偏誤標籤再玩</button>'+
-  (HAS_SITE?'<button class="btn sm ghost" id="toSite">返教學網</button>':'')+
+  '<button class="btn sm" id="again">'+esc(t('btnAgain'))+'</button>'+
+  '<button class="btn sm ghost" id="ng2">'+esc(t('btnNg2'))+'</button>'+
+  (HAS_SITE?'<button class="btn sm ghost" id="toSite">'+esc(t('btnToSite'))+'</button>':'')+
   '</div>';
- h+='<div class="foot">開住偏誤標籤，每個選項旁邊會寫明佢對應邊種偏誤。'+
-  '你會發現：就算你明知係偏誤，你依然想揀。</div>';
+ h+='<div class="foot">'+t('endFoot')+'</div>';
 
  $('eExtra').innerHTML=h;
  /* 即刻鎖定個比率再傳入去 —— 唔可以喺 timer 入面先讀 G，
@@ -566,7 +541,8 @@ function finish(){
  setTimeout(function(){drawMC(mc,mineRatio);},50);
  $('again').onclick=function(){AUD.click();OPTS.tags=0;saveOpts();show('title');AUD.startMusic('rookie');};
  $('ng2').onclick=function(){AUD.click();OPTS.tags=1;saveOpts();applyOpts();startGame(G.name);};
- if($('toSite'))$('toSite').onclick=function(){location.href='../新手篇/06-行為偏誤點應對/';};
+ /* 返教學網：跟返 locale 嘅第 6 章位置（台灣版喺 ../zh-TW/ 之下） */
+ if($('toSite'))$('toSite').onclick=function(){location.href=CH.CH6[1];};
 }
 function stat(l,v){return '<div class="stat"><span>'+l+'</span><span class="v">'+v+'</span></div>';}
 
@@ -597,17 +573,11 @@ function drawMC(mc,mine){
  var xm=pad+(Math.min(mine,hi)-lo)/(hi-lo)*(W-pad*2);
  x.strokeStyle='#e8e4d9';x.lineWidth=2;
  x.beginPath();x.moveTo(xm,6);x.lineTo(xm,H-24);x.stroke();
- x.fillStyle='#e8e4d9';x.fillText('你今次',xm,H-12);
+ x.fillStyle='#e8e4d9';x.fillText(t('mcYou'),xm,H-12);
  x.textAlign='left';
 
- $('mcTxt').innerHTML=
-  '每一條柱 = 一個平行時空。橫軸係你最後有 Mike 嘅幾多倍。<br><br>'+
-  '· 跑贏 Mike 嘅時空：<b>'+(mc.win*100).toFixed(1)+'%</b><br>'+
-  '· 中位數：Mike 嘅 <b>'+mc.med.toFixed(2)+'</b> 倍<br>'+
-  '· 你今次嘅結果排喺第 <b>'+pctl.toFixed(0)+'</b> 百分位<br><br>'+
-  (pctl>85?'今次嘅行情對你嘅做法特別友好。同一套嘢，大部分時空結果差好遠。'
-   :pctl<15?'今次嘅行情對你嘅做法特別唔友好。不過就算喺最好嘅時空，呢套做法嘅期望值一樣有限。'
-   :'你今次嘅結果，喺你自己做法嘅正常範圍之內。');
+ $('mcTxt').innerHTML=t('mcTxt',(mc.win*100).toFixed(1),mc.med.toFixed(2),pctl.toFixed(0),
+  pctl>85?t('mcHigh'):pctl<15?t('mcLow'):t('mcMid'));
 }
 
 /* ---------- 啟動 ---------- */
@@ -624,26 +594,56 @@ function resumeGame(){
  nextTurn();
 }
 
-loadOpts();applyOpts();
+loadOpts();
+/* 語言要喺任何嘢畫出嚟之前定 —— applyLocale() 會蓋咗場景／偏誤／結局嘅文字。 */
+initLang(OPTS.lang);
+applyOpts();
 $('titleBg').style.backgroundImage="url('"+uiURL('ui_title_keyart')+"')";
-if(!HAS_SITE){var lk=$('lnkCh6');if(lk)lk.style.display='none';}
+/* 跟語言填返啲有金額／預設名嘅位 */
+$('nameIn').value=t('defaultName');
+$('tNote').innerHTML=t('titleNote',fmt(START));
+$('hNav').textContent=fmt(START);
+$('hBen').textContent=fmt(START);
+var lk=$('lnkCh6');
+if(lk){ if(!HAS_SITE)lk.style.display='none'; else lk.href=CH.CH6[1]; }
+
+/* ---------- 換語言 ----------
+   換咗之後成版嘢都要重新蓋一次 overlay，最乾淨嘅做法係 reload。
+   打緊機嘅話先自動存檔，再帶住 resume=1 返嚟，接返落去同一個回合。 */
+function switchLang(code){
+ if(!LANGS[code]||code===LANG)return;
+ AUD.click();
+ OPTS.lang=code;saveOpts();
+ var mid=!!(G&&$('game').classList.contains('on'));
+ if(mid)saveGame();
+ location.replace(location.pathname+'?lang='+encodeURIComponent(code)+(mid?'&resume=1':''));
+}
+/* 自動接返落去嗰陣，瀏覽器仲未收過用戶手勢，開唔到音訊。
+   等佢第一下撳／撳掣先補開。 */
+function armAudioOnce(){
+ var go=function(){
+  document.removeEventListener('pointerdown',go);document.removeEventListener('keydown',go);
+  AUD.init();AUD.resume();AUD.startMusic(phaseOf(Math.max(1,G?G.turn:1)));
+ };
+ document.addEventListener('pointerdown',go);document.addEventListener('keydown',go);
+}
 
 $('startBtn').onclick=function(){
  AUD.init();AUD.resume();AUD.select();
- var nm=($('nameIn').value||'烏龍茶').trim().slice(0,8)||'烏龍茶';
+ var nm=($('nameIn').value||t('defaultName')).trim().slice(0,8)||t('defaultName');
  startGame(nm);
 };
 $('nameIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('startBtn').click();});
 $('next').onclick=function(){AUD.click();nextTurn();};
 $('rvNext').onclick=function(){AUD.click();$('review').classList.remove('on');nextTurn();};
 $('rvSave').onclick=function(){AUD.select();var b=$('rvSave');
- if(saveGame()){b.textContent='已儲存 ✓';b.classList.add('ok');}else b.textContent='儲存失敗';};
+ if(saveGame()){b.textContent=t('btnSaved');b.classList.add('ok');}else b.textContent=t('btnSaveFail');};
 $('logBtn').onclick=function(){AUD.click();showLog();};
 $('logClose').onclick=function(){AUD.click();$('logOvl').classList.remove('on');};
 $('setBtn').onclick=function(){AUD.click();applyOpts();$('setOvl').classList.add('on');};
 $('setClose').onclick=function(){AUD.click();$('setOvl').classList.remove('on');};
 $('setSave').onclick=function(){AUD.select();var b=$('setSave');
- if(G&&saveGame()){b.textContent='已儲存 ✓';b.classList.add('ok');}else b.textContent='儲存失敗';};
+ if(G&&saveGame()){b.textContent=t('btnSaved');b.classList.add('ok');}else b.textContent=t('btnSaveFail');};
 
 function bindSeg(id,key,after){
  var seg=$(id);if(!seg)return;
@@ -654,6 +654,18 @@ function bindSeg(id,key,after){
 bindSeg('segSpeed','speed');
 bindSeg('segSound','sound',function(){AUD.setOn(OPTS.sound);});
 bindSeg('segTags','tags',function(){if(curScen&&!locked)renderOpts(curScen);});
+/* 語言唔行 bindSeg —— 佢個值係字串，而且改完要 reload。
+   啲掣跟 LANGS 生成，label 用該語言自己嘅寫法（廣東話 / 繁體中文 / English），
+   所以加語言唔使改 shell.html。 */
+(function(){var seg=$('segLang');if(!seg)return;
+ var codes=[DEFAULT_LANG];for(var c in LANGS)if(c!==DEFAULT_LANG)codes.push(c);
+ codes.forEach(function(code){
+  var b=document.createElement('button');
+  b.dataset.v=code;b.textContent=LANGS[code].label||code;
+  if(code===LANG)b.classList.add('on');
+  b.onclick=function(){switchLang(code);};
+  seg.appendChild(b);
+ });})();
 
 document.addEventListener('keydown',function(e){
  if($('review').classList.contains('on')){if(e.key==='Enter'||e.key===' ')$('rvNext').click();return;}
@@ -669,17 +681,20 @@ document.addEventListener('keydown',function(e){
 });
 window.addEventListener('resize',function(){if(G&&$('game').classList.contains('on'))drawChart();});
 
-/* 有存檔先出「繼續」 */
+/* 有存檔先出「繼續」。
+   如果係啱啱換完語言返嚟（resume=1），就唔使佢再撳一次，直接接返落去。 */
+var WANT_RESUME=/[?&]resume=1/.test(String(location.search));
 readSaveRaw().then(function(raw){
  if(!raw)return;
  var o=null;try{o=JSON.parse(raw);}catch(e){}
  if(!o||o.v!==SAVE_VER)return;
+ if(WANT_RESUME&&applySave(o)){resumeGame();armAudioOnce();return;}
  $('contWrap').style.display='block';
- $('contInfo').textContent=(o.name||'烏龍茶')+' · 第 '+o.turn+' 回合 · '+
-  new Date(o.t||Date.now()).toLocaleDateString();
+ $('contInfo').textContent=t('contInfo',o.name||t('defaultName'),o.turn,
+  new Date(o.t||Date.now()).toLocaleDateString());
  $('contBtn').onclick=function(){
   AUD.init();AUD.resume();AUD.select();
   if(applySave(o))resumeGame();
-  else $('contInfo').textContent='讀取失敗，請開新遊戲';
+  else $('contInfo').textContent=t('contFail');
  };
 });

@@ -18,7 +18,10 @@ var CH = {
   APB:  ['附錄 B · 窮人點投資',         '../附錄/02-窮人點投資/'],
   XD:   ['進階選讀 D · 行為金融學',     '../進階選讀/D-行為金融學/']
 };
-var HAS_SITE = location.protocol !== 'file:';
+/* typeof 個 guard 係為咗 Node 測試 —— 嗰邊冇 location，
+   咁 test.mjs 就可以直接 import 真正嗰份 BIAS／CH 嚟核對譯文覆蓋率，
+   唔使再靠 regex 喺原始碼度撈 key。 */
+var HAS_SITE = (typeof location !== 'undefined') && location.protocol !== 'file:';
 
 /* key: [名, 一句話解釋, 對應章節] */
 var BIAS = {

@@ -82,11 +82,13 @@ function judge(G, mcWin) {
   return 'BOILED_FROG';
 }
 
-/* 財富階梯 Level（同教學網一致，港元，唔計自住樓） */
+/* 財富階梯 Level（同教學網一致，唔計自住樓）。
+   門檻同標籤由 locale 提供 —— 廣東話版係港元，台灣版係新台幣，
+   兩邊各自對返自己嗰版 level.md 嘅級距。
+   注意：v 係模型內部嘅數，要先 × 匯率變成顯示貨幣先好同門檻比。 */
 function levelOf(v) {
-  if (v < 100000) return ['Level 1', '$10萬以下'];
-  if (v < 1000000) return ['Level 2', '$10萬 – $100萬'];
-  if (v < 10000000) return ['Level 3', '$100萬 – $1,000萬'];
-  if (v < 50000000) return ['Level 4', '$1,000萬 – $5,000萬'];
-  return ['Level 5', '$5,000萬以上'];
+  var rows = LC().levels || [[Infinity, 'Level 5', '']];
+  var d = v * curRate();
+  for (var i = 0; i < rows.length; i++) if (d < rows[i][0]) return [rows[i][1], rows[i][2]];
+  return [rows[rows.length - 1][1], rows[rows.length - 1][2]];
 }

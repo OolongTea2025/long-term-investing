@@ -8,7 +8,7 @@ function newGame(name, seed) {
   seed = seed == null ? Math.floor(Math.random() * 1e9) : seed;
   var path = makePath(seed);
   return {
-    seed: seed, name: name || '烏龍茶', turn: 0,
+    seed: seed, name: name || t('defaultName'), turn: 0,
     path: path, mikeHist: runMike(path).hist,
     sim: newSim(), decs: [],
     posture: { invFrac: 0, conc: 0, lev: 1, volMult: 1, dca: 0, indexed: 0, ig: 0.006, churnCap: 99 },
@@ -86,10 +86,10 @@ function applyChoice(G, d, opt, scen) {
 function extraOption(G) {
   if (G.posture.invFrac >= 0.75 || G.idleTurns < 2) return null;
   return {
-    t: '（將閒置現金投返落市場）', b: null, extra: true,
+    t: t('extraOptTxt'), b: null, extra: true,
     d: { inv: 0.95, churn: 0.3, disc: 6 },
-    r: '你將擺喺一邊嘅現金投返落去。',
-    why: '你今次喺場外坐咗 ' + G.idleTurns + ' 個回合。呢段時間市場升定跌，你都冇份。'
+    r: t('extraOptRes'),
+    why: t('extraOptWhy', G.idleTurns)
   };
 }
 function optionsFor(G, scen) {

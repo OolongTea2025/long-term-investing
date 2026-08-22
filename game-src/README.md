@@ -1,6 +1,7 @@
 # 烏龍茶的投資人生
 
-一個關於認知偏誤嘅廣東話互動故事。七十個決定、二十年、一個乜都冇做嘅對照組。
+一個關於認知偏誤嘅互動故事。七十個決定、二十年、一個乜都冇做嘅對照組。
+**三語**：廣東話（原文）／繁體中文／English。
 
 你三十歲，有 $300,000，每季儲到啲錢。有個叫 **Mike** 嘅人同你一齊開始 ——
 佢第一日買晒指數基金，之後每季照供，二十年冇再做過任何嘢。
@@ -26,7 +27,9 @@ cd site && python -m http.server 8766
 
 - 滑鼠點擊，或者鍵盤 `A`–`E` 揀選項
 - `Enter` / `Space` 繼續
-- 右上角 `☰` 睇返自己所有決定，`⚙` 改文字速度／音效／偏誤標籤
+- 右上角 `☰` 睇返自己所有決定，`⚙` 改語言／文字速度／音效／偏誤標籤
+- 語言亦都可以用網址指定：`?lang=zh-HK` / `?lang=zh-TW` / `?lang=en`
+  （次序係 網址 > 上次揀過嗰個 > 廣東話；**刻意唔睇** `navigator.language`）
 - 打字途中點一下文字框可以跳過
 
 ---
@@ -121,9 +124,11 @@ cd site && python -m http.server 8766
 ## 測試
 
 ```bash
-node build.mjs      # src/ -> index.html（同時出 src/game.gen.mjs 畀測試用）
-node test.mjs 1200  # 試玩平衡 + 歸因 + 結局分佈 + 場景完整性
-node domtest.mjs    # 喺最小 DOM 度由標題撳到結局，捉 runtime error + 存檔來回
+node build.mjs         # src/ -> index.html（同時出 src/game.gen.mjs 畀測試用）
+node test.mjs 1200     # 試玩平衡 + 歸因 + 結局分佈 + 場景完整性
+node i18ncheck.mjs     # 譯文覆蓋率 + 佔位符 + HTML tag + 語言純度
+node domtest.mjs       # 喺最小 DOM 度由標題撳到結局，捉 runtime error + 存檔來回
+node domtest.mjs zh-TW # 同上，但行台灣版（en 亦然）—— 每個語言都要行一次
 ```
 
 `domtest.mjs` 會驗證存檔／讀檔完全一致。新存檔格式只存
@@ -137,6 +142,8 @@ build.mjs       砌 ../docs/game/index.html（唔好直接改嗰個檔）
 test.mjs        平衡測試
 domtest.mjs     runtime 測試
 src/
+  i18n.js       多語言層：廣東話 canonical，其他語言係 overlay
+  lang/         zh-HK（基準）· zh-TW · en，每個語言一份對照表
   shell.html    版面 + CSS
   model.js      經濟模型（唯一 source of truth）
   engine.js     純遊戲邏輯，冇掂 DOM（所以測試用得返同一份）
@@ -146,6 +153,7 @@ src/
   audio.js      音訊引擎
   ui.js         介面 + 存檔
 tools_import.py 立繪 import 工具
+i18ncheck.mjs   譯文檢查（唔喺 src/，同 test.mjs 一齊住喺 game-src/）
 ```
 
 ## 技術
@@ -167,12 +175,15 @@ tools_import.py 立繪 import 工具
 ## 放上教學網
 
 遊戲入面所有返教學網嘅連結，都假設佢擺喺網站嘅 `/game/` 之下
-（用 `../新手篇/...` 相對路徑）。用 `file://` 直接開嘅話，
-`HAS_SITE` 會自動變 false，啲連結會收起，遊戲照玩。
+（用 `../新手篇/...` 相對路徑）。**台灣版同英文版係 `../zh-TW/...` / `../en/...`**，
+由 `lang/*.js` 嘅 `ch{}` 覆蓋 —— 檔名喺三個語言都保持廣東話，呢個係網站嘅既定決定。
+用 `file://` 直接開嘅話，`HAS_SITE` 會自動變 false，啲連結會收起，遊戲照玩。
 
-已經做咗：擺入 `docs/game/`、`docs/遊戲.md` 介紹頁 + nav entry、
+已經做咗：擺入 `docs/game/`、三個介紹頁（`docs/遊戲.md` / `.zh-TW.md` / `.en.md`）+ nav entry、
 第 6 章結尾入口、`target="_blank"`（避開 Material 嘅 `navigation.instant`）、
-附錄 C 加咗 AI 立繪聲明。
+附錄 C 加咗 AI 立繪聲明。**三個介紹頁嘅「開始玩」連結都明寫 `?lang=`**
+（連廣東話嗰版都要寫 `?lang=zh-HK`），否則一個試過換語言嘅讀者，
+下次由廣東話版撳入去會跌返落佢上次揀嗰種語言。
 
 `resume.js` 唔使改 —— mkdocs 只會將 `extra_javascript` 注入由 .md render 出嚟嘅頁，
 `docs/game/index.html` 係原封 copy 嘅靜態檔，載唔到 resume.js，
