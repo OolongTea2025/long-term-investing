@@ -94,6 +94,7 @@ plugins:
             A　邏輯謬誤 & 思維工具: A　邏輯謬誤 & 思維工具
             B　窮人點投資: B　窮人怎麼投資
             C　參考書單 & 來源: C　參考書單 & 來源
+            ⏳ 時間嘅威力: ⏳ 時間的威力
             🎮 互動遊戲: 🎮 互動遊戲
         - locale: en
           name: English
@@ -137,13 +138,14 @@ plugins:
             A　邏輯謬誤 & 思維工具: A. Logical fallacies & thinking tools
             B　窮人點投資: B. Investing when money is tight
             C　參考書單 & 來源: C. Reading list & sources
+            ⏳ 時間嘅威力: ⏳ The power of time
             🎮 互動遊戲: 🎮 Interactive game
 
 hooks:
-  # build 完之後將搜尋索引按語言拆兩份(廣東話 / 台灣版),否則兩邊搜尋
-  # 會撈埋一齊出結果。另一半喺 overrides/main.html。詳情見個檔頭嘅註解。
+  # build 完之後將搜尋索引按語言拆開(廣東話 / 繁體中文 / English),否則
+  # 各語言搜尋會撈埋一齊出結果。另一半喺 overrides/main.html。詳情見個檔頭嘅註解。
   - hooks/i18n_search_split.py
-  # 根目錄 404.html 會畀最後 build 嗰個語言（台灣版）覆寫,呢個 hook 寫返
+  # 根目錄 404.html 會畀最後 build 嗰個語言覆寫,呢個 hook 寫返
   # 預設語言（廣東話）嗰版落去。詳情見個檔頭嘅註解。
   - hooks/default_lang_404.py
 
@@ -153,6 +155,7 @@ extra_css:
 extra_javascript:
   - javascripts/resume.js
   - javascripts/figzoom.js
+  - javascripts/tbm.js
 
 markdown_extensions:
   - admonition
@@ -202,6 +205,7 @@ nav:
       - A　邏輯謬誤 & 思維工具: 附錄/01-邏輯謬誤與思維.md
       - B　窮人點投資: 附錄/02-窮人點投資.md
       - C　參考書單 & 來源: 附錄/03-參考書單與來源.md
+  - ⏳ 時間嘅威力: 時間.md
   - 🎮 互動遊戲: 遊戲.md
 
 # 頁尾。Material 會照原樣出 HTML,所以擺得落連結。

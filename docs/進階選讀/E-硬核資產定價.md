@@ -38,8 +38,8 @@
 
 呢個係最反直覺、最深刻嘅發現。
 
-!!! quote "Shiller 嘅方差比檢驗"
-    **Robert Shiller** 用「方差比檢驗（variance-ratio test）」發現：**股票同債券嘅短期波動，比長期波動更劇烈。**
+!!! quote "Shiller 嘅「過度波動」"
+    **Robert Shiller**（1981）發現：**股價嘅波動，遠大過佢背後股息（基本面）嘅波動** —— 呢個叫「過度波動（excess volatility）」。之後 Poterba & Summers、Lo & MacKinlay 等人用「方差比檢驗（variance-ratio test）」，亦見到**短期波動比長期更劇烈**。
 
     意思係：**長期價格有均值回歸嘅特性** → 長期收益**係可以被預測**嘅。如果一個資產嘅收益高過平均，未來收益往往會低過平均（反之亦然）。
 

@@ -5,7 +5,7 @@
     Chapter B introduced the five factors; this one takes each apart to find **what causes it**: are you being compensated by the market for carrying extra risk (risk compensation), or are humans making mistakes and creating mispricing (behavioural bias)? That distinction decides whether a factor still works in future.
 
 !!! tip "The short version"
-    Every factor premium is caused by something between **risk compensation** and **behavioural bias**. The **risk-based** ones (size, profitability, investment) tend to be more durable; the **behavioural / mispricing** ones (momentum most obviously) have strong premia but are easily arbitraged away. And **almost every factor has come under scrutiny in recent years** (weakening after publication, dead periods, value becoming redundant under five factors) — which is why diversifying across factors, rather than betting heavily on one, is the sound approach.
+    Every factor premium is caused by something between **risk compensation** and **behavioural bias**. The **risk-based** ones (profitability, investment) tend to be more durable (size has a risk story too, but has faded noticeably since publication); the **behavioural / mispricing** ones (momentum most obviously) have strong premia but are easily arbitraged away. And **almost every factor has come under scrutiny in recent years** (weakening after publication, dead periods, value becoming redundant under five factors) — which is why diversifying across factors, rather than betting heavily on one, is the sound approach.
 
 ---
 
@@ -124,7 +124,7 @@
     - **Risk-compensation** factors are more **durable** (risk doesn't disappear just because everyone knows about it).
     - **Behavioural / mispricing** factors have **a strong premium, but once too many people trade them and money creates factor crowding, they get squeezed dry** (see Chapters D and F).
 
-    So: **don't stake everything on one factor**, especially a purely behaviour-driven one. Factors take turns being strong and weak, and **spreading across several** is what makes it sustainable — which is the underlying logic of the Level 1–3 portfolios in Chapter 10.
+    So: **don't stake everything on one factor**, especially a purely behaviour-driven one. Factors take turns being strong and weak, and **spreading across several** is what makes it sustainable — which is the underlying logic of the Tier 1–3 factor portfolios in Chapter 10.
 
 ---
 

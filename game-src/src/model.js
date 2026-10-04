@@ -187,7 +187,10 @@ function step(S, dec, p, knobs) {
   /* --- 5. 強制平倉 --- */
   var forced = false;
   if (lev > 1.02) {
-    var assets = S.invested * lev;
+    /* 維持保證金要用「市場郁完之後」嘅總持倉同淨值去比。
+       舊版寫 S.invested * lev，即係 淨值 ÷ (淨值 × lev) ≡ 1/lev，
+       同市況完全無關 —— 25% 嘅維持保證金永遠唔會觸發，要淨值歸零先斬倉。 */
+    var assets = exposure * (1 + rp);
     if (assets <= 0 || S.invested / assets < MAINT) {
       forced = true; S.forced++;
       S.invested = Math.max(0, S.invested) * (1 - FORCED_SLIP);

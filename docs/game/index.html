@@ -881,7 +881,7 @@ ending: {
 EARLY_RUIN: { n: '出局', tag: '提前結束',
   d: '你沒有撐到最後。集中持股、槓桿、單一押注 —— 其中任何一樣單獨都未必致命，但你三樣一起來。市場不需要很久就能完成它的工作。你連「慢慢輸」的機會都沒有。' },
 BLOWUP: { n: '爆倉', tag: '淨值歸零',
-  d: '你的淨值跌到只剩起步的一成不到。這個結局不需要解釋 —— 你自己知道發生了什麼事。' },
+  d: '你的淨值跌到不到你總投入（起步本金加上所有投入）的一成半。這個結局不需要解釋 —— 你自己知道發生了什麼事。' },
 BOILED_FROG: { n: '溫水煮青蛙', tag: '最常見的結局',
   d: '你沒有爆倉，沒有災難，沒有故事可以講。你只是在二十年裡，慢慢地、每一年輸一點點給一個什麼都沒做的人。這是最常見的結局，也是最少人察覺的。' },
 LEEK_LIFE: { n: '韭菜的一生', tag: '成本吃光',
@@ -1773,7 +1773,7 @@ ending: {
 EARLY_RUIN: { n: 'Knocked out', tag: 'Ended early',
   d: 'You did not make it to the end. Concentration, leverage, a single bet — any one of them alone might not have killed you, but you brought all three. The market does not need long to finish its work. You never even got the chance to lose slowly.' },
 BLOWUP: { n: 'Blow-up', tag: 'Wiped out',
-  d: 'Your net worth fell below a tenth of where you started. This ending needs no explanation — you know exactly what happened.' },
+  d: 'Your net worth fell below 15% of everything you put in — your starting capital plus every contribution. This ending needs no explanation — you know exactly what happened.' },
 BOILED_FROG: { n: 'Boiled frog', tag: 'The most common ending',
   d: 'You did not blow up. No disaster, no story to tell. You simply lost a little every year, for twenty years, to a man who did nothing at all. This is the most common ending, and the one fewest people notice.' },
 LEEK_LIFE: { n: 'Eaten by costs', tag: 'The fees got it all',
@@ -2761,7 +2761,10 @@ function step(S, dec, p, knobs) {
   /* --- 5. 強制平倉 --- */
   var forced = false;
   if (lev > 1.02) {
-    var assets = S.invested * lev;
+    /* 維持保證金要用「市場郁完之後」嘅總持倉同淨值去比。
+       舊版寫 S.invested * lev，即係 淨值 ÷ (淨值 × lev) ≡ 1/lev，
+       同市況完全無關 —— 25% 嘅維持保證金永遠唔會觸發，要淨值歸零先斬倉。 */
+    var assets = exposure * (1 + rp);
     if (assets <= 0 || S.invested / assets < MAINT) {
       forced = true; S.forced++;
       S.invested = Math.max(0, S.invested) * (1 - FORCED_SLIP);
@@ -3057,7 +3060,7 @@ var ENDING_INFO = {
 EARLY_RUIN:{n:'出局',cg:'cg_end_01_blowup',tag:'提前結束',
  d:'你冇捱到最後。集中持倉、槓桿、單一注碼 —— 當中任何一樣單獨都未必致命，但你三樣一齊嚟。市場唔需要好耐就可以完成佢嘅工作。你連「慢慢輸」嘅機會都冇。'},
 BLOWUP:{n:'爆倉',cg:'cg_end_01_blowup',tag:'淨值歸零',
- d:'你嘅淨值跌到剩返起步嘅一成以下。呢個結局唔需要解釋 —— 你自己知發生咗咩事。'},
+ d:'你嘅淨值跌到唔夠你總投入（起步本金加埋所有供款）嘅一成半。呢個結局唔需要解釋 —— 你自己知發生咗咩事。'},
 BOILED_FROG:{n:'溫水煮蛙',cg:'cg_end_02_boiled_frog',tag:'最常見嘅結局',
  d:'你冇爆倉，冇災難，冇故事可以講。你只係喺二十年入面，慢慢咁、每一年輸少少畀一個乜都冇做嘅人。呢個係最常見嘅結局，亦都係最少人為意嘅。'},
 LEEK_LIFE:{n:'韭菜的一生',cg:'cg_end_03_leek_life',tag:'成本食晒',

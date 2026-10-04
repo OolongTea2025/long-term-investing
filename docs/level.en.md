@@ -119,7 +119,7 @@ Levels tell you **where your net worth is**; but **where the money actually sits
 !!! example "Why hold VT even in retirement? — one important study"
     Conventional wisdom says the older you get, the more bonds you should hold. But a large study, **"Beyond the Status Quo: A Critical Assessment of Lifecycle Investment Advice"** (Anarkulova, Cederburg & O'Doherty), simulated using a century of data across 38 countries and reached a counterintuitive conclusion:
 
-    > **Holding globally diversified equity for life (half domestic, half international) beat the traditional "add bonds as you age" approach over the long run — on retirement wealth, on sustainable withdrawals, and even on what's left for your heirs.**
+    > **Holding globally diversified equity for life (roughly one-third domestic, two-thirds international; the first version used half and half, with the same result) beat the traditional "add bonds as you age" approach over the long run — on retirement wealth, on sustainable withdrawals, and even on what's left for your heirs.**
 
     Bonds look safe, but their long-run returns are too low, which actually makes running out of money *more* likely. That's why we **hold VT from 30 onward and keep holding it through retirement**. VT is global equity by construction, which is exactly what the study is describing.
 

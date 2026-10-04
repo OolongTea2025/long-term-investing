@@ -126,10 +126,15 @@
   }
 
   function showBanner(slot, d, path) {
+    /* d 嚟自 localStorage,用 DOM API 砌,唔好直接塞入 innerHTML */
     slot.innerHTML =
-      '<span class="resume-ico">↩</span> ' + T.resume +
-      '<a href="' + d.u + '">' + (d.t || T.lastPage) + '</a>' +
+      '<span class="resume-ico">↩</span> ' +
       '<button type="button" class="resume-x" aria-label="' + T.clear + '">✕</button>';
+    var a = document.createElement('a');
+    a.href = d.u;
+    a.textContent = d.t || T.lastPage;
+    slot.insertBefore(document.createTextNode(T.resume), slot.lastChild);
+    slot.insertBefore(a, slot.lastChild);
     slot.style.display = '';
     var x = slot.querySelector('.resume-x');
     if (x) x.addEventListener('click', function () {
@@ -152,6 +157,13 @@
         // 內容頁：記低位置（404 除外）
         if (!is404()) {
           localStorage.setItem(KEY, JSON.stringify({ u: path, t: title }));
+        } else {
+          /* 紀錄指住嘅頁而家係 404（例如之後改咗網址）→ 清走佢。
+             唔清嘅話，首頁每次都會 replace 去呢個 404，讀者永遠出唔返嚟。 */
+          try {
+            var old = JSON.parse(localStorage.getItem(KEY) || 'null');
+            if (old && old.u === path) localStorage.removeItem(KEY);
+          } catch (e) {}
         }
         return;
       }

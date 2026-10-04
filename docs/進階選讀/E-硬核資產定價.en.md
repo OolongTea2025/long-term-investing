@@ -38,8 +38,8 @@ This formula is the common language of modern asset pricing, and everything that
 
 This is the most counterintuitive and most profound finding.
 
-!!! quote "Shiller's variance ratio test"
-    **Robert Shiller** used the **variance ratio test** to show that **short-run fluctuations in stocks and bonds are more violent than long-run ones.**
+!!! quote "Shiller's excess volatility"
+    **Robert Shiller** (1981) showed that **stock prices swing far more than the dividends (fundamentals) behind them** — "excess volatility". Later work by Poterba & Summers and Lo & MacKinlay, using **variance ratio tests**, also found that **short-run fluctuations are more violent than long-run ones**.
 
     Which means: **prices exhibit mean reversion over the long run** → long-run returns **can be predicted** to some degree. If an asset's return has been above average, future returns tend to be below average (and vice versa).
 

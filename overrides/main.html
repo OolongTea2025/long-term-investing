@@ -4,7 +4,7 @@
   Social-share meta (Open Graph + Twitter).
   Hand-written instead of using Material's `social` plugin, because that plugin
   needs cairo/pango system libraries — which would have to be installed in CI on
-  every build. The card is generated locally (scratchpad/make_brand.py) and
+  every build. The card is generated locally (tools/make_brand.py) and
   committed as docs/images/social-card.png, so CI stays dependency-free.
   Material's base.html emits no og:/twitter: tags, so nothing here duplicates.
 -->

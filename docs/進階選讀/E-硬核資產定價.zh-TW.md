@@ -38,8 +38,8 @@
 
 這是最反直覺、最深刻的發現。
 
-!!! quote "Shiller 的變異數比率檢定"
-    **Robert Shiller** 用「變異數比率檢定（variance-ratio test）」發現：**股票跟債券的短期波動，比長期波動更劇烈。**
+!!! quote "Shiller 的「過度波動」"
+    **Robert Shiller**（1981）發現：**股價的波動，遠大於背後股利（基本面）的波動** —— 這叫「過度波動（excess volatility）」。之後 Poterba & Summers、Lo & MacKinlay 等人用「變異數比率檢定（variance-ratio test）」，也看到**短期波動比長期更劇烈**。
 
     意思是：**長期價格有均值回歸的特性** → 長期報酬**是可以被預測**的。如果一個資產的報酬高於平均，未來的報酬往往會低於平均（反之亦然）。
 

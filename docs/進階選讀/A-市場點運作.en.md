@@ -111,6 +111,41 @@ This is the most important bridge from theory to execution.
 
     Good odds ≠ certainty (echoing Howard Marks in Chapter 9: the future is a probability distribution). You hold VT for the long run because **the data says it's the bet with the best chance**, not because it "must" pay. That clarity is what lets you hold on.
 
+<figure class="lti-fig" markdown="0" data-fig="b-holding">
+<p class="lti-cap-title">The longer you hold, the better your odds</p>
+<svg viewBox="0 0 640 300" role="img" aria-label="Five columns: holding 1 year ended ahead 75% of the time, 5 years 89%, 10 years 95%, 15 years 99.5%, 20 years 100%.">
+<text class="anno-dim" x="320" y="22" text-anchor="middle">Buy US stocks in any month from 1926 to 2025, hold N years — did you end up ahead?</text>
+<line class="grid" x1="100" y1="151.0" x2="590" y2="151.0"></line>
+<text class="axlabel" x="94" y="155.0" text-anchor="end">50%</text>
+<line class="grid" x1="100" y1="66.0" x2="590" y2="66.0"></line>
+<text class="axlabel" x="94" y="70.0" text-anchor="end">100%</text>
+<line class="ax" x1="100" y1="236" x2="590" y2="236"></line>
+<rect class="step s2" x="110" y="107.8" width="70" height="128.2" rx="3"></rect>
+<text class="val" x="145.0" y="99.8" text-anchor="middle">75%</text>
+<text class="val" x="145.0" y="254" text-anchor="middle">1 yr</text>
+<text class="anno-dim" x="145.0" y="274" text-anchor="middle">−65.7%</text>
+<rect class="step s3" x="206" y="85.6" width="70" height="150.4" rx="3"></rect>
+<text class="val" x="241.0" y="77.6" text-anchor="middle">88%</text>
+<text class="val" x="241.0" y="254" text-anchor="middle">5 yr</text>
+<text class="anno-dim" x="241.0" y="274" text-anchor="middle">−19.4%</text>
+<rect class="step s4" x="302" y="73.9" width="70" height="162.1" rx="3"></rect>
+<text class="val" x="337.0" y="65.9" text-anchor="middle">95%</text>
+<text class="val" x="337.0" y="254" text-anchor="middle">10 yr</text>
+<text class="anno-dim" x="337.0" y="274" text-anchor="middle">−5.4%</text>
+<rect class="step s5" x="398" y="66.8" width="70" height="169.2" rx="3"></rect>
+<text class="val" x="433.0" y="58.8" text-anchor="middle">99.5%</text>
+<text class="val" x="433.0" y="254" text-anchor="middle">15 yr</text>
+<text class="anno-dim" x="433.0" y="274" text-anchor="middle">−0.4%</text>
+<rect class="step s5" x="494" y="66.0" width="70" height="170.0" rx="3"></rect>
+<text class="val" x="529.0" y="58.0" text-anchor="middle">100%</text>
+<text class="val" x="529.0" y="254" text-anchor="middle">20 yr</text>
+<text class="anno-dim" x="529.0" y="274" text-anchor="middle">+1.8%</text>
+<text class="anno-dim" x="94" y="274" text-anchor="end">Worst, a yr</text>
+<text class="axtitle" x="34" y="48">Chance of ending ahead</text>
+</svg>
+<figcaption>Hold for one year and you lost money about one time in four; hold for twenty and you never did. <strong>But remember: this is the US — the luckiest market of the past century</strong> (see survivorship bias in Chapter 8), so high odds are not a guarantee.<span class="src">&nbsp;&nbsp;Source: Kenneth R. French Data Library (US total market return, monthly, Jul 1926 – Dec 2025) · nominal, before inflation and fees</span></figcaption>
+</figure>
+
 ---
 
 ## 6. Mean reversion

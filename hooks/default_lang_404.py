@@ -4,7 +4,7 @@
 ----
 `site/404.html` 唔係一版文件，係主題模板，MkDocs 每次 build 都會直接寫落
 `site_dir/404.html`，唔會加語言前綴。而 mkdocs-static-i18n 係**一個語言 build
-一次**，所以最後 build 嗰個語言（台灣版）會覆寫返廣東話嗰版。
+一次**，所以最後 build 嗰個語言會覆寫返廣東話嗰版。
 
 後果（未修之前係真係咁）：
     site/404.html  →  <html lang="zh-TW"> · <title>長期投資入門</title>

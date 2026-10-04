@@ -94,7 +94,7 @@ ending: {
 EARLY_RUIN: { n: 'Knocked out', tag: 'Ended early',
   d: 'You did not make it to the end. Concentration, leverage, a single bet — any one of them alone might not have killed you, but you brought all three. The market does not need long to finish its work. You never even got the chance to lose slowly.' },
 BLOWUP: { n: 'Blow-up', tag: 'Wiped out',
-  d: 'Your net worth fell below a tenth of where you started. This ending needs no explanation — you know exactly what happened.' },
+  d: 'Your net worth fell below 15% of everything you put in — your starting capital plus every contribution. This ending needs no explanation — you know exactly what happened.' },
 BOILED_FROG: { n: 'Boiled frog', tag: 'The most common ending',
   d: 'You did not blow up. No disaster, no story to tell. You simply lost a little every year, for twenty years, to a man who did nothing at all. This is the most common ending, and the one fewest people notice.' },
 LEEK_LIFE: { n: 'Eaten by costs', tag: 'The fees got it all',

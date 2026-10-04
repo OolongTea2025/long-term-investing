@@ -111,6 +111,41 @@ EMH 不是萬能的。它有一個大前提：**「投資人都是理性的」**
 
     高勝率 ≠ 必勝（呼應第 9 章 Howard Marks：未來是機率分佈）。你抱著 VT 長期持有，是因為**數據上這是贏面最大的賭注**，不是因為「一定賺」。這份清醒，才是抱得住的底氣。
 
+<figure class="lti-fig" markdown="0" data-fig="b-holding">
+<p class="lti-cap-title">抱得愈久，賺錢的機會愈高</p>
+<svg viewBox="0 0 640 300" role="img" aria-label="五條直條：抱 1 年有 75% 機會賺錢，5 年 89%，10 年 95%，15 年 99.5%，20 年 100%。">
+<text class="anno-dim" x="320" y="22" text-anchor="middle">1926–2025 年，在任何一個月買進美股，抱滿 N 年之後是賺還是賠</text>
+<line class="grid" x1="100" y1="151.0" x2="590" y2="151.0"></line>
+<text class="axlabel" x="94" y="155.0" text-anchor="end">50%</text>
+<line class="grid" x1="100" y1="66.0" x2="590" y2="66.0"></line>
+<text class="axlabel" x="94" y="70.0" text-anchor="end">100%</text>
+<line class="ax" x1="100" y1="236" x2="590" y2="236"></line>
+<rect class="step s2" x="110" y="107.8" width="70" height="128.2" rx="3"></rect>
+<text class="val" x="145.0" y="99.8" text-anchor="middle">75%</text>
+<text class="val" x="145.0" y="254" text-anchor="middle">1 年</text>
+<text class="anno-dim" x="145.0" y="274" text-anchor="middle">−65.7%</text>
+<rect class="step s3" x="206" y="85.6" width="70" height="150.4" rx="3"></rect>
+<text class="val" x="241.0" y="77.6" text-anchor="middle">88%</text>
+<text class="val" x="241.0" y="254" text-anchor="middle">5 年</text>
+<text class="anno-dim" x="241.0" y="274" text-anchor="middle">−19.4%</text>
+<rect class="step s4" x="302" y="73.9" width="70" height="162.1" rx="3"></rect>
+<text class="val" x="337.0" y="65.9" text-anchor="middle">95%</text>
+<text class="val" x="337.0" y="254" text-anchor="middle">10 年</text>
+<text class="anno-dim" x="337.0" y="274" text-anchor="middle">−5.4%</text>
+<rect class="step s5" x="398" y="66.8" width="70" height="169.2" rx="3"></rect>
+<text class="val" x="433.0" y="58.8" text-anchor="middle">99.5%</text>
+<text class="val" x="433.0" y="254" text-anchor="middle">15 年</text>
+<text class="anno-dim" x="433.0" y="274" text-anchor="middle">−0.4%</text>
+<rect class="step s5" x="494" y="66.0" width="70" height="170.0" rx="3"></rect>
+<text class="val" x="529.0" y="58.0" text-anchor="middle">100%</text>
+<text class="val" x="529.0" y="254" text-anchor="middle">20 年</text>
+<text class="anno-dim" x="529.0" y="274" text-anchor="middle">+1.8%</text>
+<text class="anno-dim" x="94" y="274" text-anchor="end">最差年化</text>
+<text class="axtitle" x="34" y="48">最後賺錢的機會</text>
+</svg>
+<figcaption>抱一年，四次有一次賠錢；抱二十年，一次都沒賠過。<strong>但記得：這是美國 —— 過去一百年最幸運的市場</strong>（見第 8 章的倖存者偏差），所以高勝率不等於必勝。<span class="src">　資料：Kenneth R. French Data Library（美國全市場總報酬，月度，1926/7–2025/12）· 名目報酬，未計通膨與費用</span></figcaption>
+</figure>
+
 ---
 
 ## 六、均值回歸
