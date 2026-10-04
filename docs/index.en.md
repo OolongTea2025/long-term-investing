@@ -81,6 +81,8 @@ Index funds, diversification, holding for the long run, keeping your own emotion
 
 </div>
 
+⏳ **Want to see what starting early is actually worth?** Try [Your biggest asset is time](時間.md) — three charts and a simulator you drive yourself, two minutes.
+
 ---
 
 ## How to use this site
